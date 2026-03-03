@@ -191,7 +191,7 @@ CREATE TABLE IF NOT EXISTS admins (
     username VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
-    email VARCHAR(255),
+    email VARCHAR(255) UNIQUE,
     is_super TINYINT(1) DEFAULT 0,
     is_active TINYINT(1) DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
