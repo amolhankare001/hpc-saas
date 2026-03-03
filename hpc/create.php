@@ -1,6 +1,7 @@
 <?php
 $page_title = 'HPC कार्ड तयार करा';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/demo_data.php';
 requireLogin();
 
 $db = getDB();
@@ -407,14 +408,38 @@ require_once __DIR__ . '/../includes/header.php';
 
                                     <!-- Activity -->
                                     <div class="mb-4">
-                                        <h6 class="text-primary"><i class="bi bi-activity"></i> उपक्रम (Activity)</h6>
-                                        <textarea class="form-control" name="domain_<?= $domain_id ?>_activity" rows="3" placeholder="उपक्रमाचे वर्णन लिहा..."><?= sanitize($existing['activity_mr'] ?? '') ?></textarea>
+                                        <h6 class="text-primary"><i class="bi bi-activity"></i> 📝 उपक्रम (Activity)</h6>
+                                        <div class="mb-2">
+                                            <label class="form-label text-muted small">📋 गाइड बुकमधून नमुना निवडा:</label>
+                                            <select class="form-select form-select-sm demo-dropdown" data-target="domain_<?= $domain_id ?>_activity">
+                                                <option value="">-- नमुना उपक्रम निवडा (Demo Activity) --</option>
+                                                <?php if (isset($demo_activities[$domain_id])): ?>
+                                                    <?php foreach ($demo_activities[$domain_id] as $idx => $act): ?>
+                                                        <option value="<?= htmlspecialchars($act, ENT_QUOTES) ?>">📌 नमुना <?= $idx + 1 ?>: <?= mb_substr(strip_tags($act), 0, 80) ?>...</option>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
+                                            </select>
+                                        </div>
+                                        <textarea class="form-control" name="domain_<?= $domain_id ?>_activity" id="domain_<?= $domain_id ?>_activity" rows="4" placeholder="उपक्रमाचे वर्णन लिहा... किंवा वरील ड्रॉपडाउनमधून नमुना निवडा"><?= sanitize($existing['activity_mr'] ?? '') ?></textarea>
+                                        <small class="text-muted">💡 ड्रॉपडाउनमधून निवडा आणि आवश्यकतेनुसार बदल करा</small>
                                     </div>
 
                                     <!-- Assessment Questions -->
                                     <div class="mb-4">
-                                        <h6 class="text-primary"><i class="bi bi-question-circle"></i> मूल्यांकन प्रश्न (Assessment Questions)</h6>
-                                        <textarea class="form-control" name="domain_<?= $domain_id ?>_assessment_questions" rows="2" placeholder="मूल्यांकन प्रश्न लिहा..."><?= sanitize($existing['assessment_questions_mr'] ?? '') ?></textarea>
+                                        <h6 class="text-primary"><i class="bi bi-question-circle"></i> ❓ मूल्यांकन प्रश्न (Assessment Questions)</h6>
+                                        <div class="mb-2">
+                                            <label class="form-label text-muted small">📋 गाइड बुकमधून नमुना प्रश्न निवडा:</label>
+                                            <select class="form-select form-select-sm demo-dropdown" data-target="domain_<?= $domain_id ?>_assessment_questions">
+                                                <option value="">-- नमुना प्रश्न निवडा (Demo Questions) --</option>
+                                                <?php if (isset($demo_questions[$domain_id])): ?>
+                                                    <?php foreach ($demo_questions[$domain_id] as $idx => $q): ?>
+                                                        <option value="<?= htmlspecialchars($q, ENT_QUOTES) ?>">📌 प्रश्नसंच <?= $idx + 1 ?>: <?= mb_substr(strip_tags(str_replace("\n", ' ', $q)), 0, 80) ?>...</option>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
+                                            </select>
+                                        </div>
+                                        <textarea class="form-control" name="domain_<?= $domain_id ?>_assessment_questions" id="domain_<?= $domain_id ?>_assessment_questions" rows="3" placeholder="मूल्यांकन प्रश्न लिहा... किंवा वरील ड्रॉपडाउनमधून निवडा"><?= sanitize($existing['assessment_questions_mr'] ?? '') ?></textarea>
+                                        <small class="text-muted">💡 ड्रॉपडाउनमधून निवडा आणि आवश्यकतेनुसार बदल करा</small>
                                     </div>
 
                                     <!-- Assessment Rubric -->
@@ -452,8 +477,19 @@ require_once __DIR__ . '/../includes/header.php';
 
                                     <!-- Teacher's Feedback -->
                                     <div class="mb-4">
-                                        <h6 class="text-primary"><i class="bi bi-chat-left-text"></i> शिक्षकांचा अभिप्राय (Teacher's Feedback)</h6>
-                                        <textarea class="form-control" name="domain_<?= $domain_id ?>_teacher_feedback" rows="3" placeholder="शिक्षकांचा अभिप्राय लिहा..."><?= sanitize($existing['teacher_feedback_mr'] ?? '') ?></textarea>
+                                        <h6 class="text-primary"><i class="bi bi-chat-left-text"></i> 👩‍🏫 शिक्षकांचा अभिप्राय (Teacher's Feedback)</h6>
+                                        <div class="mb-2">
+                                            <label class="form-label text-muted small">📋 नमुना अभिप्राय निवडा:</label>
+                                            <select class="form-select form-select-sm demo-dropdown" data-target="domain_<?= $domain_id ?>_teacher_feedback">
+                                                <option value="">-- नमुना अभिप्राय निवडा --</option>
+                                                <?php if (isset($demo_teacher_feedback[$domain_id])): ?>
+                                                    <?php foreach ($demo_teacher_feedback[$domain_id] as $idx => $fb): ?>
+                                                        <option value="<?= htmlspecialchars($fb, ENT_QUOTES) ?>">📌 नमुना <?= $idx + 1 ?>: <?= mb_substr($fb, 0, 80) ?>...</option>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
+                                            </select>
+                                        </div>
+                                        <textarea class="form-control" name="domain_<?= $domain_id ?>_teacher_feedback" id="domain_<?= $domain_id ?>_teacher_feedback" rows="3" placeholder="शिक्षकांचा अभिप्राय लिहा..."><?= sanitize($existing['teacher_feedback_mr'] ?? '') ?></textarea>
                                     </div>
 
                                     <!-- Self & Peer Assessment -->
@@ -470,8 +506,17 @@ require_once __DIR__ . '/../includes/header.php';
 
                                     <!-- Parent/Caregiver Observation -->
                                     <div class="mb-3">
-                                        <h6 class="text-primary"><i class="bi bi-house-heart"></i> पालक/काळजीवाहक निरीक्षण (Parent/Caregiver Observation)</h6>
-                                        <textarea class="form-control" name="domain_<?= $domain_id ?>_parent_observation" rows="2" placeholder="पालकांचे निरीक्षण..."><?= sanitize($existing['parent_observation_mr'] ?? '') ?></textarea>
+                                        <h6 class="text-primary"><i class="bi bi-house-heart"></i> 👨‍👩‍👧 पालक/काळजीवाहक निरीक्षण (Parent/Caregiver Observation)</h6>
+                                        <div class="mb-2">
+                                            <label class="form-label text-muted small">📋 नमुना निरीक्षण निवडा:</label>
+                                            <select class="form-select form-select-sm demo-dropdown" data-target="domain_<?= $domain_id ?>_parent_observation">
+                                                <option value="">-- नमुना पालक निरीक्षण निवडा --</option>
+                                                <?php if (isset($demo_parent_observation[$domain_id])): ?>
+                                                    <option value="<?= htmlspecialchars($demo_parent_observation[$domain_id], ENT_QUOTES) ?>">📌 <?= mb_substr($demo_parent_observation[$domain_id], 0, 80) ?>...</option>
+                                                <?php endif; ?>
+                                            </select>
+                                        </div>
+                                        <textarea class="form-control" name="domain_<?= $domain_id ?>_parent_observation" id="domain_<?= $domain_id ?>_parent_observation" rows="2" placeholder="पालकांचे निरीक्षण..."><?= sanitize($existing['parent_observation_mr'] ?? '') ?></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -554,6 +599,29 @@ document.querySelectorAll('.rubric-level').forEach(function(label) {
         td.querySelectorAll('.rubric-level').forEach(function(l) { l.classList.remove('selected'); });
         this.classList.add('selected');
         this.querySelector('input[type="radio"]').checked = true;
+    });
+});
+
+// Demo dropdown → textarea copy functionality
+document.querySelectorAll('.demo-dropdown').forEach(function(dropdown) {
+    dropdown.addEventListener('change', function() {
+        var targetId = this.getAttribute('data-target');
+        var textarea = document.getElementById(targetId);
+        if (textarea && this.value) {
+            // If textarea already has content, append with newline
+            if (textarea.value.trim()) {
+                textarea.value = textarea.value.trim() + '\n\n' + this.value;
+            } else {
+                textarea.value = this.value;
+            }
+            // Flash effect to show content was copied
+            textarea.style.backgroundColor = '#d4edda';
+            setTimeout(function() {
+                textarea.style.backgroundColor = '';
+            }, 1000);
+            // Reset dropdown to placeholder
+            this.selectedIndex = 0;
+        }
     });
 });
 </script>
