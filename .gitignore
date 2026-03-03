@@ -1,0 +1,23 @@
+# Uploads
+uploads/photos/*
+uploads/logos/*
+!uploads/photos/.gitkeep
+!uploads/logos/.gitkeep
+
+# Environment
+.env
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vendor
+vendor/
+
+# Temp
+tmp/
