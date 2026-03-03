@@ -61,12 +61,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
         $allowed = ['image/jpeg', 'image/png', 'image/gif'];
         if (in_array($_FILES['photo']['type'], $allowed)) {
-            $ext = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
-            $filename = 'student_' . time() . '_' . rand(1000,9999) . '.' . $ext;
-            $upload_dir = __DIR__ . '/../uploads/photos/';
-            if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
-            if (move_uploaded_file($_FILES['photo']['tmp_name'], $upload_dir . $filename)) {
-                $photo = 'uploads/photos/' . $filename;
+            $ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+            $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
+            if (in_array($ext, $allowed_ext)) {
+                $filename = 'student_' . time() . '_' . rand(1000,9999) . '.' . $ext;
+                $upload_dir = __DIR__ . '/../uploads/photos/';
+                if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
+                if (move_uploaded_file($_FILES['photo']['tmp_name'], $upload_dir . $filename)) {
+                    $photo = 'uploads/photos/' . $filename;
+                }
             }
         }
     }
