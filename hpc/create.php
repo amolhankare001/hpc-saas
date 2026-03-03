@@ -134,6 +134,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
         if ($working > 0 || $present > 0) {
             $stmt = $db->prepare("INSERT INTO attendance (student_id, academic_year, month, working_days, days_present) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE working_days = VALUES(working_days), days_present = VALUES(days_present)");
             $stmt->execute([$student_id, academic_year(), $num, $working, $present]);
+        } else {
+            // Clear previously saved attendance if both values are now zero
+            $db->prepare("DELETE FROM attendance WHERE student_id = ? AND academic_year = ? AND month = ?")->execute([$student_id, academic_year(), $num]);
         }
     }
 
