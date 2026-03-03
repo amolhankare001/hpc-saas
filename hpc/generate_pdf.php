@@ -105,7 +105,7 @@ exit;
 
 function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $interests, $domain_info) {
     global $demo_rubric_descriptions;
-    $month_names = [6=>'जून',7=>'जुलै',8=>'ऑगस्ट',9=>'सप्टें.',10=>'ऑक्टो.',11=>'नोव्हें.',12=>'डिसें.',1=>'जाने.',2=>'फेब्रु.',3=>'मार्च',4=>'एप्रिल',5=>'मे'];
+    $month_names = [4=>'एप्रिल',5=>'मे',6=>'जून',7=>'जुलै',8=>'ऑगस्ट',9=>'सप्टें.',10=>'ऑक्टो.',11=>'नोव्हें.',12=>'डिसें.',1=>'जाने.',2=>'फेब्रु.',3=>'मार्च'];
     
     // Calculate attendance totals
     $tw = 0; $tp = 0;
