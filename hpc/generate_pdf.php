@@ -293,12 +293,12 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
             <div class="section-header-green">✅ माझी आवड आहे</div>
             <div style="display:flex;flex-wrap:wrap;gap:5px;margin:5px 0;">
                 <?php 
-                $interest_list = ['वाचन 📖','नृत्य 💃','गायन 🎵','वादन 🎸','क्रीडा/खेळ ⚽','सर्जनशील लेखन ✍️','बागकाम 🌿','योगाभ्यास 🧘','कला 🎨','हस्तकला ✂️','पाककला 🍳','इतर'];
+                $interest_list = ['वाचन 📖','नृत्य 💃','गायन 🎵','वाद्य वाजवणे 🎸','खेळ ⚽','सर्जनशील लेखन ✍️','बागकाम 🌿','योग 🧘','चित्रकला 🎨','हस्तकला ✂️','स्वयंपाक 🍳','घरकामात सहभाग 🏠','इतर'];
                 $student_interests = array_map(function($i) { return $i['name_mr'] ?: $i['name']; }, $interests);
                 foreach ($interest_list as $il): 
                     $checked = false;
                     foreach ($student_interests as $si) {
-                        $clean = str_replace(['📖','💃','🎵','🎸','⚽','✍️','🌿','🧘','🎨','✂️','🍳'], '', trim($il));
+                        $clean = str_replace(['📖','💃','🎵','🎸','⚽','✍️','🌿','🧘','🎨','✂️','🍳','🏠'], '', trim($il));
                         if (mb_strpos($il, $si) !== false || mb_strpos($si, $clean) !== false) { $checked = true; break; }
                     }
                 ?>
