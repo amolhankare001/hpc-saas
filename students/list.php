@@ -112,7 +112,10 @@ require_once __DIR__ . '/../includes/header.php';
                                 <div class="btn-group btn-group-sm">
                                     <a href="<?= APP_URL ?>/students/edit.php?id=<?= $s['id'] ?>" class="btn btn-outline-primary" title="संपादित करा"><i class="bi bi-pencil"></i></a>
                                     <a href="<?= APP_URL ?>/hpc/create.php?student_id=<?= $s['id'] ?>" class="btn btn-outline-success" title="HPC तयार करा"><i class="bi bi-card-checklist"></i></a>
-                                    <a href="<?= APP_URL ?>/students/delete.php?id=<?= $s['id'] ?>" class="btn btn-outline-danger" title="हटवा" onclick="return confirmDelete()"><i class="bi bi-trash"></i></a>
+                                    <form method="POST" action="<?= APP_URL ?>/students/delete.php" class="d-inline" onsubmit="return confirmDelete()">
+                                        <input type="hidden" name="id" value="<?= $s['id'] ?>">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="हटवा"><i class="bi bi-trash"></i></button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>

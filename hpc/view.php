@@ -164,12 +164,15 @@ require_once __DIR__ . '/../includes/header.php';
                     <tbody>
                         <?php
                         $total_working = 0; $total_present = 0;
+                        foreach ($month_names as $num => $name) {
+                            $total_working += $attendance[$num]['working_days'] ?? 0;
+                            $total_present += $attendance[$num]['days_present'] ?? 0;
+                        }
                         ?>
                         <tr>
                             <td class="fw-bold">कामकाजाचे दिवस</td>
                             <?php foreach ($month_names as $num => $name):
                                 $w = $attendance[$num]['working_days'] ?? 0;
-                                $total_working += $w;
                             ?>
                                 <td><?= $w ?: '-' ?></td>
                             <?php endforeach; ?>
@@ -180,7 +183,6 @@ require_once __DIR__ . '/../includes/header.php';
                             <td class="fw-bold">उपस्थित दिवस</td>
                             <?php foreach ($month_names as $num => $name):
                                 $p = $attendance[$num]['days_present'] ?? 0;
-                                $total_present += $p;
                             ?>
                                 <td><?= $p ?: '-' ?></td>
                             <?php endforeach; ?>

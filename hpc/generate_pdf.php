@@ -157,20 +157,23 @@ foreach ($month_names as $name) {
 $att_html .= '<th align="center"><b>एकूण</b></th><th align="center"><b>%</b></th></tr>';
 
 $total_working = 0; $total_present = 0;
+foreach ($month_names as $num => $name) {
+    $total_working += $attendance[$num]['working_days'] ?? 0;
+    $total_present += $attendance[$num]['days_present'] ?? 0;
+}
+$pct = $total_working > 0 ? round(($total_present / $total_working) * 100, 1) : 0;
+
 $att_html .= '<tr><td><b>कामकाजाचे दिवस</b></td>';
 foreach ($month_names as $num => $name) {
     $w = $attendance[$num]['working_days'] ?? 0;
-    $total_working += $w;
     $att_html .= '<td align="center">' . ($w ?: '-') . '</td>';
 }
-$pct = $total_working > 0 ? round(($total_present / $total_working) * 100, 1) : 0;
 $att_html .= '<td align="center"><b>' . $total_working . '</b></td>';
 $att_html .= '<td rowspan="2" align="center"><b>' . $pct . '%</b></td></tr>';
 
 $att_html .= '<tr><td><b>उपस्थित दिवस</b></td>';
 foreach ($month_names as $num => $name) {
     $p = $attendance[$num]['days_present'] ?? 0;
-    $total_present += $p;
     $att_html .= '<td align="center">' . ($p ?: '-') . '</td>';
 }
 $att_html .= '<td align="center"><b>' . $total_present . '</b></td></tr></table>';
@@ -378,16 +381,20 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                 </tr>
                 <?php
                 $tw = 0; $tp = 0;
+                foreach ($month_names as $num => $name) {
+                    $tw += $attendance[$num]['working_days'] ?? 0;
+                    $tp += $attendance[$num]['days_present'] ?? 0;
+                }
                 ?>
                 <tr><td><strong>कामकाजाचे दिवस</strong></td>
-                    <?php foreach ($month_names as $num => $name): $w = $attendance[$num]['working_days'] ?? 0; $tw += $w; ?>
+                    <?php foreach ($month_names as $num => $name): $w = $attendance[$num]['working_days'] ?? 0; ?>
                         <td class="text-center"><?= $w ?: '-' ?></td>
                     <?php endforeach; ?>
                     <td class="text-center"><strong><?= $tw ?></strong></td>
                     <td rowspan="2" class="text-center" style="font-size:16px;font-weight:bold;"><?= $tw > 0 ? round(($tp / $tw) * 100, 1) : 0 ?>%</td>
                 </tr>
                 <tr><td><strong>उपस्थित दिवस</strong></td>
-                    <?php foreach ($month_names as $num => $name): $p = $attendance[$num]['days_present'] ?? 0; $tp += $p; ?>
+                    <?php foreach ($month_names as $num => $name): $p = $attendance[$num]['days_present'] ?? 0; ?>
                         <td class="text-center"><?= $p ?: '-' ?></td>
                     <?php endforeach; ?>
                     <td class="text-center"><strong><?= $tp ?></strong></td>
