@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$plans = $db->query("SELECT * FROM subscription_plans ORDER BY price ASC")->fetchAll();
+$plans = $db->query("SELECT * FROM plans ORDER BY price ASC")->fetchAll();
 $student_count = getStudentCount($_SESSION['school_id']);
 
 require_once __DIR__ . '/../includes/header.php';

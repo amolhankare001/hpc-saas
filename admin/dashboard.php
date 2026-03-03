@@ -15,10 +15,10 @@ $total_hpc = $db->query("SELECT COUNT(*) FROM hpc_cards")->fetchColumn();
 $total_teachers = $db->query("SELECT COUNT(*) FROM teachers WHERE is_active = 1")->fetchColumn();
 
 // Plan distribution
-$plan_stats = $db->query("SELECT p.name, p.name_mr, COUNT(s.id) as count FROM subscription_plans p LEFT JOIN schools s ON s.plan_id = p.id AND s.is_active = 1 GROUP BY p.id ORDER BY p.id")->fetchAll();
+$plan_stats = $db->query("SELECT p.name, p.name_mr, COUNT(s.id) as count FROM plans p LEFT JOIN schools s ON s.plan_id = p.id AND s.is_active = 1 GROUP BY p.id ORDER BY p.id")->fetchAll();
 
 // Recent schools
-$recent_schools = $db->query("SELECT s.*, p.name as plan_name, p.name_mr as plan_name_mr, (SELECT COUNT(*) FROM students WHERE school_id = s.id AND is_active = 1) as student_count FROM schools s LEFT JOIN subscription_plans p ON s.plan_id = p.id WHERE s.is_active = 1 ORDER BY s.created_at DESC LIMIT 10")->fetchAll();
+$recent_schools = $db->query("SELECT s.*, p.name as plan_name, p.name_mr as plan_name_mr, (SELECT COUNT(*) FROM students WHERE school_id = s.id AND is_active = 1) as student_count FROM schools s LEFT JOIN plans p ON s.plan_id = p.id WHERE s.is_active = 1 ORDER BY s.created_at DESC LIMIT 10")->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="mr">

@@ -32,7 +32,7 @@ $search = trim($_GET['search'] ?? '');
 $sql = "SELECT s.*, p.name as plan_name, p.name_mr as plan_name_mr, p.max_students,
         (SELECT COUNT(*) FROM students WHERE school_id = s.id AND is_active = 1) as student_count,
         (SELECT COUNT(*) FROM hpc_cards WHERE school_id = s.id) as hpc_count
-        FROM schools s LEFT JOIN subscription_plans p ON s.plan_id = p.id";
+        FROM schools s LEFT JOIN plans p ON s.plan_id = p.id";
 $params = [];
 
 if ($search) {
@@ -45,7 +45,7 @@ $stmt->execute($params);
 $schools = $stmt->fetchAll();
 
 // Get plans for dropdown
-$plans = $db->query("SELECT * FROM subscription_plans ORDER BY price ASC")->fetchAll();
+$plans = $db->query("SELECT * FROM plans ORDER BY price ASC")->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="mr">
