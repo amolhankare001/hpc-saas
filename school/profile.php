@@ -19,12 +19,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Handle logo upload
     if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
-        $ext = pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION);
-        $filename = 'logo_' . $_SESSION['school_id'] . '.' . $ext;
-        $upload_dir = __DIR__ . '/../uploads/logos/';
-        if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
-        if (move_uploaded_file($_FILES['logo']['tmp_name'], $upload_dir . $filename)) {
-            $db->prepare("UPDATE schools SET logo = ? WHERE id = ?")->execute(['uploads/logos/' . $filename, $_SESSION['school_id']]);
+        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (in_array($_FILES['logo']['type'], $allowed)) {
+            $ext = pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION);
+            $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            if (in_array(strtolower($ext), $allowed_ext)) {
+                $filename = 'logo_' . $_SESSION['school_id'] . '.' . $ext;
+                $upload_dir = __DIR__ . '/../uploads/logos/';
+                if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
+                if (move_uploaded_file($_FILES['logo']['tmp_name'], $upload_dir . $filename)) {
+                    $db->prepare("UPDATE schools SET logo = ? WHERE id = ?")->execute(['uploads/logos/' . $filename, $_SESSION['school_id']]);
+                }
+            }
         }
     }
 

@@ -15,7 +15,7 @@ $stmt->execute([$id, $school_id]);
 $data = $stmt->fetch();
 
 if (!$data) {
-    flash('danger', 'HPC कार्ड सापडले नाही.');
+    flash('error', 'HPC कार्ड सापडले नाही.');
     redirect(APP_URL . '/hpc/list.php');
 }
 
