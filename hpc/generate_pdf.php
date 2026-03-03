@@ -38,7 +38,7 @@ foreach ($stmt->fetchAll() as $a) {
 }
 
 // Get credits
-$stmt = $db->prepare("SELECT * FROM hpc_credits WHERE hpc_card_id = ?");
+$stmt = $db->prepare("SELECT * FROM hpc_credits WHERE hpc_card_id = ? ORDER BY id ASC");
 $stmt->execute([$id]);
 $credits = $stmt->fetchAll();
 
@@ -264,7 +264,7 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                 <div style="flex:1;">
                     <table>
                         <tr><td><strong>👤 माझे नाव:</strong></td><td><?= sanitize($data['name_mr'] ?: $data['name']) ?></td></tr>
-                        <tr><td><strong>🎂 माझे वय:</strong></td><td><?= $data['date_of_birth'] ? (date('Y') - date('Y', strtotime($data['date_of_birth']))) . ' वर्षे' : '-' ?></td></tr>
+                        <tr><td><strong>🎂 माझे वय:</strong></td><td><?= $data['date_of_birth'] ? (new DateTime($data['date_of_birth']))->diff(new DateTime())->y . ' वर्षे' : '-' ?></td></tr>
                         <tr><td><strong>🎈 माझा वाढदिवस:</strong></td><td><?= $data['date_of_birth'] ? date('d/m/Y', strtotime($data['date_of_birth'])) : '-' ?></td></tr>
                         <tr><td><strong>🏠 माझ्या घराचा पत्ता:</strong></td><td>-</td></tr>
                     </table>
