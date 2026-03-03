@@ -32,6 +32,10 @@ require_once __DIR__ . '/../includes/header.php';
     <strong>कालावधी:</strong> <?= $school['subscription_start'] ? date('d/m/Y', strtotime($school['subscription_start'])) : '-' ?> ते <?= $school['subscription_end'] ? date('d/m/Y', strtotime($school['subscription_end'])) : '-' ?>
 </div>
 
+<?php
+    $current_plan_index = $current_plan_id !== null ? array_search($current_plan_id, array_column($plans, 'id')) : false;
+    $current_price = ($current_plan_index !== false) ? ($plans[$current_plan_index]['price'] ?? 0) : 0;
+?>
 <div class="row g-4 justify-content-center">
     <?php foreach ($plans as $plan): 
         $is_current = ($plan['id'] == $current_plan_id);
@@ -71,10 +75,6 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="card-footer text-center">
                 <?php if ($is_current): ?>
                     <button class="btn btn-outline-primary w-100" disabled>सध्याची योजना</button>
-                <?php 
-                    $current_plan_index = $current_plan_id !== null ? array_search($current_plan_id, array_column($plans, 'id')) : false;
-                    $current_price = ($current_plan_index !== false) ? ($plans[$current_plan_index]['price'] ?? 0) : 0;
-                ?>
                 <?php elseif ($plan['price'] > $current_price): ?>
                     <form method="POST">
                         <input type="hidden" name="plan_id" value="<?= $plan['id'] ?>">

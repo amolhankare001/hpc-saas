@@ -590,12 +590,12 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                 ];
                 
                 if (!empty($credits)):
-                    foreach ($credits as $c): 
+                    foreach ($credits as $idx => $c): 
                         $total_earned += $c['credit_points_earned'];
                 ?>
                 <tr>
-                    <td class="text-center"><?= $c['domain_id'] ?? '-' ?></td>
-                    <td><strong><?= sanitize($c['domain_name_mr'] ?? ($domain_names_list[$c['domain_id']] ?? '')) ?></strong></td>
+                    <td class="text-center"><?= $idx + 1 ?></td>
+                    <td><strong><?= sanitize($c['domain_name_mr'] ?? ($domain_names_list[$idx + 1] ?? '')) ?></strong></td>
                     <td class="text-center"><?= $c['credits'] ?? '-' ?></td>
                     <td class="text-center"><?= $c['ncf_level'] ?? '-' ?></td>
                     <td class="text-center"><?= $c['credit_points'] ?? '-' ?></td>

@@ -57,6 +57,22 @@ $domain_names = [
     6 => ['name_mr' => 'सकारात्मक शिक्षण सवयी', 'name' => 'Positive Learning Habits'],
 ];
 
+// Goal code to description mapping for display
+$goal_descriptions = [
+    'CG1' => 'मुले स्वतःला निरोगी आणि सुरक्षित ठेवणाऱ्या सवयी विकसित करतात.',
+    'CG2' => 'मुले संवेदी धारणांमध्ये तीक्ष्णता विकसित करतात.',
+    'CG3' => 'मुले तंदुरुस्त आणि लवचिक शरीर विकसित करतात.',
+    'CG4' => 'मुले सकारात्मक आत्म-प्रतिमा आणि आत्मविश्वास विकसित करतात.',
+    'CG5' => 'मुले सामाजिक संवाद कौशल्ये विकसित करतात.',
+    'CG6' => 'मुले नैतिक मूल्ये आणि सहानुभूती विकसित करतात.',
+    'CG7' => 'मुले समस्या सोडवण्याची आणि तर्कशक्ती विकसित करतात.',
+    'CG8' => 'मुले गणितीय आणि वैज्ञानिक विचार विकसित करतात.',
+    'CG9' => 'मुले प्रभावी संवाद कौशल्ये विकसित करतात.',
+    'CG10' => 'मुले वाचन आणि लेखन कौशल्ये विकसित करतात.',
+    'CG11' => 'मुले सौंदर्य संवेदनशीलता आणि सर्जनशीलता विकसित करतात.',
+    'CG12' => 'मुले जिज्ञासा, शिस्त आणि सकारात्मक शिक्षण सवयी विकसित करतात.',
+];
+
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
@@ -213,7 +229,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <?php if (!empty($goals)): ?>
                     <ul class="list-group list-group-flush">
                         <?php foreach ($goals as $g): ?>
-                            <li class="list-group-item py-1"><i class="bi bi-check-circle text-success"></i> <?= sanitize($g) ?></li>
+                            <li class="list-group-item py-1"><i class="bi bi-check-circle text-success"></i> <strong><?= sanitize($g) ?>:</strong> <?= sanitize($goal_descriptions[$g] ?? $g) ?></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
