@@ -114,7 +114,7 @@ $domains = [
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
     $teacher_code = trim($_POST['teacher_code'] ?? '');
-    $status = $_POST['save_type'] === 'complete' ? 'completed' : 'draft';
+    $status = ($_POST['save_type'] ?? 'draft') === 'complete' ? 'completed' : 'draft';
 
     if (!$hpc_card) {
         $stmt = $db->prepare("INSERT INTO hpc_cards (student_id, school_id, academic_year, teacher_code, status) VALUES (?, ?, ?, ?, ?)");

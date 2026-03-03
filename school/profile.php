@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ext = pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION);
             $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
             if (in_array(strtolower($ext), $allowed_ext)) {
-                $filename = 'logo_' . $_SESSION['school_id'] . '.' . $ext;
+                $filename = 'logo_' . $_SESSION['school_id'] . '.' . strtolower($ext);
                 $upload_dir = __DIR__ . '/../uploads/logos/';
                 if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
                 if (move_uploaded_file($_FILES['logo']['tmp_name'], $upload_dir . $filename)) {
