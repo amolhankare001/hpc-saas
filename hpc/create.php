@@ -520,31 +520,52 @@ require_once __DIR__ . '/../includes/header.php';
                                         <textarea class="form-control" name="domain_<?= $domain_id ?>_teacher_feedback" id="domain_<?= $domain_id ?>_teacher_feedback" rows="3" placeholder="शिक्षकांचा अभिप्राय लिहा..."><?= sanitize($existing['teacher_feedback_mr'] ?? '') ?></textarea>
                                     </div>
 
-                                    <!-- Self & Peer Assessment -->
-                                    <div class="row mb-4">
-                                        <div class="col-md-6">
-                                            <h6 class="text-primary"><i class="bi bi-person-check"></i> स्व-मूल्यांकन (Self Assessment)</h6>
-                                            <textarea class="form-control" name="domain_<?= $domain_id ?>_self_assessment" rows="2" placeholder="विद्यार्थ्याचे स्व-मूल्यांकन..."><?= sanitize($existing['self_assessment'] ?? '') ?></textarea>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h6 class="text-primary"><i class="bi bi-people"></i> सहकारी मूल्यांकन (Peer Assessment)</h6>
-                                            <textarea class="form-control" name="domain_<?= $domain_id ?>_peer_assessment" rows="2" placeholder="सहकाऱ्यांचे मूल्यांकन..."><?= sanitize($existing['peer_assessment'] ?? '') ?></textarea>
-                                        </div>
+                                    <!-- Self Assessment - Dropdown Menu -->
+                                    <div class="mb-4">
+                                        <h6 class="text-primary"><i class="bi bi-person-check"></i> स्व-मूल्यांकन (Self Assessment)</h6>
+                                        <select class="form-select assessment-dropdown" name="domain_<?= $domain_id ?>_self_assessment" id="domain_<?= $domain_id ?>_self_assessment">
+                                            <option value="">-- स्व-मूल्यांकन निवडा --</option>
+                                            <?php if (isset($demo_self_assessment[$domain_id])): ?>
+                                                <?php foreach ($demo_self_assessment[$domain_id] as $opt): ?>
+                                                    <option value="<?= htmlspecialchars($opt, ENT_QUOTES) ?>" <?= (($existing['self_assessment'] ?? '') === $opt) ? 'selected' : '' ?>>
+                                                        <?= (($existing['self_assessment'] ?? '') === $opt) ? '✅ ' : '' ?><?= htmlspecialchars($opt) ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </select>
+                                        <small class="text-muted">✅ निवडलेला पर्याय टिक मार्कने दर्शवला जाईल</small>
                                     </div>
 
-                                    <!-- Parent/Caregiver Observation -->
+                                    <!-- Peer Assessment - Dropdown Menu -->
+                                    <div class="mb-4">
+                                        <h6 class="text-primary"><i class="bi bi-people"></i> सहकारी मूल्यांकन (Peer Assessment)</h6>
+                                        <select class="form-select assessment-dropdown" name="domain_<?= $domain_id ?>_peer_assessment" id="domain_<?= $domain_id ?>_peer_assessment">
+                                            <option value="">-- सहकारी मूल्यांकन निवडा --</option>
+                                            <?php if (isset($demo_peer_assessment[$domain_id])): ?>
+                                                <?php foreach ($demo_peer_assessment[$domain_id] as $opt): ?>
+                                                    <option value="<?= htmlspecialchars($opt, ENT_QUOTES) ?>" <?= (($existing['peer_assessment'] ?? '') === $opt) ? 'selected' : '' ?>>
+                                                        <?= (($existing['peer_assessment'] ?? '') === $opt) ? '✅ ' : '' ?><?= htmlspecialchars($opt) ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </select>
+                                        <small class="text-muted">✅ निवडलेला पर्याय टिक मार्कने दर्शवला जाईल</small>
+                                    </div>
+
+                                    <!-- Parent/Caregiver Observation - Dropdown Menu -->
                                     <div class="mb-3">
                                         <h6 class="text-primary"><i class="bi bi-house-heart"></i> 👨‍👩‍👧 पालक/काळजीवाहक निरीक्षण (Parent/Caregiver Observation)</h6>
-                                        <div class="mb-2">
-                                            <label class="form-label text-muted small">📋 नमुना निरीक्षण निवडा:</label>
-                                            <select class="form-select form-select-sm demo-dropdown" data-target="domain_<?= $domain_id ?>_parent_observation">
-                                                <option value="">-- नमुना पालक निरीक्षण निवडा --</option>
-                                                <?php if (isset($demo_parent_observation[$domain_id])): ?>
-                                                    <option value="<?= htmlspecialchars($demo_parent_observation[$domain_id], ENT_QUOTES) ?>">📌 <?= mb_substr($demo_parent_observation[$domain_id], 0, 80) ?>...</option>
-                                                <?php endif; ?>
-                                            </select>
-                                        </div>
-                                        <textarea class="form-control" name="domain_<?= $domain_id ?>_parent_observation" id="domain_<?= $domain_id ?>_parent_observation" rows="2" placeholder="पालकांचे निरीक्षण..."><?= sanitize($existing['parent_observation_mr'] ?? '') ?></textarea>
+                                        <select class="form-select assessment-dropdown" name="domain_<?= $domain_id ?>_parent_observation" id="domain_<?= $domain_id ?>_parent_observation">
+                                            <option value="">-- पालक निरीक्षण निवडा --</option>
+                                            <?php if (isset($demo_parent_observation_options[$domain_id])): ?>
+                                                <?php foreach ($demo_parent_observation_options[$domain_id] as $opt): ?>
+                                                    <option value="<?= htmlspecialchars($opt, ENT_QUOTES) ?>" <?= (($existing['parent_observation_mr'] ?? '') === $opt) ? 'selected' : '' ?>>
+                                                        <?= (($existing['parent_observation_mr'] ?? '') === $opt) ? '✅ ' : '' ?><?= htmlspecialchars($opt) ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </select>
+                                        <small class="text-muted">✅ निवडलेला पर्याय टिक मार्कने दर्शवला जाईल</small>
                                     </div>
 
                                     <!-- ============ TERM 2 (द्वितीय सत्र) SECTION ============ -->
@@ -662,22 +683,49 @@ require_once __DIR__ . '/../includes/header.php';
                                         <textarea class="form-control" name="domain_<?= $domain_id ?>_teacher_feedback_term2" id="domain_<?= $domain_id ?>_teacher_feedback_term2" rows="3" placeholder="सत्र 2 शिक्षकांचा अभिप्राय लिहा..."><?= sanitize($existing['teacher_feedback_mr_term2'] ?? '') ?></textarea>
                                     </div>
 
-                                    <!-- Term 2: Self & Peer Assessment -->
-                                    <div class="row mb-4">
-                                        <div class="col-md-6">
-                                            <h6 class="text-success"><i class="bi bi-person-check"></i> स्व-मूल्यांकन - सत्र 2 (Self Assessment - Term 2)</h6>
-                                            <textarea class="form-control" name="domain_<?= $domain_id ?>_self_assessment_term2" rows="2" placeholder="सत्र 2 स्व-मूल्यांकन..."><?= sanitize($existing['self_assessment_term2'] ?? '') ?></textarea>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h6 class="text-success"><i class="bi bi-people"></i> सहकारी मूल्यांकन - सत्र 2 (Peer Assessment - Term 2)</h6>
-                                            <textarea class="form-control" name="domain_<?= $domain_id ?>_peer_assessment_term2" rows="2" placeholder="सत्र 2 सहकारी मूल्यांकन..."><?= sanitize($existing['peer_assessment_term2'] ?? '') ?></textarea>
-                                        </div>
+                                    <!-- Term 2: Self Assessment - Dropdown -->
+                                    <div class="mb-4">
+                                        <h6 class="text-success"><i class="bi bi-person-check"></i> स्व-मूल्यांकन - सत्र 2 (Self Assessment - Term 2)</h6>
+                                        <select class="form-select assessment-dropdown" name="domain_<?= $domain_id ?>_self_assessment_term2">
+                                            <option value="">-- स्व-मूल्यांकन निवडा (सत्र 2) --</option>
+                                            <?php if (isset($demo_self_assessment[$domain_id])): ?>
+                                                <?php foreach ($demo_self_assessment[$domain_id] as $opt): ?>
+                                                    <option value="<?= htmlspecialchars($opt, ENT_QUOTES) ?>" <?= (($existing['self_assessment_term2'] ?? '') === $opt) ? 'selected' : '' ?>>
+                                                        <?= (($existing['self_assessment_term2'] ?? '') === $opt) ? '✅ ' : '' ?><?= htmlspecialchars($opt) ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </select>
                                     </div>
 
-                                    <!-- Term 2: Parent/Caregiver Observation -->
+                                    <!-- Term 2: Peer Assessment - Dropdown -->
+                                    <div class="mb-4">
+                                        <h6 class="text-success"><i class="bi bi-people"></i> सहकारी मूल्यांकन - सत्र 2 (Peer Assessment - Term 2)</h6>
+                                        <select class="form-select assessment-dropdown" name="domain_<?= $domain_id ?>_peer_assessment_term2">
+                                            <option value="">-- सहकारी मूल्यांकन निवडा (सत्र 2) --</option>
+                                            <?php if (isset($demo_peer_assessment[$domain_id])): ?>
+                                                <?php foreach ($demo_peer_assessment[$domain_id] as $opt): ?>
+                                                    <option value="<?= htmlspecialchars($opt, ENT_QUOTES) ?>" <?= (($existing['peer_assessment_term2'] ?? '') === $opt) ? 'selected' : '' ?>>
+                                                        <?= (($existing['peer_assessment_term2'] ?? '') === $opt) ? '✅ ' : '' ?><?= htmlspecialchars($opt) ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </select>
+                                    </div>
+
+                                    <!-- Term 2: Parent Observation - Dropdown -->
                                     <div class="mb-3">
                                         <h6 class="text-success"><i class="bi bi-house-heart"></i> 👨‍👩‍👧 पालक निरीक्षण - सत्र 2 (Parent Observation - Term 2)</h6>
-                                        <textarea class="form-control" name="domain_<?= $domain_id ?>_parent_observation_term2" id="domain_<?= $domain_id ?>_parent_observation_term2" rows="2" placeholder="सत्र 2 पालकांचे निरीक्षण..."><?= sanitize($existing['parent_observation_mr_term2'] ?? '') ?></textarea>
+                                        <select class="form-select assessment-dropdown" name="domain_<?= $domain_id ?>_parent_observation_term2">
+                                            <option value="">-- पालक निरीक्षण निवडा (सत्र 2) --</option>
+                                            <?php if (isset($demo_parent_observation_options[$domain_id])): ?>
+                                                <?php foreach ($demo_parent_observation_options[$domain_id] as $opt): ?>
+                                                    <option value="<?= htmlspecialchars($opt, ENT_QUOTES) ?>" <?= (($existing['parent_observation_mr_term2'] ?? '') === $opt) ? 'selected' : '' ?>>
+                                                        <?= (($existing['parent_observation_mr_term2'] ?? '') === $opt) ? '✅ ' : '' ?><?= htmlspecialchars($opt) ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </select>
                                     </div>
                                 </div>
                             </div>

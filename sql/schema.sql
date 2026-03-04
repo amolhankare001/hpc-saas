@@ -92,6 +92,16 @@ CREATE TABLE IF NOT EXISTS students (
     area_type ENUM('ग्रामीण','शहरी') DEFAULT 'ग्रामीण',
     blood_group VARCHAR(5),
     aadhar_no VARCHAR(12),
+    favourite_color VARCHAR(100) DEFAULT NULL,
+    favourite_food VARCHAR(100) DEFAULT NULL,
+    favourite_flower VARCHAR(100) DEFAULT NULL,
+    favourite_sport VARCHAR(100) DEFAULT NULL,
+    favourite_animal VARCHAR(100) DEFAULT NULL,
+    favourite_subject VARCHAR(100) DEFAULT NULL,
+    aspiration VARCHAR(255) DEFAULT NULL,
+    best_friend1 VARCHAR(255) DEFAULT NULL,
+    best_friend2 VARCHAR(255) DEFAULT NULL,
+    best_friend3 VARCHAR(255) DEFAULT NULL,
     is_active TINYINT(1) DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -210,14 +220,35 @@ CREATE TABLE IF NOT EXISTS admins (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
+-- Coupon Codes
+CREATE TABLE IF NOT EXISTS coupon_codes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    discount_percent INT NOT NULL DEFAULT 10,
+    max_uses INT NOT NULL DEFAULT 100,
+    used_count INT NOT NULL DEFAULT 0,
+    valid_from DATE DEFAULT NULL,
+    valid_to DATE DEFAULT NULL,
+    is_active TINYINT(1) DEFAULT 1,
+    created_by INT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (created_by) REFERENCES admins(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
 -- Payment/Subscription records
 CREATE TABLE IF NOT EXISTS payments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     school_id INT NOT NULL,
     plan_id INT NOT NULL,
     amount DECIMAL(10,2) NOT NULL,
+    original_amount DECIMAL(10,2) DEFAULT NULL,
+    discount_amount DECIMAL(10,2) DEFAULT 0.00,
+    coupon_code VARCHAR(50) DEFAULT NULL,
     payment_method VARCHAR(50),
     transaction_id VARCHAR(100),
+    razorpay_order_id VARCHAR(100) DEFAULT NULL,
+    razorpay_payment_id VARCHAR(100) DEFAULT NULL,
+    razorpay_signature VARCHAR(255) DEFAULT NULL,
     status ENUM('pending','completed','failed') DEFAULT 'pending',
     payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE CASCADE,
@@ -226,10 +257,10 @@ CREATE TABLE IF NOT EXISTS payments (
 
 -- Insert default plans
 INSERT INTO plans (name, name_mr, max_students, price, duration_months, features) VALUES
-('मोफत', 'मोफत योजना', 10, 0.00, 12, '10 विद्यार्थी, HPC कार्ड तयार करा'),
-('बेसिक', 'बेसिक योजना', 50, 999.00, 12, '50 विद्यार्थी, HPC कार्ड, PDF डाउनलोड'),
-('प्रो', 'प्रो योजना', 200, 2499.00, 12, '200 विद्यार्थी, HPC कार्ड, PDF, बॅच प्रिंट'),
-('एंटरप्राइज', 'एंटरप्राइज योजना', 9999, 4999.00, 12, 'अमर्यादित विद्यार्थी, सर्व सुविधा');
+('मोफत', 'मोफत योजना', 10, 0.00, 12, '["10 विद्यार्थी", "HPC कार्ड तयार करा", "PDF डाउनलोड"]'),
+('स्टार्टर', 'स्टार्टर योजना', 10, 149.00, 12, '["10 विद्यार्थी", "HPC कार्ड तयार करा", "PDF डाउनलोड", "प्राधान्य सहाय्य"]'),
+('स्टँडर्ड', 'स्टँडर्ड योजना', 20, 249.00, 12, '["20 विद्यार्थी", "HPC कार्ड", "PDF डाउनलोड", "बॅच प्रिंट", "प्राधान्य सहाय्य"]'),
+('प्रीमियम', 'प्रीमियम योजना', 9999, 499.00, 12, '["अमर्यादित विद्यार्थी", "सर्व सुविधा", "बॅच प्रिंट", "कस्टम ब्रँडिंग", "प्राधान्य सहाय्य"]');
 
 -- Insert default admin
 INSERT INTO admins (username, password_hash, name, email, is_super) VALUES

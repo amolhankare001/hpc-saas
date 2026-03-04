@@ -1,6 +1,7 @@
 <?php
 $page_title = 'विद्यार्थी जोडा';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/demo_data.php';
 requireLogin();
 
 $school_id = $_SESSION['school_id'];
@@ -50,6 +51,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'area_type' => $_POST['area_type'] ?? 'ग्रामीण',
         'blood_group' => trim($_POST['blood_group'] ?? ''),
         'aadhar_no' => trim($_POST['aadhar_no'] ?? ''),
+        'favourite_color' => trim($_POST['favourite_color'] ?? ''),
+        'favourite_food' => trim($_POST['favourite_food'] ?? ''),
+        'favourite_flower' => trim($_POST['favourite_flower'] ?? ''),
+        'favourite_sport' => trim($_POST['favourite_sport'] ?? ''),
+        'favourite_animal' => trim($_POST['favourite_animal'] ?? ''),
+        'favourite_subject' => trim($_POST['favourite_subject'] ?? ''),
+        'aspiration' => trim($_POST['aspiration'] ?? ''),
+        'best_friend1' => trim($_POST['best_friend1'] ?? ''),
+        'best_friend2' => trim($_POST['best_friend2'] ?? ''),
+        'best_friend3' => trim($_POST['best_friend3'] ?? ''),
     ];
 
     if (empty($data['name']) && empty($data['name_mr'])) {
@@ -75,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $sql = "INSERT INTO students (school_id, teacher_id, name, name_mr, apaar_id, udid, roll_no, registration_no, grade, section, date_of_birth, age, gender, photo, address_line1, address_line2, phone, mother_name, mother_education, mother_occupation, father_name, father_education, father_occupation, guardian_name, guardian_relation, num_siblings, siblings_age, mother_tongue, medium_of_instruction, area_type, blood_group, aadhar_no) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO students (school_id, teacher_id, name, name_mr, apaar_id, udid, roll_no, registration_no, grade, section, date_of_birth, age, gender, photo, address_line1, address_line2, phone, mother_name, mother_education, mother_occupation, father_name, father_education, father_occupation, guardian_name, guardian_relation, num_siblings, siblings_age, mother_tongue, medium_of_instruction, area_type, blood_group, aadhar_no, favourite_color, favourite_food, favourite_flower, favourite_sport, favourite_animal, favourite_subject, aspiration, best_friend1, best_friend2, best_friend3) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $db->prepare($sql);
         $stmt->execute([
             $data['school_id'], $data['teacher_id'], $data['name'], $data['name_mr'],
@@ -86,7 +97,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data['father_name'], $data['father_education'], $data['father_occupation'],
             $data['guardian_name'], $data['guardian_relation'], $data['num_siblings'],
             $data['siblings_age'], $data['mother_tongue'], $data['medium_of_instruction'],
-            $data['area_type'], $data['blood_group'], $data['aadhar_no']
+            $data['area_type'], $data['blood_group'], $data['aadhar_no'],
+            $data['favourite_color'], $data['favourite_food'], $data['favourite_flower'],
+            $data['favourite_sport'], $data['favourite_animal'], $data['favourite_subject'],
+            $data['aspiration'], $data['best_friend1'], $data['best_friend2'], $data['best_friend3']
         ]);
 
         // Handle interests
@@ -288,6 +302,92 @@ require_once __DIR__ . '/../includes/header.php';
                         <option value="ग्रामीण" <?= ($_POST['area_type'] ?? '') === 'ग्रामीण' ? 'selected' : '' ?>>ग्रामीण</option>
                         <option value="शहरी" <?= ($_POST['area_type'] ?? '') === 'शहरी' ? 'selected' : '' ?>>शहरी</option>
                     </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Favourite Items (Dropdown Menus) -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white"><i class="bi bi-star-fill"></i> आवडते (Favourite Items) - ड्रॉपडाउन मेनू</div>
+        <div class="card-body">
+            <p class="text-muted mb-3">विद्यार्थ्याचे आवडते निवडा - ड्रॉपडाउन मधून सोपे निवडा:</p>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">🎨 आवडता रंग (Favourite Color)</label>
+                    <select class="form-select" name="favourite_color">
+                        <option value="">-- रंग निवडा --</option>
+                        <?php foreach ($favourite_colors as $c): ?>
+                            <option value="<?= $c ?>" <?= ($_POST['favourite_color'] ?? '') === $c ? 'selected' : '' ?>><?= $c ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">🍛 आवडता अन्नपदार्थ (Favourite Food)</label>
+                    <select class="form-select" name="favourite_food">
+                        <option value="">-- अन्नपदार्थ निवडा --</option>
+                        <?php foreach ($favourite_foods as $f): ?>
+                            <option value="<?= $f ?>" <?= ($_POST['favourite_food'] ?? '') === $f ? 'selected' : '' ?>><?= $f ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">🌺 आवडते फूल (Favourite Flower)</label>
+                    <select class="form-select" name="favourite_flower">
+                        <option value="">-- फूल निवडा --</option>
+                        <?php foreach ($favourite_flowers as $fl): ?>
+                            <option value="<?= $fl ?>" <?= ($_POST['favourite_flower'] ?? '') === $fl ? 'selected' : '' ?>><?= $fl ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">⚽ आवडता खेळ (Favourite Sport)</label>
+                    <select class="form-select" name="favourite_sport">
+                        <option value="">-- खेळ निवडा --</option>
+                        <?php foreach ($favourite_sports as $sp): ?>
+                            <option value="<?= $sp ?>" <?= ($_POST['favourite_sport'] ?? '') === $sp ? 'selected' : '' ?>><?= $sp ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">🐾 आवडता प्राणी (Favourite Animal)</label>
+                    <select class="form-select" name="favourite_animal">
+                        <option value="">-- प्राणी निवडा --</option>
+                        <?php foreach ($favourite_animals as $an): ?>
+                            <option value="<?= $an ?>" <?= ($_POST['favourite_animal'] ?? '') === $an ? 'selected' : '' ?>><?= $an ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">📚 आवडता विषय (Favourite Subject)</label>
+                    <select class="form-select" name="favourite_subject">
+                        <option value="">-- विषय निवडा --</option>
+                        <?php foreach ($favourite_subjects as $sub): ?>
+                            <option value="<?= $sub ?>" <?= ($_POST['favourite_subject'] ?? '') === $sub ? 'selected' : '' ?>><?= $sub ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">🌟 मोठेपणाचे स्वप्न (Aspiration)</label>
+                    <select class="form-select" name="aspiration">
+                        <option value="">-- स्वप्न निवडा --</option>
+                        <?php foreach ($aspiration_options as $asp): ?>
+                            <option value="<?= $asp ?>" <?= ($_POST['aspiration'] ?? '') === $asp ? 'selected' : '' ?>><?= $asp ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-8"></div>
+                <div class="col-md-4">
+                    <label class="form-label">👫 जवळचा मित्र 1 (Best Friend 1)</label>
+                    <input type="text" class="form-control" name="best_friend1" value="<?= sanitize($_POST['best_friend1'] ?? '') ?>" placeholder="मित्राचे नाव">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">👫 जवळचा मित्र 2 (Best Friend 2)</label>
+                    <input type="text" class="form-control" name="best_friend2" value="<?= sanitize($_POST['best_friend2'] ?? '') ?>" placeholder="मित्राचे नाव">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">👫 जवळचा मित्र 3 (Best Friend 3)</label>
+                    <input type="text" class="form-control" name="best_friend3" value="<?= sanitize($_POST['best_friend3'] ?? '') ?>" placeholder="मित्राचे नाव">
                 </div>
             </div>
         </div>

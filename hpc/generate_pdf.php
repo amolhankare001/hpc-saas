@@ -280,15 +280,41 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                 <tr><td><strong>👫 भावंडांची संख्या:</strong></td><td>-</td></tr>
             </table>
 
-            <div class="section-header-blue">⭐ माझा आवडता</div>
+            <div class="section-header-blue">⭐ माझा आवडता (Favourite Items)</div>
             <table>
-                <tr><td><strong>🎨 रंग:</strong></td><td>-</td><td><strong>🌺 फूल:</strong></td><td>-</td></tr>
-                <tr><td><strong>🍎 अन्नपदार्थ:</strong></td><td>-</td><td><strong>🏏 खेळ:</strong></td><td>-</td></tr>
-                <tr><td><strong>🐾 प्राणी:</strong></td><td>-</td><td><strong>📚 विषय:</strong></td><td>-</td></tr>
+                <tr>
+                    <td style="background:#FFEBEE;width:16%;"><strong>🎨 रंग:</strong></td>
+                    <td style="background:#FFCDD2;width:17%;"><?= !empty($data['favourite_color']) ? sanitize($data['favourite_color']) : '-' ?></td>
+                    <td style="background:#E8F5E9;width:16%;"><strong>🌺 फूल:</strong></td>
+                    <td style="background:#C8E6C9;width:17%;"><?= !empty($data['favourite_flower']) ? sanitize($data['favourite_flower']) : '-' ?></td>
+                    <td style="background:#E3F2FD;width:16%;"><strong>🐾 प्राणी:</strong></td>
+                    <td style="background:#BBDEFB;width:17%;"><?= !empty($data['favourite_animal']) ? sanitize($data['favourite_animal']) : '-' ?></td>
+                </tr>
+                <tr>
+                    <td style="background:#FFF3E0;"><strong>🍎 अन्नपदार्थ:</strong></td>
+                    <td style="background:#FFE0B2;"><?= !empty($data['favourite_food']) ? sanitize($data['favourite_food']) : '-' ?></td>
+                    <td style="background:#F3E5F5;"><strong>🏏 खेळ:</strong></td>
+                    <td style="background:#E1BEE7;"><?= !empty($data['favourite_sport']) ? sanitize($data['favourite_sport']) : '-' ?></td>
+                    <td style="background:#E0F7FA;"><strong>📚 विषय:</strong></td>
+                    <td style="background:#B2EBF2;"><?= !empty($data['favourite_subject']) ? sanitize($data['favourite_subject']) : '-' ?></td>
+                </tr>
             </table>
 
+            <?php
+            // Best friends section
+            $friends = array_filter([
+                $data['best_friend1'] ?? '',
+                $data['best_friend2'] ?? '',
+                $data['best_friend3'] ?? '',
+            ]);
+            if (!empty($friends)): ?>
+            <div style="margin:8px 0;padding:8px;border:1px solid #81D4FA;border-radius:6px;background:#E1F5FE;">
+                <strong>👫 माझे जिवलग मित्र/मैत्रिणी:</strong> <?= sanitize(implode(', ', $friends)) ?>
+            </div>
+            <?php endif; ?>
+
             <div style="margin:10px 0;padding:10px;border:2px solid #FFB300;border-radius:8px;background:#FFF8E1;">
-                <strong>🌟 मोठे होऊन मला _________________ व्हायचे आहे.</strong>
+                <strong>🌟 मोठे होऊन मला <?= !empty($data['aspiration']) ? sanitize($data['aspiration']) : '_________________' ?> व्हायचे आहे.</strong>
             </div>
 
             <div class="section-header-green">✅ माझी आवड आहे</div>

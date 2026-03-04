@@ -133,27 +133,43 @@ require_once 'includes/header.php';
             <div class="col-md-3">
                 <div class="card pricing-card h-100 p-4">
                     <div class="card-body">
-                        <h5 class="text-muted">मोफत</h5>
+                        <h5 class="text-muted">मोफत (Free)</h5>
                         <div class="price my-3">&#8377;0<small>/वर्ष</small></div>
                         <ul class="list-unstyled text-start">
                             <li class="mb-2"><i class="bi bi-check-circle text-success"></i> 10 विद्यार्थी</li>
                             <li class="mb-2"><i class="bi bi-check-circle text-success"></i> HPC कार्ड तयार करा</li>
-                            <li class="mb-2"><i class="bi bi-x-circle text-muted"></i> PDF डाउनलोड</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> PDF डाउनलोड</li>
                         </ul>
-                        <a href="<?= APP_URL ?>/auth/register.php" class="btn btn-outline-primary w-100">सुरू करा</a>
+                        <a href="<?= APP_URL ?>/auth/register.php" class="btn btn-outline-primary w-100">मोफत सुरू करा</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card pricing-card h-100 p-4">
+                    <div class="card-body">
+                        <h5 class="text-muted">बेसिक (Basic)</h5>
+                        <div class="price my-3">&#8377;149<small>/वर्ष</small></div>
+                        <ul class="list-unstyled text-start">
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> 10 विद्यार्थी</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> HPC कार्ड तयार करा</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> PDF डाउनलोड</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> प्राधान्य सहाय्य</li>
+                        </ul>
+                        <a href="<?= APP_URL ?>/auth/register.php" class="btn btn-outline-primary w-100">नोंदणी करा</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card pricing-card popular h-100 p-4">
-                    <span class="badge bg-primary position-absolute top-0 start-50 translate-middle">लोकप्रिय</span>
+                    <span class="badge bg-primary position-absolute top-0 start-50 translate-middle">⭐ लोकप्रिय</span>
                     <div class="card-body">
-                        <h5 class="text-muted">बेसिक</h5>
-                        <div class="price my-3">&#8377;999<small>/वर्ष</small></div>
+                        <h5 class="text-muted">स्टँडर्ड (Standard)</h5>
+                        <div class="price my-3">&#8377;249<small>/वर्ष</small></div>
                         <ul class="list-unstyled text-start">
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> 50 विद्यार्थी</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> 20 विद्यार्थी</li>
                             <li class="mb-2"><i class="bi bi-check-circle text-success"></i> HPC कार्ड तयार करा</li>
                             <li class="mb-2"><i class="bi bi-check-circle text-success"></i> PDF डाउनलोड</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> प्राधान्य सहाय्य</li>
                         </ul>
                         <a href="<?= APP_URL ?>/auth/register.php" class="btn btn-primary w-100">नोंदणी करा</a>
                     </div>
@@ -162,12 +178,13 @@ require_once 'includes/header.php';
             <div class="col-md-3">
                 <div class="card pricing-card h-100 p-4">
                     <div class="card-body">
-                        <h5 class="text-muted">प्रो</h5>
-                        <div class="price my-3">&#8377;2,499<small>/वर्ष</small></div>
+                        <h5 class="text-muted">प्रो (Pro)</h5>
+                        <div class="price my-3">&#8377;499<small>/वर्ष</small></div>
                         <ul class="list-unstyled text-start">
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> 200 विद्यार्थी</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> अमर्यादित विद्यार्थी</li>
                             <li class="mb-2"><i class="bi bi-check-circle text-success"></i> सर्व सुविधा</li>
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> बॅच प्रिंट</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> बल्क PDF निर्यात</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> कस्टम ब्रँडिंग</li>
                         </ul>
                         <a href="<?= APP_URL ?>/auth/register.php" class="btn btn-outline-primary w-100">नोंदणी करा</a>
                     </div>

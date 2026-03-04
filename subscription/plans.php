@@ -7,18 +7,7 @@ $db = getDB();
 $school = getSchool();
 $current_plan_id = $school['plan_id'];
 
-// Handle plan upgrade request
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $plan_id = intval($_POST['plan_id'] ?? 0);
-    if ($plan_id && $plan_id != $current_plan_id) {
-        $stmt = $db->prepare("UPDATE schools SET plan_id = ?, subscription_start = CURDATE(), subscription_end = DATE_ADD(CURDATE(), INTERVAL 12 MONTH) WHERE id = ?");
-        $stmt->execute([$plan_id, $_SESSION['school_id']]);
-        flash('success', 'योजना यशस्वीरित्या अपग्रेड झाली! (पेमेंट प्रोसेसिंग भविष्यात जोडले जाईल)');
-        redirect(APP_URL . '/subscription/plans.php');
-    }
-}
-
-$plans = $db->query("SELECT * FROM plans ORDER BY price ASC")->fetchAll();
+$plans = $db->query("SELECT * FROM plans WHERE is_active = 1 ORDER BY price ASC")->fetchAll();
 $student_count = getStudentCount($_SESSION['school_id']);
 
 require_once __DIR__ . '/../includes/header.php';
@@ -39,10 +28,13 @@ require_once __DIR__ . '/../includes/header.php';
 <div class="row g-4 justify-content-center">
     <?php foreach ($plans as $plan): 
         $is_current = ($plan['id'] == $current_plan_id);
-        $features = json_decode($plan['features'] ?? '[]', true) ?: [];
+        $is_popular = ($plan['price'] == 249);
     ?>
     <div class="col-md-3">
-        <div class="card h-100 <?= $is_current ? 'border-primary shadow' : '' ?>">
+        <div class="card h-100 <?= $is_current ? 'border-primary shadow' : '' ?> <?= $is_popular ? 'border-warning' : '' ?>" style="position:relative;">
+            <?php if ($is_popular && !$is_current): ?>
+                <span class="badge bg-warning text-dark position-absolute top-0 start-50 translate-middle px-3 py-2" style="font-size:12px;">⭐ लोकप्रिय</span>
+            <?php endif; ?>
             <?php if ($is_current): ?>
                 <div class="card-header bg-primary text-white text-center"><i class="bi bi-check-circle"></i> सध्याची योजना</div>
             <?php endif; ?>
@@ -52,34 +44,33 @@ require_once __DIR__ . '/../includes/header.php';
                     <?php if ($plan['price'] == 0): ?>
                         <span class="display-6 text-success fw-bold">मोफत</span>
                     <?php else: ?>
-                        <span class="display-6 fw-bold text-primary">₹<?= number_format($plan['price']) ?></span>
+                        <span class="display-6 fw-bold text-primary">&#8377;<?= number_format($plan['price']) ?></span>
                         <span class="text-muted">/वर्ष</span>
                     <?php endif; ?>
                 </div>
                 <ul class="list-unstyled text-start">
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> <?= $plan['max_students'] == -1 ? 'अमर्यादित' : $plan['max_students'] ?> विद्यार्थी</li>
+                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> <?= $plan['max_students'] >= 9999 ? 'अमर्यादित' : $plan['max_students'] ?> विद्यार्थी</li>
                     <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> HPC कार्ड तयार करा</li>
                     <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> PDF डाउनलोड</li>
+                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> ड्रॉपडाउन मेनू</li>
                     <?php if ($plan['price'] > 0): ?>
                         <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> प्राधान्य सहाय्य</li>
                     <?php endif; ?>
-                    <?php if ($plan['price'] >= 1999): ?>
+                    <?php if ($plan['price'] >= 499): ?>
                         <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> बल्क PDF निर्यात</li>
-                    <?php endif; ?>
-                    <?php if ($plan['price'] >= 4999): ?>
                         <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> कस्टम ब्रँडिंग</li>
-                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> API ॲक्सेस</li>
                     <?php endif; ?>
                 </ul>
             </div>
             <div class="card-footer text-center">
                 <?php if ($is_current): ?>
                     <button class="btn btn-outline-primary w-100" disabled>सध्याची योजना</button>
+                <?php elseif ($plan['price'] == 0): ?>
+                    <button class="btn btn-outline-secondary w-100" disabled>मोफत योजना</button>
                 <?php elseif ($plan['price'] > $current_price): ?>
-                    <form method="POST">
-                        <input type="hidden" name="plan_id" value="<?= $plan['id'] ?>">
-                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-arrow-up-circle"></i> अपग्रेड करा</button>
-                    </form>
+                    <a href="<?= APP_URL ?>/subscription/checkout.php?plan=<?= $plan['id'] ?>" class="btn btn-primary w-100">
+                        <i class="bi bi-arrow-up-circle"></i> अपग्रेड करा
+                    </a>
                 <?php else: ?>
                     <button class="btn btn-outline-secondary w-100" disabled>डाउनग्रेड उपलब्ध नाही</button>
                 <?php endif; ?>
@@ -89,8 +80,13 @@ require_once __DIR__ . '/../includes/header.php';
     <?php endforeach; ?>
 </div>
 
-<div class="text-center mt-4">
-    <p class="text-muted"><i class="bi bi-info-circle"></i> पेमेंट गेटवे लवकरच जोडले जाईल. सध्या योजना बदल थेट लागू होतात.</p>
+<!-- Coupon Code Section -->
+<div class="card mt-4 mx-auto" style="max-width:500px;">
+    <div class="card-body text-center">
+        <h5><i class="bi bi-ticket-perforated"></i> कूपन कोड आहे?</h5>
+        <p class="text-muted mb-3">तुमच्याकडे कूपन कोड असल्यास, योजना निवडताना चेकआउट पेजवर तो लागू करा.</p>
+        <p class="text-muted small"><i class="bi bi-shield-check"></i> सुरक्षित पेमेंट - Razorpay द्वारे</p>
+    </div>
 </div>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
