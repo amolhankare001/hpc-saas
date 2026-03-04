@@ -16,9 +16,9 @@ $payload = file_get_contents('php://input');
 $webhook_signature = $_SERVER['HTTP_X_RAZORPAY_SIGNATURE'] ?? '';
 
 // Verify webhook signature
-if (!empty(RAZORPAY_KEY_SECRET) && !empty($webhook_signature)) {
+if (!empty(RAZORPAY_KEY_SECRET)) {
     $expected_signature = hash_hmac('sha256', $payload, RAZORPAY_KEY_SECRET);
-    if (!hash_equals($expected_signature, $webhook_signature)) {
+    if (empty($webhook_signature) || !hash_equals($expected_signature, $webhook_signature)) {
         http_response_code(400);
         exit('Invalid signature');
     }
