@@ -117,14 +117,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
     $teacher_code = trim($_POST['teacher_code'] ?? '');
     $status = ($_POST['save_type'] ?? 'draft') === 'complete' ? 'completed' : 'draft';
 
+    $final_annual_feedback = trim($_POST['final_annual_feedback'] ?? '');
+
     if (!$hpc_card) {
-        $stmt = $db->prepare("INSERT INTO hpc_cards (student_id, school_id, academic_year, teacher_code, status) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$student_id, $school_id, academic_year(), $teacher_code, $status]);
+        $stmt = $db->prepare("INSERT INTO hpc_cards (student_id, school_id, academic_year, teacher_code, status, final_annual_feedback) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$student_id, $school_id, academic_year(), $teacher_code, $status, $final_annual_feedback]);
         $hpc_card_id = $db->lastInsertId();
     } else {
         $hpc_card_id = $hpc_card['id'];
-        $stmt = $db->prepare("UPDATE hpc_cards SET teacher_code = ?, status = ? WHERE id = ?");
-        $stmt->execute([$teacher_code, $status, $hpc_card_id]);
+        $stmt = $db->prepare("UPDATE hpc_cards SET teacher_code = ?, status = ?, final_annual_feedback = ? WHERE id = ?");
+        $stmt->execute([$teacher_code, $status, $final_annual_feedback, $hpc_card_id]);
     }
 
     // Save attendance
@@ -166,6 +168,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
             'teacher_feedback_mr' => trim($_POST[$prefix . 'teacher_feedback'] ?? ''),
             'self_assessment' => trim($_POST[$prefix . 'self_assessment'] ?? ''),
             'peer_assessment' => trim($_POST[$prefix . 'peer_assessment'] ?? ''),
+            'self_emoji' => trim($_POST[$prefix . 'self_emoji'] ?? ''),
+            'peer_emoji' => trim($_POST[$prefix . 'peer_emoji'] ?? ''),
             'parent_observation_mr' => trim($_POST[$prefix . 'parent_observation'] ?? ''),
             // Term 2 fields
             'curricular_goals_term2' => json_encode($goals_selected_t2, JSON_UNESCAPED_UNICODE),
@@ -179,6 +183,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
             'self_assessment_term2' => trim($_POST[$prefix . 'self_assessment_term2'] ?? ''),
             'peer_assessment_term2' => trim($_POST[$prefix . 'peer_assessment_term2'] ?? ''),
             'parent_observation_mr_term2' => trim($_POST[$prefix . 'parent_observation_term2'] ?? ''),
+            'self_emoji_term2' => trim($_POST[$prefix . 'self_emoji_term2'] ?? ''),
+            'peer_emoji_term2' => trim($_POST[$prefix . 'peer_emoji_term2'] ?? ''),
         ];
 
         // Check if assessment already exists
@@ -187,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
         $existing = $stmt->fetch();
 
         if ($existing) {
-            $stmt = $db->prepare("UPDATE hpc_domain_assessments SET curricular_goals=?, competencies=?, activity_mr=?, assessment_questions_mr=?, awareness_level=?, sensitivity_level=?, creativity_level=?, teacher_feedback_mr=?, self_assessment=?, peer_assessment=?, parent_observation_mr=?, curricular_goals_term2=?, competencies_term2=?, activity_mr_term2=?, assessment_questions_mr_term2=?, awareness_level_term2=?, sensitivity_level_term2=?, creativity_level_term2=?, teacher_feedback_mr_term2=?, self_assessment_term2=?, peer_assessment_term2=?, parent_observation_mr_term2=? WHERE id=?");
+            $stmt = $db->prepare("UPDATE hpc_domain_assessments SET curricular_goals=?, competencies=?, activity_mr=?, assessment_questions_mr=?, awareness_level=?, sensitivity_level=?, creativity_level=?, teacher_feedback_mr=?, self_assessment=?, peer_assessment=?, parent_observation_mr=?, curricular_goals_term2=?, competencies_term2=?, activity_mr_term2=?, assessment_questions_mr_term2=?, awareness_level_term2=?, sensitivity_level_term2=?, creativity_level_term2=?, teacher_feedback_mr_term2=?, self_assessment_term2=?, peer_assessment_term2=?, parent_observation_mr_term2=?, self_emoji=?, peer_emoji=?, self_emoji_term2=?, peer_emoji_term2=? WHERE id=?");
             $stmt->execute([
                 $data['curricular_goals'], $data['competencies'], $data['activity_mr'],
                 $data['assessment_questions_mr'], $data['awareness_level'], $data['sensitivity_level'],
@@ -196,10 +202,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
                 $data['curricular_goals_term2'], $data['competencies_term2'], $data['activity_mr_term2'],
                 $data['assessment_questions_mr_term2'], $data['awareness_level_term2'], $data['sensitivity_level_term2'],
                 $data['creativity_level_term2'], $data['teacher_feedback_mr_term2'], $data['self_assessment_term2'],
-                $data['peer_assessment_term2'], $data['parent_observation_mr_term2'], $existing['id']
+                $data['peer_assessment_term2'], $data['parent_observation_mr_term2'],
+                $data['self_emoji'], $data['peer_emoji'], $data['self_emoji_term2'], $data['peer_emoji_term2'],
+                $existing['id']
             ]);
         } else {
-            $stmt = $db->prepare("INSERT INTO hpc_domain_assessments (hpc_card_id, domain_id, domain_name, domain_name_mr, curricular_goals, competencies, activity_mr, assessment_questions_mr, awareness_level, sensitivity_level, creativity_level, teacher_feedback_mr, self_assessment, peer_assessment, parent_observation_mr, curricular_goals_term2, competencies_term2, activity_mr_term2, assessment_questions_mr_term2, awareness_level_term2, sensitivity_level_term2, creativity_level_term2, teacher_feedback_mr_term2, self_assessment_term2, peer_assessment_term2, parent_observation_mr_term2) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            $stmt = $db->prepare("INSERT INTO hpc_domain_assessments (hpc_card_id, domain_id, domain_name, domain_name_mr, curricular_goals, competencies, activity_mr, assessment_questions_mr, awareness_level, sensitivity_level, creativity_level, teacher_feedback_mr, self_assessment, peer_assessment, parent_observation_mr, curricular_goals_term2, competencies_term2, activity_mr_term2, assessment_questions_mr_term2, awareness_level_term2, sensitivity_level_term2, creativity_level_term2, teacher_feedback_mr_term2, self_assessment_term2, peer_assessment_term2, parent_observation_mr_term2, self_emoji, peer_emoji, self_emoji_term2, peer_emoji_term2) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             $stmt->execute([
                 $data['hpc_card_id'], $data['domain_id'], $data['domain_name'], $data['domain_name_mr'],
                 $data['curricular_goals'], $data['competencies'], $data['activity_mr'],
@@ -209,7 +217,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
                 $data['curricular_goals_term2'], $data['competencies_term2'], $data['activity_mr_term2'],
                 $data['assessment_questions_mr_term2'], $data['awareness_level_term2'], $data['sensitivity_level_term2'],
                 $data['creativity_level_term2'], $data['teacher_feedback_mr_term2'], $data['self_assessment_term2'],
-                $data['peer_assessment_term2'], $data['parent_observation_mr_term2']
+                $data['peer_assessment_term2'], $data['parent_observation_mr_term2'],
+                $data['self_emoji'], $data['peer_emoji'], $data['self_emoji_term2'], $data['peer_emoji_term2']
             ]);
         }
     }
@@ -298,7 +307,8 @@ require_once __DIR__ . '/../includes/header.php';
         <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#partA1">भाग A(1) - शाळा माहिती</a></li>
         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partA2">भाग A(2) - उपस्थिती व आवड</a></li>
         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partB">भाग B - डोमेन मूल्यांकन</a></li>
-        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partC">भाग C - क्रेडिट फ्रेमवर्क</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partFinal">अंतिम अभिप्राय</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partC">भाग C - क्रेडिट</a></li>
     </ul>
 
     <div class="tab-content">
@@ -419,15 +429,17 @@ require_once __DIR__ . '/../includes/header.php';
                                         </div>
                                     </div>
 
-                                    <!-- Competencies -->
+                                    <!-- Competencies with full text descriptions -->
                                     <div class="mb-4">
                                         <h6 class="text-primary"><i class="bi bi-check2-all"></i> क्षमता (Competencies) - एक किंवा अधिक निवडा:</h6>
                                         <div class="row g-2">
-                                            <?php foreach ($domain['competencies'] as $comp): ?>
-                                            <div class="col-md-2">
+                                            <?php 
+                                            $comp_descs = $competency_descriptions[$domain_id] ?? [];
+                                            foreach ($comp_descs as $comp_code => $comp_desc): ?>
+                                            <div class="col-md-12">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="domain_<?= $domain_id ?>_competencies[]" value="<?= $comp ?>" <?= in_array($comp, $existing_comps ?? []) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label"><?= $comp ?></label>
+                                                    <input class="form-check-input" type="checkbox" name="domain_<?= $domain_id ?>_competencies[]" value="<?= $comp_code ?>" <?= in_array($comp_code, $existing_comps ?? []) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label"><strong><?= $comp_code ?>-</strong> "<?= $comp_desc ?>"</label>
                                                 </div>
                                             </div>
                                             <?php endforeach; ?>
@@ -520,36 +532,34 @@ require_once __DIR__ . '/../includes/header.php';
                                         <textarea class="form-control" name="domain_<?= $domain_id ?>_teacher_feedback" id="domain_<?= $domain_id ?>_teacher_feedback" rows="3" placeholder="शिक्षकांचा अभिप्राय लिहा..."><?= sanitize($existing['teacher_feedback_mr'] ?? '') ?></textarea>
                                     </div>
 
-                                    <!-- Self Assessment - Dropdown Menu -->
+                                    <!-- Self Assessment - Emoji Selection -->
                                     <div class="mb-4">
-                                        <h6 class="text-primary"><i class="bi bi-person-check"></i> स्व-मूल्यांकन (Self Assessment)</h6>
-                                        <select class="form-select assessment-dropdown" name="domain_<?= $domain_id ?>_self_assessment" id="domain_<?= $domain_id ?>_self_assessment">
-                                            <option value="">-- स्व-मूल्यांकन निवडा --</option>
-                                            <?php if (isset($demo_self_assessment[$domain_id])): ?>
-                                                <?php foreach ($demo_self_assessment[$domain_id] as $opt): ?>
-                                                    <option value="<?= htmlspecialchars($opt, ENT_QUOTES) ?>" <?= (($existing['self_assessment'] ?? '') === $opt) ? 'selected' : '' ?>>
-                                                        <?= (($existing['self_assessment'] ?? '') === $opt) ? '✅ ' : '' ?><?= htmlspecialchars($opt) ?>
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            <?php endif; ?>
-                                        </select>
-                                        <small class="text-muted">✅ निवडलेला पर्याय टिक मार्कने दर्शवला जाईल</small>
+                                        <h6 class="text-primary"><i class="bi bi-person-check"></i> 😄 स्व-मूल्यांकन (Self Assessment) - इमोजी निवडा:</h6>
+                                        <div class="d-flex flex-wrap gap-3">
+                                            <?php foreach ($self_emoji_options as $elabel => $eicon): ?>
+                                            <label class="emoji-radio-label" style="cursor:pointer;text-align:center;padding:8px 12px;border:2px solid #ddd;border-radius:10px;min-width:90px;">
+                                                <input type="radio" name="domain_<?= $domain_id ?>_self_emoji" value="<?= htmlspecialchars($elabel, ENT_QUOTES) ?>" class="d-none emoji-radio" <?= (($existing['self_emoji'] ?? '') === $elabel) ? 'checked' : '' ?>>
+                                                <div style="font-size:28px;"><?= $eicon ?></div>
+                                                <div style="font-size:11px;margin-top:2px;"><?= $elabel ?></div>
+                                            </label>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <small class="text-muted">निवडलेला इमोजी PDF मध्ये हिरव्या टिक मार्कसह दर्शवला जाईल</small>
                                     </div>
 
-                                    <!-- Peer Assessment - Dropdown Menu -->
+                                    <!-- Peer Assessment - Emoji Selection -->
                                     <div class="mb-4">
-                                        <h6 class="text-primary"><i class="bi bi-people"></i> सहकारी मूल्यांकन (Peer Assessment)</h6>
-                                        <select class="form-select assessment-dropdown" name="domain_<?= $domain_id ?>_peer_assessment" id="domain_<?= $domain_id ?>_peer_assessment">
-                                            <option value="">-- सहकारी मूल्यांकन निवडा --</option>
-                                            <?php if (isset($demo_peer_assessment[$domain_id])): ?>
-                                                <?php foreach ($demo_peer_assessment[$domain_id] as $opt): ?>
-                                                    <option value="<?= htmlspecialchars($opt, ENT_QUOTES) ?>" <?= (($existing['peer_assessment'] ?? '') === $opt) ? 'selected' : '' ?>>
-                                                        <?= (($existing['peer_assessment'] ?? '') === $opt) ? '✅ ' : '' ?><?= htmlspecialchars($opt) ?>
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            <?php endif; ?>
-                                        </select>
-                                        <small class="text-muted">✅ निवडलेला पर्याय टिक मार्कने दर्शवला जाईल</small>
+                                        <h6 class="text-primary"><i class="bi bi-people"></i> 👍 सहकारी मूल्यांकन (Peer Assessment) - इमोजी निवडा:</h6>
+                                        <div class="d-flex flex-wrap gap-3">
+                                            <?php foreach ($peer_emoji_options as $elabel => $eicon): ?>
+                                            <label class="emoji-radio-label" style="cursor:pointer;text-align:center;padding:8px 12px;border:2px solid #ddd;border-radius:10px;min-width:90px;">
+                                                <input type="radio" name="domain_<?= $domain_id ?>_peer_emoji" value="<?= htmlspecialchars($elabel, ENT_QUOTES) ?>" class="d-none emoji-radio" <?= (($existing['peer_emoji'] ?? '') === $elabel) ? 'checked' : '' ?>>
+                                                <div style="font-size:28px;"><?= $eicon ?></div>
+                                                <div style="font-size:11px;margin-top:2px;"><?= $elabel ?></div>
+                                            </label>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <small class="text-muted">निवडलेला इमोजी PDF मध्ये हिरव्या टिक मार्कसह दर्शवला जाईल</small>
                                     </div>
 
                                     <!-- Parent/Caregiver Observation - Dropdown Menu -->
@@ -596,15 +606,17 @@ require_once __DIR__ . '/../includes/header.php';
                                         </div>
                                     </div>
 
-                                    <!-- Term 2: Competencies -->
+                                    <!-- Term 2: Competencies with full text descriptions -->
                                     <div class="mb-4">
                                         <h6 class="text-success"><i class="bi bi-check2-all"></i> क्षमता - सत्र 2 (Competencies - Term 2):</h6>
                                         <div class="row g-2">
-                                            <?php foreach ($domain['competencies'] as $comp): ?>
-                                            <div class="col-md-2">
+                                            <?php 
+                                            $comp_descs_t2 = $competency_descriptions[$domain_id] ?? [];
+                                            foreach ($comp_descs_t2 as $comp_code_t2 => $comp_desc_t2): ?>
+                                            <div class="col-md-12">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="domain_<?= $domain_id ?>_competencies_term2[]" value="<?= $comp ?>" <?= in_array($comp, $existing_comps_t2 ?? []) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label"><?= $comp ?></label>
+                                                    <input class="form-check-input" type="checkbox" name="domain_<?= $domain_id ?>_competencies_term2[]" value="<?= $comp_code_t2 ?>" <?= in_array($comp_code_t2, $existing_comps_t2 ?? []) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label"><strong><?= $comp_code_t2 ?>-</strong> "<?= $comp_desc_t2 ?>"</label>
                                                 </div>
                                             </div>
                                             <?php endforeach; ?>
@@ -680,37 +692,46 @@ require_once __DIR__ . '/../includes/header.php';
                                     <!-- Term 2: Teacher's Feedback -->
                                     <div class="mb-4">
                                         <h6 class="text-success"><i class="bi bi-chat-left-text"></i> 👩‍🏫 शिक्षकांचा अभिप्राय - सत्र 2 (Teacher's Feedback - Term 2)</h6>
+                                        <div class="mb-2">
+                                            <label class="form-label text-muted small">📋 नमुना अभिप्राय निवडा (सत्र 2):</label>
+                                            <select class="form-select form-select-sm demo-dropdown" data-target="domain_<?= $domain_id ?>_teacher_feedback_term2">
+                                                <option value="">-- नमुना अभिप्राय निवडा --</option>
+                                                <?php if (isset($demo_teacher_feedback[$domain_id])): ?>
+                                                    <?php foreach ($demo_teacher_feedback[$domain_id] as $idx => $fb): ?>
+                                                        <option value="<?= htmlspecialchars($fb, ENT_QUOTES) ?>">📌 नमुना <?= $idx + 1 ?>: <?= mb_substr($fb, 0, 80) ?>...</option>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
+                                            </select>
+                                        </div>
                                         <textarea class="form-control" name="domain_<?= $domain_id ?>_teacher_feedback_term2" id="domain_<?= $domain_id ?>_teacher_feedback_term2" rows="3" placeholder="सत्र 2 शिक्षकांचा अभिप्राय लिहा..."><?= sanitize($existing['teacher_feedback_mr_term2'] ?? '') ?></textarea>
                                     </div>
 
-                                    <!-- Term 2: Self Assessment - Dropdown -->
+                                    <!-- Term 2: Self Assessment - Emoji Selection -->
                                     <div class="mb-4">
-                                        <h6 class="text-success"><i class="bi bi-person-check"></i> स्व-मूल्यांकन - सत्र 2 (Self Assessment - Term 2)</h6>
-                                        <select class="form-select assessment-dropdown" name="domain_<?= $domain_id ?>_self_assessment_term2">
-                                            <option value="">-- स्व-मूल्यांकन निवडा (सत्र 2) --</option>
-                                            <?php if (isset($demo_self_assessment[$domain_id])): ?>
-                                                <?php foreach ($demo_self_assessment[$domain_id] as $opt): ?>
-                                                    <option value="<?= htmlspecialchars($opt, ENT_QUOTES) ?>" <?= (($existing['self_assessment_term2'] ?? '') === $opt) ? 'selected' : '' ?>>
-                                                        <?= (($existing['self_assessment_term2'] ?? '') === $opt) ? '✅ ' : '' ?><?= htmlspecialchars($opt) ?>
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            <?php endif; ?>
-                                        </select>
+                                        <h6 class="text-success"><i class="bi bi-person-check"></i> 😄 स्व-मूल्यांकन - सत्र 2 (Self Assessment - Term 2) - इमोजी निवडा:</h6>
+                                        <div class="d-flex flex-wrap gap-3">
+                                            <?php foreach ($self_emoji_options as $elabel => $eicon): ?>
+                                            <label class="emoji-radio-label" style="cursor:pointer;text-align:center;padding:8px 12px;border:2px solid #ddd;border-radius:10px;min-width:90px;">
+                                                <input type="radio" name="domain_<?= $domain_id ?>_self_emoji_term2" value="<?= htmlspecialchars($elabel, ENT_QUOTES) ?>" class="d-none emoji-radio" <?= (($existing['self_emoji_term2'] ?? '') === $elabel) ? 'checked' : '' ?>>
+                                                <div style="font-size:28px;"><?= $eicon ?></div>
+                                                <div style="font-size:11px;margin-top:2px;"><?= $elabel ?></div>
+                                            </label>
+                                            <?php endforeach; ?>
+                                        </div>
                                     </div>
 
-                                    <!-- Term 2: Peer Assessment - Dropdown -->
+                                    <!-- Term 2: Peer Assessment - Emoji Selection -->
                                     <div class="mb-4">
-                                        <h6 class="text-success"><i class="bi bi-people"></i> सहकारी मूल्यांकन - सत्र 2 (Peer Assessment - Term 2)</h6>
-                                        <select class="form-select assessment-dropdown" name="domain_<?= $domain_id ?>_peer_assessment_term2">
-                                            <option value="">-- सहकारी मूल्यांकन निवडा (सत्र 2) --</option>
-                                            <?php if (isset($demo_peer_assessment[$domain_id])): ?>
-                                                <?php foreach ($demo_peer_assessment[$domain_id] as $opt): ?>
-                                                    <option value="<?= htmlspecialchars($opt, ENT_QUOTES) ?>" <?= (($existing['peer_assessment_term2'] ?? '') === $opt) ? 'selected' : '' ?>>
-                                                        <?= (($existing['peer_assessment_term2'] ?? '') === $opt) ? '✅ ' : '' ?><?= htmlspecialchars($opt) ?>
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            <?php endif; ?>
-                                        </select>
+                                        <h6 class="text-success"><i class="bi bi-people"></i> 👍 सहकारी मूल्यांकन - सत्र 2 (Peer Assessment - Term 2) - इमोजी निवडा:</h6>
+                                        <div class="d-flex flex-wrap gap-3">
+                                            <?php foreach ($peer_emoji_options as $elabel => $eicon): ?>
+                                            <label class="emoji-radio-label" style="cursor:pointer;text-align:center;padding:8px 12px;border:2px solid #ddd;border-radius:10px;min-width:90px;">
+                                                <input type="radio" name="domain_<?= $domain_id ?>_peer_emoji_term2" value="<?= htmlspecialchars($elabel, ENT_QUOTES) ?>" class="d-none emoji-radio" <?= (($existing['peer_emoji_term2'] ?? '') === $elabel) ? 'checked' : '' ?>>
+                                                <div style="font-size:28px;"><?= $eicon ?></div>
+                                                <div style="font-size:11px;margin-top:2px;"><?= $elabel ?></div>
+                                            </label>
+                                            <?php endforeach; ?>
+                                        </div>
                                     </div>
 
                                     <!-- Term 2: Parent Observation - Dropdown -->
@@ -732,6 +753,17 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                         <?php endforeach; ?>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Annual Feedback -->
+        <div class="tab-pane fade" id="partFinal">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white"><i class="bi bi-pen"></i> शिक्षकांचा अंतिम सर्वकष वार्षिक अभिप्राय (Final Annual Teacher's Feedback)</div>
+                <div class="card-body">
+                    <p class="text-muted">शैक्षणिक वर्षाच्या शेवटी विद्यार्थ्यांच्या समग्र विकासाबद्दल वर्णनात्मक अभिप्राय लिहा:</p>
+                    <textarea class="form-control" name="final_annual_feedback" rows="8" placeholder="विद्यार्थ्याचा समग्र वार्षिक अभिप्राय येथे लिहा..."><?= sanitize($hpc_card['final_annual_feedback'] ?? '') ?></textarea>
                 </div>
             </div>
         </div>
@@ -812,6 +844,25 @@ document.querySelectorAll('.rubric-level').forEach(function(label) {
         td.querySelectorAll('.rubric-level').forEach(function(l) { l.classList.remove('selected'); });
         this.classList.add('selected');
         this.querySelector('input[type="radio"]').checked = true;
+    });
+});
+
+// Emoji radio button selection with visual feedback
+document.querySelectorAll('.emoji-radio-label').forEach(function(label) {
+    var radio = label.querySelector('.emoji-radio');
+    if (radio && radio.checked) {
+        label.style.borderColor = '#4CAF50';
+        label.style.background = '#E8F5E9';
+    }
+    label.addEventListener('click', function() {
+        var parent = this.closest('.d-flex');
+        parent.querySelectorAll('.emoji-radio-label').forEach(function(l) {
+            l.style.borderColor = '#ddd';
+            l.style.background = '';
+        });
+        this.style.borderColor = '#4CAF50';
+        this.style.background = '#E8F5E9';
+        this.querySelector('.emoji-radio').checked = true;
     });
 });
 
