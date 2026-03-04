@@ -102,6 +102,7 @@ $all_plans = $db->query("SELECT * FROM plans WHERE is_active = 1 ORDER BY price 
                 <span class="nav-link text-light"><i class="bi bi-person-circle"></i> <?= sanitize($_SESSION['admin_name'] ?? 'Admin') ?></span>
                 <a class="nav-link active" href="<?= APP_URL ?>/admin/dashboard.php"><i class="bi bi-speedometer2"></i> डॅशबोर्ड</a>
                 <a class="nav-link" href="<?= APP_URL ?>/admin/schools.php"><i class="bi bi-building"></i> शाळा</a>
+                <a class="nav-link" href="<?= APP_URL ?>/admin/plans.php"><i class="bi bi-credit-card"></i> योजना</a>
                 <a class="nav-link" href="<?= APP_URL ?>/admin/coupons.php"><i class="bi bi-ticket-perforated"></i> कूपन</a>
                 <a class="nav-link text-danger" href="<?= APP_URL ?>/admin/logout.php"><i class="bi bi-box-arrow-right"></i> लॉगआउट</a>
             </div>

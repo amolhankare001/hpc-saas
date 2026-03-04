@@ -62,8 +62,11 @@ $plans = $db->query("SELECT * FROM plans ORDER BY price ASC")->fetchAll();
     <div class="container">
         <a class="navbar-brand" href="<?= APP_URL ?>/admin/dashboard.php"><i class="bi bi-shield-lock"></i> HPC Admin</a>
         <div class="navbar-nav ms-auto">
-            <a class="nav-link active" href="<?= APP_URL ?>/admin/schools.php">शाळा</a>
-            <a class="nav-link text-danger" href="<?= APP_URL ?>/admin/logout.php">लॉगआउट</a>
+            <a class="nav-link" href="<?= APP_URL ?>/admin/dashboard.php"><i class="bi bi-speedometer2"></i> डॅशबोर्ड</a>
+            <a class="nav-link active" href="<?= APP_URL ?>/admin/schools.php"><i class="bi bi-building"></i> शाळा</a>
+            <a class="nav-link" href="<?= APP_URL ?>/admin/plans.php"><i class="bi bi-credit-card"></i> योजना</a>
+            <a class="nav-link" href="<?= APP_URL ?>/admin/coupons.php"><i class="bi bi-ticket-perforated"></i> कूपन</a>
+            <a class="nav-link text-danger" href="<?= APP_URL ?>/admin/logout.php"><i class="bi bi-box-arrow-right"></i> लॉगआउट</a>
         </div>
     </div>
 </nav>
