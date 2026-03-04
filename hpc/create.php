@@ -53,61 +53,62 @@ if ($student_id) {
     }
 }
 
-// Domain definitions for Foundational Stage (Std 1) in Marathi
+// Domain definitions for Foundational Stage (Std 1) in Marathi - with detailed CG descriptions from guide book
 $domains = [
     1 => [
         'name' => 'Physical Development',
         'name_mr' => 'शारीरिक विकास',
         'goals' => [
-            'CG1' => 'मुले स्वतःला निरोगी आणि सुरक्षित ठेवणाऱ्या सवयी विकसित करतात.',
-            'CG2' => 'मुले संवेदी धारणांमध्ये तीक्ष्णता विकसित करतात.',
-            'CG3' => 'मुले तंदुरुस्त आणि लवचिक शरीर विकसित करतात.',
+            'CG-1*' => 'बालके त्यांना निरोगी आणि सुरक्षित ठेवणाऱ्या सवयी विकसित करतात.',
+            'CG-2*' => 'बालके ज्ञानेंद्रियांची कुशाग्रता विकसित करतात.',
+            'CG-3*' => 'सुदृढ आणि लवचीक शरीर विकसित होते.',
         ],
-        'competencies' => ['C1.1','C1.2','C1.3','C1.4','C1.5','C1.6','C2.1','C2.2','C2.3','C2.4','C2.5','C2.6','C3.1','C3.2','C3.3','C3.4'],
+        'competencies' => ['C-1.1','C-1.2','C-1.3','C-1.4','C-1.5','C-1.6','C-2.1','C-2.2','C-2.3','C-2.4','C-2.5','C-2.6','C-3.1','C-3.2','C-3.3','C-3.4'],
     ],
     2 => [
         'name' => 'Socio-emotional & Ethical Development',
         'name_mr' => 'सामाजिक-भावनिक आणि नैतिक विकास',
         'goals' => [
-            'CG4' => 'मुले सकारात्मक आत्म-प्रतिमा आणि आत्मविश्वास विकसित करतात.',
-            'CG5' => 'मुले सामाजिक संवाद कौशल्ये विकसित करतात.',
-            'CG6' => 'मुले नैतिक मूल्ये आणि सहानुभूती विकसित करतात.',
+            'CG-4*' => 'बालके भावनिक बुद्धिमत्ता विकसित करतात (स्वतःच्या भावनांचे व्यवस्थापन आणि सामाजिक नियमांना प्रतिसाद).',
+            'CG-5*' => 'बालके उत्पादक कार्याबाबत व सेवेबाबत सकारात्मक दृष्टिकोन विकसित करतात.',
+            'CG-6*' => 'बालके स्वतः भोवतालच्या नैसर्गिक वातावरणाबद्दल कृतज्ञता भाव दर्शवितात.',
         ],
-        'competencies' => ['C4.1','C4.2','C4.3','C4.4','C4.5','C4.6','C4.7','C5.1','C6.1'],
+        'competencies' => ['C-4.1','C-4.2','C-4.3','C-4.4','C-4.5','C-4.6','C-4.7','C-5.1','C-6.1'],
     ],
     3 => [
         'name' => 'Cognitive Development',
         'name_mr' => 'बौद्धिक विकास',
         'goals' => [
-            'CG7' => 'मुले समस्या सोडवण्याची आणि तर्कशक्ती विकसित करतात.',
-            'CG8' => 'मुले गणितीय आणि वैज्ञानिक विचार विकसित करतात.',
+            'CG-7*' => 'बालके निरीक्षण व तार्किक विचाराने सभोवतालच्या जगाची जाणीव करून घेतात.',
+            'CG-8*' => 'बालकांची गणितीय समज विकसित होते (राशी, आकार, मापे, संख्या).',
         ],
-        'competencies' => ['C7.1','C7.2','C7.3','C8.1','C8.2','C8.3','C8.4','C8.5','C8.6','C8.7','C8.8','C8.9','C8.10','C8.11','C8.12','C8.13','C8.14'],
+        'competencies' => ['C-7.1','C-7.2','C-7.3','C-8.1','C-8.2','C-8.3','C-8.4','C-8.5','C-8.6','C-8.7','C-8.8','C-8.9','C-8.10','C-8.11','C-8.12','C-8.13','C-8.14'],
     ],
     4 => [
         'name' => 'Language and Literacy Development',
         'name_mr' => 'भाषा आणि साक्षरता विकास',
         'goals' => [
-            'CG9' => 'मुले प्रभावी संवाद कौशल्ये विकसित करतात.',
-            'CG10' => 'मुले वाचन आणि लेखन कौशल्ये विकसित करतात.',
+            'CG-9*' => 'बालके दोन भाषांमध्ये दैनंदिन संवादासाठी प्रभावी कौशल्ये विकसित करतात.',
+            'CG-10*' => 'बालके भाषा एक (L1) मध्ये सफाईदारपणे वाचन व लेखन करतात.',
+            'CG-11*' => 'बालके भाषा दोन (L2) मध्ये वाचन आणि लेखनाचा आरंभ करतात.',
         ],
-        'competencies' => ['C9.1','C9.2','C9.3','C9.4','C9.5','C9.6','C9.7','C10.1','C10.2','C10.3','C10.4','C10.5','C10.6','C10.7','C10.8','C10.9'],
+        'competencies' => ['C-9.1','C-9.2','C-9.3','C-9.4','C-9.5','C-9.6','C-9.7','C-10.1','C-10.2','C-10.3','C-10.4','C-10.5','C-10.6','C-10.7','C-10.8','C-10.9','C-11.1','C-11.2','C-11.3'],
     ],
     5 => [
         'name' => 'Aesthetic and Cultural Development',
         'name_mr' => 'सौंदर्यात्मक आणि सांस्कृतिक विकास',
         'goals' => [
-            'CG11' => 'मुले सौंदर्य संवेदनशीलता आणि सर्जनशीलता विकसित करतात.',
+            'CG-12*' => 'बालके दृश्य आणि ललित कलांमध्ये आपली संवेदनशीलता कलेद्वारे व्यक्त करतात.',
         ],
-        'competencies' => ['C11.1','C11.2'],
+        'competencies' => ['C-12.1','C-12.2','C-12.3','C-12.4'],
     ],
     6 => [
         'name' => 'Positive Learning Habits',
         'name_mr' => 'सकारात्मक शिक्षण सवयी',
         'goals' => [
-            'CG12' => 'मुले जिज्ञासा, शिस्त आणि सकारात्मक शिक्षण सवयी विकसित करतात.',
+            'CG-13*' => 'बालके शाळेच्या वर्गात सक्रियपणे सहभागी होण्यासाठी अध्ययन सवयी विकसित करतात.',
         ],
-        'competencies' => ['C12.1','C12.2','C12.3','C12.4','C12.5'],
+        'competencies' => ['C-13.1','C-13.2','C-13.3','C-13.4','C-13.5'],
     ],
 ];
 
@@ -147,6 +148,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
         $goals_selected = $_POST[$prefix . 'goals'] ?? [];
         $comps_selected = $_POST[$prefix . 'competencies'] ?? [];
 
+        $goals_selected_t2 = $_POST[$prefix . 'goals_term2'] ?? [];
+        $comps_selected_t2 = $_POST[$prefix . 'competencies_term2'] ?? [];
+
         $data = [
             'hpc_card_id' => $hpc_card_id,
             'domain_id' => $domain_id,
@@ -163,6 +167,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
             'self_assessment' => trim($_POST[$prefix . 'self_assessment'] ?? ''),
             'peer_assessment' => trim($_POST[$prefix . 'peer_assessment'] ?? ''),
             'parent_observation_mr' => trim($_POST[$prefix . 'parent_observation'] ?? ''),
+            // Term 2 fields
+            'curricular_goals_term2' => json_encode($goals_selected_t2, JSON_UNESCAPED_UNICODE),
+            'competencies_term2' => json_encode($comps_selected_t2, JSON_UNESCAPED_UNICODE),
+            'activity_mr_term2' => trim($_POST[$prefix . 'activity_term2'] ?? ''),
+            'assessment_questions_mr_term2' => trim($_POST[$prefix . 'assessment_questions_term2'] ?? ''),
+            'awareness_level_term2' => $_POST[$prefix . 'awareness_term2'] ?? null,
+            'sensitivity_level_term2' => $_POST[$prefix . 'sensitivity_term2'] ?? null,
+            'creativity_level_term2' => $_POST[$prefix . 'creativity_term2'] ?? null,
+            'teacher_feedback_mr_term2' => trim($_POST[$prefix . 'teacher_feedback_term2'] ?? ''),
+            'self_assessment_term2' => trim($_POST[$prefix . 'self_assessment_term2'] ?? ''),
+            'peer_assessment_term2' => trim($_POST[$prefix . 'peer_assessment_term2'] ?? ''),
+            'parent_observation_mr_term2' => trim($_POST[$prefix . 'parent_observation_term2'] ?? ''),
         ];
 
         // Check if assessment already exists
@@ -171,21 +187,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
         $existing = $stmt->fetch();
 
         if ($existing) {
-            $stmt = $db->prepare("UPDATE hpc_domain_assessments SET curricular_goals=?, competencies=?, activity_mr=?, assessment_questions_mr=?, awareness_level=?, sensitivity_level=?, creativity_level=?, teacher_feedback_mr=?, self_assessment=?, peer_assessment=?, parent_observation_mr=? WHERE id=?");
+            $stmt = $db->prepare("UPDATE hpc_domain_assessments SET curricular_goals=?, competencies=?, activity_mr=?, assessment_questions_mr=?, awareness_level=?, sensitivity_level=?, creativity_level=?, teacher_feedback_mr=?, self_assessment=?, peer_assessment=?, parent_observation_mr=?, curricular_goals_term2=?, competencies_term2=?, activity_mr_term2=?, assessment_questions_mr_term2=?, awareness_level_term2=?, sensitivity_level_term2=?, creativity_level_term2=?, teacher_feedback_mr_term2=?, self_assessment_term2=?, peer_assessment_term2=?, parent_observation_mr_term2=? WHERE id=?");
             $stmt->execute([
                 $data['curricular_goals'], $data['competencies'], $data['activity_mr'],
                 $data['assessment_questions_mr'], $data['awareness_level'], $data['sensitivity_level'],
                 $data['creativity_level'], $data['teacher_feedback_mr'], $data['self_assessment'],
-                $data['peer_assessment'], $data['parent_observation_mr'], $existing['id']
+                $data['peer_assessment'], $data['parent_observation_mr'],
+                $data['curricular_goals_term2'], $data['competencies_term2'], $data['activity_mr_term2'],
+                $data['assessment_questions_mr_term2'], $data['awareness_level_term2'], $data['sensitivity_level_term2'],
+                $data['creativity_level_term2'], $data['teacher_feedback_mr_term2'], $data['self_assessment_term2'],
+                $data['peer_assessment_term2'], $data['parent_observation_mr_term2'], $existing['id']
             ]);
         } else {
-            $stmt = $db->prepare("INSERT INTO hpc_domain_assessments (hpc_card_id, domain_id, domain_name, domain_name_mr, curricular_goals, competencies, activity_mr, assessment_questions_mr, awareness_level, sensitivity_level, creativity_level, teacher_feedback_mr, self_assessment, peer_assessment, parent_observation_mr) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            $stmt = $db->prepare("INSERT INTO hpc_domain_assessments (hpc_card_id, domain_id, domain_name, domain_name_mr, curricular_goals, competencies, activity_mr, assessment_questions_mr, awareness_level, sensitivity_level, creativity_level, teacher_feedback_mr, self_assessment, peer_assessment, parent_observation_mr, curricular_goals_term2, competencies_term2, activity_mr_term2, assessment_questions_mr_term2, awareness_level_term2, sensitivity_level_term2, creativity_level_term2, teacher_feedback_mr_term2, self_assessment_term2, peer_assessment_term2, parent_observation_mr_term2) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             $stmt->execute([
                 $data['hpc_card_id'], $data['domain_id'], $data['domain_name'], $data['domain_name_mr'],
                 $data['curricular_goals'], $data['competencies'], $data['activity_mr'],
                 $data['assessment_questions_mr'], $data['awareness_level'], $data['sensitivity_level'],
                 $data['creativity_level'], $data['teacher_feedback_mr'], $data['self_assessment'],
-                $data['peer_assessment'], $data['parent_observation_mr']
+                $data['peer_assessment'], $data['parent_observation_mr'],
+                $data['curricular_goals_term2'], $data['competencies_term2'], $data['activity_mr_term2'],
+                $data['assessment_questions_mr_term2'], $data['awareness_level_term2'], $data['sensitivity_level_term2'],
+                $data['creativity_level_term2'], $data['teacher_feedback_mr_term2'], $data['self_assessment_term2'],
+                $data['peer_assessment_term2'], $data['parent_observation_mr_term2']
             ]);
         }
     }
@@ -194,8 +218,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
     $db->prepare("DELETE FROM hpc_credits WHERE hpc_card_id = ?")->execute([$hpc_card_id]);
     foreach ($domains as $domain_id => $domain) {
         $earned = floatval($_POST["credit_earned_$domain_id"] ?? 0);
-        $stmt = $db->prepare("INSERT INTO hpc_credits (hpc_card_id, domain_name, domain_name_mr, credits, ncf_level, credit_points, credit_points_earned) VALUES (?, ?, ?, 4.5, 0.2, 0.9, ?)");
-        $stmt->execute([$hpc_card_id, $domain['name'], $domain['name_mr'], $earned]);
+        $earned_t2 = floatval($_POST["credit_earned_term2_$domain_id"] ?? 0);
+        $stmt = $db->prepare("INSERT INTO hpc_credits (hpc_card_id, domain_name, domain_name_mr, credits, ncf_level, credit_points, credit_points_earned, credit_points_earned_term2) VALUES (?, ?, ?, 4.5, 0.2, 0.9, ?, ?)");
+        $stmt->execute([$hpc_card_id, $domain['name'], $domain['name_mr'], $earned, $earned_t2]);
     }
 
     flash('success', $status === 'completed' ? 'HPC कार्ड पूर्ण झाले!' : 'HPC कार्ड मसुदा जतन झाला!');
@@ -521,6 +546,139 @@ require_once __DIR__ . '/../includes/header.php';
                                         </div>
                                         <textarea class="form-control" name="domain_<?= $domain_id ?>_parent_observation" id="domain_<?= $domain_id ?>_parent_observation" rows="2" placeholder="पालकांचे निरीक्षण..."><?= sanitize($existing['parent_observation_mr'] ?? '') ?></textarea>
                                     </div>
+
+                                    <!-- ============ TERM 2 (द्वितीय सत्र) SECTION ============ -->
+                                    <hr class="my-4" style="border-top:3px dashed #FF9800;">
+                                    <div class="alert alert-warning text-center fw-bold mb-4">
+                                        <i class="bi bi-calendar2-range"></i> 📝 द्वितीय सत्र (Term 2) - सत्र दुसरे
+                                    </div>
+
+                                    <?php
+                                        $existing_goals_t2 = !empty($existing['curricular_goals_term2']) ? json_decode($existing['curricular_goals_term2'], true) : [];
+                                        $existing_comps_t2 = !empty($existing['competencies_term2']) ? json_decode($existing['competencies_term2'], true) : [];
+                                    ?>
+
+                                    <!-- Term 2: Curricular Goals -->
+                                    <div class="mb-4">
+                                        <h6 class="text-success"><i class="bi bi-bullseye"></i> अभ्यासक्रम ध्येये - सत्र 2 (Curricular Goals - Term 2):</h6>
+                                        <div class="row g-2">
+                                            <?php foreach ($domain['goals'] as $code => $goal): ?>
+                                            <div class="col-md-12">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="domain_<?= $domain_id ?>_goals_term2[]" value="<?= $code ?>" id="goal_t2_<?= $domain_id ?>_<?= $code ?>" <?= in_array($code, $existing_goals_t2 ?? []) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label" for="goal_t2_<?= $domain_id ?>_<?= $code ?>">
+                                                        <strong><?= $code ?>:</strong> <?= $goal ?>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+
+                                    <!-- Term 2: Competencies -->
+                                    <div class="mb-4">
+                                        <h6 class="text-success"><i class="bi bi-check2-all"></i> क्षमता - सत्र 2 (Competencies - Term 2):</h6>
+                                        <div class="row g-2">
+                                            <?php foreach ($domain['competencies'] as $comp): ?>
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="domain_<?= $domain_id ?>_competencies_term2[]" value="<?= $comp ?>" <?= in_array($comp, $existing_comps_t2 ?? []) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label"><?= $comp ?></label>
+                                                </div>
+                                            </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+
+                                    <!-- Term 2: Activity -->
+                                    <div class="mb-4">
+                                        <h6 class="text-success"><i class="bi bi-activity"></i> 📝 उपक्रम - सत्र 2 (Activity - Term 2)</h6>
+                                        <div class="mb-2">
+                                            <label class="form-label text-muted small">📋 गाइड बुकमधून नमुना निवडा (सत्र 2):</label>
+                                            <select class="form-select form-select-sm demo-dropdown" data-target="domain_<?= $domain_id ?>_activity_term2">
+                                                <option value="">-- नमुना उपक्रम निवडा (Term 2) --</option>
+                                                <?php if (isset($demo_activities_term2[$domain_id])): ?>
+                                                    <?php foreach ($demo_activities_term2[$domain_id] as $idx => $act): ?>
+                                                        <option value="<?= htmlspecialchars($act, ENT_QUOTES) ?>">📌 नमुना <?= $idx + 1 ?>: <?= mb_substr(strip_tags($act), 0, 80) ?>...</option>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
+                                            </select>
+                                        </div>
+                                        <textarea class="form-control" name="domain_<?= $domain_id ?>_activity_term2" id="domain_<?= $domain_id ?>_activity_term2" rows="4" placeholder="सत्र 2 उपक्रमाचे वर्णन लिहा..."><?= sanitize($existing['activity_mr_term2'] ?? '') ?></textarea>
+                                    </div>
+
+                                    <!-- Term 2: Assessment Questions -->
+                                    <div class="mb-4">
+                                        <h6 class="text-success"><i class="bi bi-question-circle"></i> ❓ मूल्यांकन प्रश्न - सत्र 2 (Assessment Questions - Term 2)</h6>
+                                        <div class="mb-2">
+                                            <label class="form-label text-muted small">📋 गाइड बुकमधून नमुना प्रश्न निवडा (सत्र 2):</label>
+                                            <select class="form-select form-select-sm demo-dropdown" data-target="domain_<?= $domain_id ?>_assessment_questions_term2">
+                                                <option value="">-- नमुना प्रश्न निवडा (Term 2) --</option>
+                                                <?php if (isset($demo_questions_term2[$domain_id])): ?>
+                                                    <?php foreach ($demo_questions_term2[$domain_id] as $idx => $q): ?>
+                                                        <option value="<?= htmlspecialchars($q, ENT_QUOTES) ?>">📌 प्रश्नसंच <?= $idx + 1 ?>: <?= mb_substr(strip_tags(str_replace("\n", ' ', $q)), 0, 80) ?>...</option>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
+                                            </select>
+                                        </div>
+                                        <textarea class="form-control" name="domain_<?= $domain_id ?>_assessment_questions_term2" id="domain_<?= $domain_id ?>_assessment_questions_term2" rows="3" placeholder="सत्र 2 मूल्यांकन प्रश्न लिहा..."><?= sanitize($existing['assessment_questions_mr_term2'] ?? '') ?></textarea>
+                                    </div>
+
+                                    <!-- Term 2: Assessment Rubric -->
+                                    <div class="mb-4">
+                                        <h6 class="text-success"><i class="bi bi-star"></i> मूल्यांकन रुब्रिक - सत्र 2 (Assessment Rubric - Term 2)</h6>
+                                        <table class="table table-bordered rubric-table">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:25%">क्षमता</th>
+                                                    <th style="width:25%">प्रारंभिक (Beginner)<br><small>प्रवाह/Stream</small></th>
+                                                    <th style="width:25%">प्रवीण (Proficient)<br><small>पर्वत/Mountain</small></th>
+                                                    <th style="width:25%">प्रगत (Advanced)<br><small>आकाश/Sky</small></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach (['awareness' => 'जागरूकता (Awareness)', 'sensitivity' => 'संवेदनशीलता (Sensitivity)', 'creativity' => 'सर्जनशीलता (Creativity)'] as $key => $label): ?>
+                                                <tr>
+                                                    <td class="fw-bold"><?= $label ?></td>
+                                                    <?php foreach (['प्रारंभिक' => 'beginner', 'प्रवीण' => 'proficient', 'प्रगत' => 'advanced'] as $val => $cls): ?>
+                                                    <td>
+                                                        <div class="rubric-group">
+                                                            <label class="rubric-level <?= $cls ?> <?= ($existing[$key . '_level_term2'] ?? '') === $val ? 'selected' : '' ?>" data-value="<?= $val ?>">
+                                                                <input type="radio" name="domain_<?= $domain_id ?>_<?= $key ?>_term2" value="<?= $val ?>" class="d-none" <?= ($existing[$key . '_level_term2'] ?? '') === $val ? 'checked' : '' ?>>
+                                                                <?= $val ?>
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Term 2: Teacher's Feedback -->
+                                    <div class="mb-4">
+                                        <h6 class="text-success"><i class="bi bi-chat-left-text"></i> 👩‍🏫 शिक्षकांचा अभिप्राय - सत्र 2 (Teacher's Feedback - Term 2)</h6>
+                                        <textarea class="form-control" name="domain_<?= $domain_id ?>_teacher_feedback_term2" id="domain_<?= $domain_id ?>_teacher_feedback_term2" rows="3" placeholder="सत्र 2 शिक्षकांचा अभिप्राय लिहा..."><?= sanitize($existing['teacher_feedback_mr_term2'] ?? '') ?></textarea>
+                                    </div>
+
+                                    <!-- Term 2: Self & Peer Assessment -->
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <h6 class="text-success"><i class="bi bi-person-check"></i> स्व-मूल्यांकन - सत्र 2 (Self Assessment - Term 2)</h6>
+                                            <textarea class="form-control" name="domain_<?= $domain_id ?>_self_assessment_term2" rows="2" placeholder="सत्र 2 स्व-मूल्यांकन..."><?= sanitize($existing['self_assessment_term2'] ?? '') ?></textarea>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6 class="text-success"><i class="bi bi-people"></i> सहकारी मूल्यांकन - सत्र 2 (Peer Assessment - Term 2)</h6>
+                                            <textarea class="form-control" name="domain_<?= $domain_id ?>_peer_assessment_term2" rows="2" placeholder="सत्र 2 सहकारी मूल्यांकन..."><?= sanitize($existing['peer_assessment_term2'] ?? '') ?></textarea>
+                                        </div>
+                                    </div>
+
+                                    <!-- Term 2: Parent/Caregiver Observation -->
+                                    <div class="mb-3">
+                                        <h6 class="text-success"><i class="bi bi-house-heart"></i> 👨‍👩‍👧 पालक निरीक्षण - सत्र 2 (Parent Observation - Term 2)</h6>
+                                        <textarea class="form-control" name="domain_<?= $domain_id ?>_parent_observation_term2" id="domain_<?= $domain_id ?>_parent_observation_term2" rows="2" placeholder="सत्र 2 पालकांचे निरीक्षण..."><?= sanitize($existing['parent_observation_mr_term2'] ?? '') ?></textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -543,7 +701,8 @@ require_once __DIR__ . '/../includes/header.php';
                                     <th class="text-center">क्रेडिट (Credits)</th>
                                     <th class="text-center">NCF पातळी<br>(NCF Levels)</th>
                                     <th class="text-center">क्रेडिट पॉइंट<br>(Credit Points)</th>
-                                    <th class="text-center">मिळवलेले क्रेडिट पॉइंट<br>(Credit Points Earned)</th>
+                                    <th class="text-center">सत्र १ मिळवलेले<br>(Term 1 Earned)</th>
+                                    <th class="text-center">सत्र २ मिळवलेले<br>(Term 2 Earned)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -570,6 +729,9 @@ require_once __DIR__ . '/../includes/header.php';
                                     <td class="text-center">0.90</td>
                                     <td class="text-center">
                                         <input type="number" class="form-control form-control-sm text-center" name="credit_earned_<?= $domain_id ?>" step="0.01" min="0" max="0.90" value="<?= $cd['credit_points_earned'] ?? '' ?>" placeholder="0.00">
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="number" class="form-control form-control-sm text-center" name="credit_earned_term2_<?= $domain_id ?>" step="0.01" min="0" max="0.90" value="<?= $cd['credit_points_earned_term2'] ?? '' ?>" placeholder="0.00">
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>

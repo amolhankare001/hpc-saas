@@ -167,6 +167,18 @@ CREATE TABLE IF NOT EXISTS hpc_domain_assessments (
     -- Parent/Caregiver Observation
     parent_observation TEXT,
     parent_observation_mr TEXT,
+    -- Term 2 (द्वितीय सत्र) fields
+    curricular_goals_term2 TEXT,
+    competencies_term2 TEXT,
+    activity_mr_term2 TEXT,
+    assessment_questions_mr_term2 TEXT,
+    awareness_level_term2 ENUM('प्रारंभिक','प्रवीण','प्रगत') DEFAULT NULL,
+    sensitivity_level_term2 ENUM('प्रारंभिक','प्रवीण','प्रगत') DEFAULT NULL,
+    creativity_level_term2 ENUM('प्रारंभिक','प्रवीण','प्रगत') DEFAULT NULL,
+    teacher_feedback_mr_term2 TEXT,
+    self_assessment_term2 TEXT,
+    peer_assessment_term2 TEXT,
+    parent_observation_mr_term2 TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (hpc_card_id) REFERENCES hpc_cards(id) ON DELETE CASCADE
@@ -182,6 +194,7 @@ CREATE TABLE IF NOT EXISTS hpc_credits (
     ncf_level DECIMAL(3,1) DEFAULT 0.2,
     credit_points DECIMAL(3,2) DEFAULT 0.90,
     credit_points_earned DECIMAL(3,2) DEFAULT 0.00,
+    credit_points_earned_term2 DECIMAL(3,2) DEFAULT 0.00,
     FOREIGN KEY (hpc_card_id) REFERENCES hpc_cards(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 

@@ -216,6 +216,8 @@ require_once __DIR__ . '/../includes/header.php';
     $a = $assessments[$domain_id] ?? [];
     $goals = !empty($a['curricular_goals']) ? json_decode($a['curricular_goals'], true) : [];
     $comps = !empty($a['competencies']) ? json_decode($a['competencies'], true) : [];
+    $goals_t2 = !empty($a['curricular_goals_term2']) ? json_decode($a['curricular_goals_term2'], true) : [];
+    $comps_t2 = !empty($a['competencies_term2']) ? json_decode($a['competencies_term2'], true) : [];
 ?>
 <div class="hpc-page mb-4">
     <div class="card">
@@ -223,7 +225,10 @@ require_once __DIR__ . '/../includes/header.php';
             <h5 class="mb-0">भाग B - डोमेन <?= $domain_id ?>: <?= $dn['name_mr'] ?> (<?= $dn['name'] ?>)</h5>
         </div>
         <div class="card-body">
-            <!-- Curricular Goals -->
+            <!-- ===== सत्र पहिले (Term 1) ===== -->
+            <div class="alert alert-primary py-2 mb-3"><strong>📝 सत्र पहिले (Term 1)</strong></div>
+
+            <!-- Curricular Goals - Term 1 -->
             <div class="mb-3">
                 <h6 class="text-primary">अभ्यासक्रम ध्येये (Curricular Goals):</h6>
                 <?php if (!empty($goals)): ?>
@@ -237,31 +242,31 @@ require_once __DIR__ . '/../includes/header.php';
                 <?php endif; ?>
             </div>
 
-            <!-- Competencies -->
+            <!-- Competencies - Term 1 -->
             <div class="mb-3">
                 <h6 class="text-primary">क्षमता (Competencies):</h6>
                 <?php if (!empty($comps)): ?>
-                    <?php foreach ($comps as $c): ?>
-                        <span class="badge bg-info me-1"><?= sanitize($c) ?></span>
+                    <?php foreach ($comps as $cv): ?>
+                        <span class="badge bg-info me-1"><?= sanitize($cv) ?></span>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <p class="text-muted">-</p>
                 <?php endif; ?>
             </div>
 
-            <!-- Activity -->
+            <!-- Activity - Term 1 -->
             <div class="mb-3">
                 <h6 class="text-primary">उपक्रम (Activity):</h6>
                 <p><?= nl2br(sanitize($a['activity_mr'] ?? '-')) ?></p>
             </div>
 
-            <!-- Assessment Questions -->
+            <!-- Assessment Questions - Term 1 -->
             <div class="mb-3">
                 <h6 class="text-primary">मूल्यांकन प्रश्न:</h6>
                 <p><?= nl2br(sanitize($a['assessment_questions_mr'] ?? '-')) ?></p>
             </div>
 
-            <!-- Rubric Assessment -->
+            <!-- Rubric Assessment - Term 1 -->
             <div class="mb-3">
                 <h6 class="text-primary">मूल्यांकन रुब्रिक:</h6>
                 <table class="table table-bordered text-center">
@@ -283,13 +288,13 @@ require_once __DIR__ . '/../includes/header.php';
                 </table>
             </div>
 
-            <!-- Teacher Feedback -->
+            <!-- Teacher Feedback - Term 1 -->
             <div class="mb-3">
                 <h6 class="text-primary"><i class="bi bi-chat-left-text"></i> शिक्षकांचा अभिप्राय:</h6>
                 <p class="border rounded p-2"><?= nl2br(sanitize($a['teacher_feedback_mr'] ?? '-')) ?></p>
             </div>
 
-            <!-- Self & Peer Assessment -->
+            <!-- Self & Peer Assessment - Term 1 -->
             <div class="row mb-3">
                 <div class="col-md-6">
                     <h6 class="text-primary">स्व-मूल्यांकन:</h6>
@@ -301,10 +306,98 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
             </div>
 
-            <!-- Parent Observation -->
+            <!-- Parent Observation - Term 1 -->
             <div class="mb-3">
                 <h6 class="text-primary"><i class="bi bi-house-heart"></i> पालक निरीक्षण:</h6>
                 <p class="border rounded p-2"><?= nl2br(sanitize($a['parent_observation_mr'] ?? '-')) ?></p>
+            </div>
+
+            <!-- ===== सत्र दुसरे (Term 2) ===== -->
+            <hr class="my-4" style="border-top:3px dashed #FF9800;">
+            <div class="alert alert-warning py-2 mb-3"><strong>📝 सत्र दुसरे (Term 2)</strong></div>
+
+            <!-- Curricular Goals - Term 2 -->
+            <div class="mb-3">
+                <h6 class="text-success">अभ्यासक्रम ध्येये - सत्र 2:</h6>
+                <?php if (!empty($goals_t2)): ?>
+                    <ul class="list-group list-group-flush">
+                        <?php foreach ($goals_t2 as $g): ?>
+                            <li class="list-group-item py-1"><i class="bi bi-check-circle text-success"></i> <strong><?= sanitize($g) ?>:</strong> <?= sanitize($goal_descriptions[$g] ?? $g) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <p class="text-muted">-</p>
+                <?php endif; ?>
+            </div>
+
+            <!-- Competencies - Term 2 -->
+            <div class="mb-3">
+                <h6 class="text-success">क्षमता - सत्र 2:</h6>
+                <?php if (!empty($comps_t2)): ?>
+                    <?php foreach ($comps_t2 as $cv): ?>
+                        <span class="badge bg-success me-1"><?= sanitize($cv) ?></span>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="text-muted">-</p>
+                <?php endif; ?>
+            </div>
+
+            <!-- Activity - Term 2 -->
+            <div class="mb-3">
+                <h6 class="text-success">उपक्रम - सत्र 2:</h6>
+                <p><?= nl2br(sanitize($a['activity_mr_term2'] ?? '-')) ?></p>
+            </div>
+
+            <!-- Assessment Questions - Term 2 -->
+            <div class="mb-3">
+                <h6 class="text-success">मूल्यांकन प्रश्न - सत्र 2:</h6>
+                <p><?= nl2br(sanitize($a['assessment_questions_mr_term2'] ?? '-')) ?></p>
+            </div>
+
+            <!-- Rubric Assessment - Term 2 -->
+            <div class="mb-3">
+                <h6 class="text-success">मूल्यांकन रुब्रिक - सत्र 2:</h6>
+                <table class="table table-bordered text-center">
+                    <thead>
+                        <tr><th>क्षमता</th><th>प्रारंभिक</th><th>प्रवीण</th><th>प्रगत</th></tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach (['awareness' => 'जागरूकता', 'sensitivity' => 'संवेदनशीलता', 'creativity' => 'सर्जनशीलता'] as $key => $label):
+                            $val_t2 = $a[$key . '_level_term2'] ?? '';
+                        ?>
+                        <tr>
+                            <td class="fw-bold"><?= $label ?></td>
+                            <td class="<?= $val_t2 === 'प्रारंभिक' ? 'bg-warning' : '' ?>"><?= $val_t2 === 'प्रारंभिक' ? '✓' : '' ?></td>
+                            <td class="<?= $val_t2 === 'प्रवीण' ? 'bg-info' : '' ?>"><?= $val_t2 === 'प्रवीण' ? '✓' : '' ?></td>
+                            <td class="<?= $val_t2 === 'प्रगत' ? 'bg-success text-white' : '' ?>"><?= $val_t2 === 'प्रगत' ? '✓' : '' ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Teacher Feedback - Term 2 -->
+            <div class="mb-3">
+                <h6 class="text-success"><i class="bi bi-chat-left-text"></i> शिक्षकांचा अभिप्राय - सत्र 2:</h6>
+                <p class="border rounded p-2"><?= nl2br(sanitize($a['teacher_feedback_mr_term2'] ?? '-')) ?></p>
+            </div>
+
+            <!-- Self & Peer Assessment - Term 2 -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h6 class="text-success">स्व-मूल्यांकन - सत्र 2:</h6>
+                    <p class="border rounded p-2"><?= nl2br(sanitize($a['self_assessment_term2'] ?? '-')) ?></p>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-success">सहकारी मूल्यांकन - सत्र 2:</h6>
+                    <p class="border rounded p-2"><?= nl2br(sanitize($a['peer_assessment_term2'] ?? '-')) ?></p>
+                </div>
+            </div>
+
+            <!-- Parent Observation - Term 2 -->
+            <div class="mb-3">
+                <h6 class="text-success"><i class="bi bi-house-heart"></i> पालक निरीक्षण - सत्र 2:</h6>
+                <p class="border rounded p-2"><?= nl2br(sanitize($a['parent_observation_mr_term2'] ?? '-')) ?></p>
             </div>
         </div>
     </div>
@@ -326,14 +419,17 @@ require_once __DIR__ . '/../includes/header.php';
                             <th class="text-center">क्रेडिट</th>
                             <th class="text-center">NCF पातळी</th>
                             <th class="text-center">क्रेडिट पॉइंट</th>
-                            <th class="text-center">मिळवलेले</th>
+                            <th class="text-center">सत्र १ मिळवलेले</th>
+                            <th class="text-center">सत्र २ मिळवलेले</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         $total_earned = 0;
+                        $total_earned_t2 = 0;
                         foreach ($credits as $c):
                             $total_earned += $c['credit_points_earned'];
+                            $total_earned_t2 += ($c['credit_points_earned_term2'] ?? 0);
                         ?>
                         <tr>
                             <td><strong><?= sanitize($c['domain_name_mr']) ?></strong></td>
@@ -341,6 +437,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <td class="text-center"><?= $c['ncf_level'] ?></td>
                             <td class="text-center"><?= $c['credit_points'] ?></td>
                             <td class="text-center fw-bold text-primary"><?= number_format($c['credit_points_earned'], 2) ?></td>
+                            <td class="text-center fw-bold text-success"><?= number_format($c['credit_points_earned_term2'] ?? 0, 2) ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -348,6 +445,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <tr class="table-warning">
                             <td colspan="4" class="text-end fw-bold">एकूण मिळवलेले क्रेडिट पॉइंट:</td>
                             <td class="text-center fw-bold text-success fs-5"><?= number_format($total_earned, 2) ?></td>
+                            <td class="text-center fw-bold text-success fs-5"><?= number_format($total_earned_t2, 2) ?></td>
                         </tr>
                     </tfoot>
                 </table>

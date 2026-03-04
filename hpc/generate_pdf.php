@@ -47,54 +47,55 @@ $stmt = $db->prepare("SELECT interest as name_mr, interest as name, other_detail
 $stmt->execute([$data['student_id']]);
 $interests = $stmt->fetchAll();
 
-// Domain info with CG goals (matching Sachin Gaikwad PDF)
+// Domain info with CG goals (matching guide book page 51 onwards with detailed CG descriptions)
 $domain_info = [
     1 => [
         'name_mr' => 'शारीरिक विकास', 
         'name' => 'Physical Development',
         'goals' => [
-            'CG-1' => 'बालके त्यांना निरोगी आणि सुरक्षित ठेवणाऱ्या सवयी विकसित करतात.',
-            'CG-2' => 'बालके ज्ञानेंद्रियांची कुशाग्रता विकसित करतात.',
-            'CG-3' => 'सुदृढ आणि लवचीक शरीर विकसित होते.',
+            'CG-1*' => 'बालके त्यांना निरोगी आणि सुरक्षित ठेवणाऱ्या सवयी विकसित करतात.',
+            'CG-2*' => 'बालके ज्ञानेंद्रियांची कुशाग्रता विकसित करतात.',
+            'CG-3*' => 'सुदृढ आणि लवचीक शरीर विकसित होते.',
         ],
     ],
     2 => [
         'name_mr' => 'सामाजिक-भावनिक आणि नैतिक विकास', 
         'name' => 'Socio-emotional & Ethical Development',
         'goals' => [
-            'CG-4' => 'बालके भावनिक बुद्धिमत्ता विकसित करतात.',
-            'CG-5' => 'बालके उत्पादक कार्याबाबत व सेवेबाबत सकारात्मक दृष्टिकोन विकसित करतात.',
-            'CG-6' => 'बालके स्वतः भोवतालच्या नैसर्गिक वातावरणाबद्दल कृतज्ञता भाव दर्शवितात.',
+            'CG-4*' => 'बालके भावनिक बुद्धिमत्ता विकसित करतात (स्वतःच्या भावनांचे व्यवस्थापन आणि सामाजिक नियमांना प्रतिसाद).',
+            'CG-5*' => 'बालके उत्पादक कार्याबाबत व सेवेबाबत सकारात्मक दृष्टिकोन विकसित करतात.',
+            'CG-6*' => 'बालके स्वतः भोवतालच्या नैसर्गिक वातावरणाबद्दल कृतज्ञता भाव दर्शवितात.',
         ],
     ],
     3 => [
         'name_mr' => 'बौद्धिक विकास', 
         'name' => 'Cognitive Development',
         'goals' => [
-            'CG-7' => 'मुले समस्या सोडवण्याची आणि तर्कशक्ती विकसित करतात.',
-            'CG-8' => 'मुले गणितीय आणि वैज्ञानिक विचार विकसित करतात.',
+            'CG-7*' => 'बालके निरीक्षण व तार्किक विचाराने सभोवतालच्या जगाची जाणीव करून घेतात.',
+            'CG-8*' => 'बालकांची गणितीय समज विकसित होते (राशी, आकार, मापे, संख्या).',
         ],
     ],
     4 => [
         'name_mr' => 'भाषा आणि साक्षरता विकास', 
         'name' => 'Language and Literacy Development',
         'goals' => [
-            'CG-9' => 'मुले प्रभावी संवाद कौशल्ये विकसित करतात.',
-            'CG-10' => 'मुले वाचन आणि लेखन कौशल्ये विकसित करतात.',
+            'CG-9*' => 'बालके दोन भाषांमध्ये दैनंदिन संवादासाठी प्रभावी कौशल्ये विकसित करतात.',
+            'CG-10*' => 'बालके भाषा एक (L1) मध्ये सफाईदारपणे वाचन व लेखन करतात.',
+            'CG-11*' => 'बालके भाषा दोन (L2) मध्ये वाचन आणि लेखनाचा आरंभ करतात.',
         ],
     ],
     5 => [
         'name_mr' => 'सौंदर्यात्मक आणि सांस्कृतिक विकास', 
         'name' => 'Aesthetic and Cultural Development',
         'goals' => [
-            'CG-11' => 'मुले सौंदर्य संवेदनशीलता आणि सर्जनशीलता विकसित करतात.',
+            'CG-12*' => 'बालके दृश्य आणि ललित कलांमध्ये आपली संवेदनशीलता कलेद्वारे व्यक्त करतात.',
         ],
     ],
     6 => [
         'name_mr' => 'सकारात्मक शिक्षण सवयी', 
         'name' => 'Positive Learning Habits',
         'goals' => [
-            'CG-12' => 'मुले जिज्ञासा, शिस्त आणि सकारात्मक शिक्षण सवयी विकसित करतात.',
+            'CG-13*' => 'बालके शाळेच्या वर्गात सक्रियपणे सहभागी होण्यासाठी अध्ययन सवयी विकसित करतात.',
         ],
     ],
 ];
@@ -315,6 +316,9 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
             $a = $assessments[$did] ?? [];
             $goals = !empty($a['curricular_goals']) ? json_decode($a['curricular_goals'], true) : [];
             $comps = !empty($a['competencies']) ? json_decode($a['competencies'], true) : [];
+            // Term 2 data
+            $goals_t2 = !empty($a['curricular_goals_term2']) ? json_decode($a['curricular_goals_term2'], true) : [];
+            $comps_t2 = !empty($a['competencies_term2']) ? json_decode($a['competencies_term2'], true) : [];
             $rubric_desc = $demo_rubric_descriptions[$did] ?? [];
         ?>
         
@@ -346,12 +350,12 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                 <div class="semester-box">
                     <div class="semester-header">📝 सत्र पहिले</div>
                     <div style="font-size:10px;font-weight:600;color:#1565C0;margin:4px 0;">क्षमता:</div>
-                    <div style="font-size:10px;min-height:30px;"><?= !empty($comps) ? sanitize($comps[0] ?? '') : '-' ?></div>
+                    <div style="font-size:10px;min-height:30px;"><?= !empty($comps) ? sanitize(implode(', ', $comps)) : '-' ?></div>
                 </div>
                 <div class="semester-box">
                     <div class="semester-header">📝 सत्र दुसरे</div>
                     <div style="font-size:10px;font-weight:600;color:#1565C0;margin:4px 0;">क्षमता:</div>
-                    <div style="font-size:10px;min-height:30px;"><?= !empty($comps) && count($comps) > 1 ? sanitize($comps[1] ?? '') : '-' ?></div>
+                    <div style="font-size:10px;min-height:30px;"><?= !empty($comps_t2) ? sanitize(implode(', ', $comps_t2)) : '-' ?></div>
                 </div>
             </div>
 
@@ -363,7 +367,7 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                 </div>
                 <div class="semester-box">
                     <div class="semester-header">सत्र दुसरे</div>
-                    <div class="assessment-box">-</div>
+                    <div class="assessment-box"><?= nl2br(sanitize($a['activity_mr_term2'] ?? '-')) ?></div>
                 </div>
             </div>
 
@@ -375,7 +379,7 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                 </div>
                 <div class="semester-box">
                     <div class="semester-header">सत्र दुसरे</div>
-                    <div class="assessment-box">-</div>
+                    <div class="assessment-box"><?= nl2br(sanitize($a['assessment_questions_mr_term2'] ?? '-')) ?></div>
                 </div>
             </div>
             <div class="page-footer">समग्र प्रगती पत्रक (HPC) | क्षेत्र <?= $did ?>: <?= $dn['name_mr'] ?></div>
@@ -427,11 +431,18 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                     </div>
                     <div class="semester-box">
                         <div class="semester-header">सत्र दुसरे</div>
+                        <?php $current_level_t2 = $a[$ability_key . '_level_term2'] ?? ''; ?>
                         <table class="rubric-table" style="margin:0;">
-                            <?php foreach ($levels as $level_key => $level): ?>
-                            <tr>
-                                <td style="width:25%;text-align:center;font-weight:600;"><?= $level['emoji'] ?> <?= $level['name'] ?></td>
-                                <td style="font-size:9px;">-</td>
+                            <?php foreach ($levels as $level_key => $level): 
+                                $desc_t2 = $rubric_desc[$ability_key][$level_key] ?? '';
+                                $is_selected_t2 = ($current_level_t2 === $level['label']);
+                            ?>
+                            <tr style="<?= $is_selected_t2 ? 'background:#C8E6C9;' : '' ?>">
+                                <td style="width:25%;text-align:center;font-weight:600;">
+                                    <?= $level['emoji'] ?> <?= $level['name'] ?>
+                                    <?= $is_selected_t2 ? ' ✅' : '' ?>
+                                </td>
+                                <td style="font-size:9px;"><?= $desc_t2 ?></td>
                             </tr>
                             <?php endforeach; ?>
                         </table>
@@ -448,7 +459,7 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                 </div>
                 <div class="semester-box">
                     <div class="semester-header">सत्र दुसरे</div>
-                    <div style="font-size:10px;min-height:40px;padding:4px;">-</div>
+                    <div style="font-size:10px;min-height:40px;padding:4px;"><?= nl2br(sanitize($a['teacher_feedback_mr_term2'] ?? '-')) ?></div>
                 </div>
             </div>
             <div class="page-footer">समग्र प्रगती पत्रक (HPC) | क्षेत्र <?= $did ?>: <?= $dn['name_mr'] ?> - रुब्रिक</div>
@@ -491,13 +502,20 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                 <div class="semester-box">
                     <div class="semester-header">सत्र दुसरे</div>
                     <div style="display:flex;justify-content:center;gap:15px;margin:8px 0;">
-                        <?php foreach ($self_options as $label => $emoji): ?>
-                        <div class="emoji-option">
+                        <?php 
+                        $self_val_t2 = $a['self_assessment_term2'] ?? '';
+                        foreach ($self_options as $label => $emoji):
+                            $is_self_t2 = (mb_strpos($self_val_t2, $label) !== false);
+                        ?>
+                        <div class="emoji-option <?= $is_self_t2 ? 'emoji-check' : '' ?>">
                             <div style="font-size:22px;"><?= $emoji ?></div>
                             <div style="font-size:9px;"><?= $label ?></div>
                         </div>
                         <?php endforeach; ?>
                     </div>
+                    <?php if ($self_val_t2): ?>
+                    <div style="font-size:10px;padding:4px;background:#F5F5F5;border-radius:4px;"><?= sanitize($self_val_t2) ?></div>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -530,13 +548,20 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                 <div class="semester-box">
                     <div class="semester-header">सत्र दुसरे</div>
                     <div style="display:flex;justify-content:center;gap:15px;margin:8px 0;">
-                        <?php foreach ($peer_options as $label => $emoji): ?>
-                        <div class="emoji-option">
+                        <?php 
+                        $peer_val_t2 = $a['peer_assessment_term2'] ?? '';
+                        foreach ($peer_options as $label => $emoji):
+                            $is_peer_t2 = (mb_strpos($peer_val_t2, $label) !== false);
+                        ?>
+                        <div class="emoji-option <?= $is_peer_t2 ? 'emoji-check' : '' ?>">
                             <div style="font-size:22px;"><?= $emoji ?></div>
                             <div style="font-size:9px;"><?= $label ?></div>
                         </div>
                         <?php endforeach; ?>
                     </div>
+                    <?php if ($peer_val_t2): ?>
+                    <div style="font-size:10px;padding:4px;background:#F5F5F5;border-radius:4px;"><?= sanitize($peer_val_t2) ?></div>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -551,7 +576,7 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                 </div>
                 <div class="semester-box">
                     <div class="semester-header">सत्र दुसरे</div>
-                    <div class="assessment-box" style="min-height:50px;font-size:10px;">-</div>
+                    <div class="assessment-box" style="min-height:50px;font-size:10px;"><?= nl2br(sanitize($a['parent_observation_mr_term2'] ?? '-')) ?></div>
                 </div>
             </div>
 
@@ -580,6 +605,7 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                 </tr>
                 <?php 
                 $total_earned = 0;
+                $total_earned_t2 = 0;
                 $domain_names_list = [
                     1 => 'शारीरिक विकास',
                     2 => 'सामाजिक-भावनिक विकास',
@@ -592,6 +618,7 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                 if (!empty($credits)):
                     foreach ($credits as $idx => $c): 
                         $total_earned += $c['credit_points_earned'];
+                        $total_earned_t2 += ($c['credit_points_earned_term2'] ?? 0);
                 ?>
                 <tr>
                     <td class="text-center"><?= $idx + 1 ?></td>
@@ -600,7 +627,7 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                     <td class="text-center"><?= $c['ncf_level'] ?? '-' ?></td>
                     <td class="text-center"><?= $c['credit_points'] ?? '-' ?></td>
                     <td class="text-center"><strong><?= number_format($c['credit_points_earned'] ?? 0, 2) ?></strong></td>
-                    <td class="text-center">-</td>
+                    <td class="text-center"><strong><?= number_format($c['credit_points_earned_term2'] ?? 0, 2) ?></strong></td>
                 </tr>
                 <?php endforeach;
                 else:
@@ -623,7 +650,7 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                 <tr style="background:#FDEBD0;">
                     <td colspan="5" style="text-align:right;font-weight:700;">एकूण मिळवलेले क्रेडिट पॉइंट:</td>
                     <td class="text-center"><strong style="font-size:14px;color:#E65100;"><?= number_format($total_earned, 2) ?></strong></td>
-                    <td class="text-center">-</td>
+                    <td class="text-center"><strong style="font-size:14px;color:#E65100;"><?= number_format($total_earned_t2, 2) ?></strong></td>
                 </tr>
             </table>
 
