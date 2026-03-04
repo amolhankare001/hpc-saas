@@ -38,7 +38,7 @@ foreach ($stmt->fetchAll() as $a) {
 }
 
 // Get credits
-$stmt = $db->prepare("SELECT * FROM hpc_credits WHERE hpc_card_id = ?");
+$stmt = $db->prepare("SELECT * FROM hpc_credits WHERE hpc_card_id = ? ORDER BY id ASC");
 $stmt->execute([$id]);
 $credits = $stmt->fetchAll();
 

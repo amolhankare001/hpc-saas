@@ -125,8 +125,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
         $hpc_card_id = $db->lastInsertId();
     } else {
         $hpc_card_id = $hpc_card['id'];
-        $stmt = $db->prepare("UPDATE hpc_cards SET teacher_code = ?, status = ?, final_annual_feedback = ? WHERE id = ?");
-        $stmt->execute([$teacher_code, $status, $final_annual_feedback, $hpc_card_id]);
+        $stmt = $db->prepare("UPDATE hpc_cards SET teacher_code = ?, status = ?, final_annual_feedback = ? WHERE id = ? AND school_id = ?");
+        $stmt->execute([$teacher_code, $status, $final_annual_feedback, $hpc_card_id, $school_id]);
     }
 
     // Save attendance
