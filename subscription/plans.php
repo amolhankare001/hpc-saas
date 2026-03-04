@@ -10,7 +10,7 @@ $current_plan_id = $school['plan_id'];
 // Handle plan upgrade request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $plan_id = intval($_POST['plan_id'] ?? 0);
-    if ($plan_id && $plan_id !== $current_plan_id) {
+    if ($plan_id && $plan_id != $current_plan_id) {
         $stmt = $db->prepare("UPDATE schools SET plan_id = ?, subscription_start = CURDATE(), subscription_end = DATE_ADD(CURDATE(), INTERVAL 12 MONTH) WHERE id = ?");
         $stmt->execute([$plan_id, $_SESSION['school_id']]);
         flash('success', 'योजना यशस्वीरित्या अपग्रेड झाली! (पेमेंट प्रोसेसिंग भविष्यात जोडले जाईल)');
