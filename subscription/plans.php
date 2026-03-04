@@ -68,7 +68,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <?php elseif ($plan['price'] == 0): ?>
                     <button class="btn btn-outline-secondary w-100" disabled>मोफत योजना</button>
                 <?php elseif ($plan['price'] > $current_price): ?>
-                    <a href="<?= APP_URL ?>/subscription/checkout.php?plan=<?= $plan['id'] ?>" class="btn btn-primary w-100">
+                    <a href="<?= APP_URL ?>/subscription/checkout.php?plan_id=<?= $plan['id'] ?>" class="btn btn-primary w-100">
                         <i class="bi bi-arrow-up-circle"></i> अपग्रेड करा
                     </a>
                 <?php else: ?>
