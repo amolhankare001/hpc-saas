@@ -145,15 +145,38 @@ exit;
 
 function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $interests, $domain_info) {
     global $demo_rubric_descriptions;
-    $month_names = [4=>'एप्रिल',5=>'मे',6=>'जून',7=>'जुलै',8=>'ऑगस्ट',9=>'सप्टें.',10=>'ऑक्टो.',11=>'नोव्हें.',12=>'डिसें.',1=>'जाने.',2=>'फेब्रु.',3=>'मार्च'];
+    $school_name = sanitize($school['name_mr'] ?: $school['name']);
+    $student_name = sanitize($data['name_mr'] ?: $data['name']);
+    // Term 1 months
+    $term1_months = [6=>'जून',7=>'जुलै',8=>'ऑगस्ट',9=>'सप्टेंबर',10=>'ऑक्टोबर'];
+    // Term 2 months
+    $term2_months = [11=>'नोव्हें.',12=>'डिसें.',1=>'जाने.',2=>'फेब्रु.',3=>'मार्च',4=>'एप्रिल'];
+    $all_months = [6=>'जून',7=>'जुलै',8=>'ऑगस्ट',9=>'सप्टेंबर',10=>'ऑक्टोबर',11=>'नोव्हें.',12=>'डिसें.',1=>'जाने.',2=>'फेब्रु.',3=>'मार्च',4=>'एप्रिल',5=>'मे'];
     $tw = 0; $tp = 0;
-    foreach ($month_names as $num => $name) {
+    foreach ($all_months as $num => $name) {
         $tw += $attendance[$num]['working_days'] ?? 0;
         $tp += $attendance[$num]['days_present'] ?? 0;
     }
     $pct = $tw > 0 ? round(($tp / $tw) * 100) : 0;
+    // Term 1 totals
+    $tw1 = 0; $tp1 = 0;
+    foreach ($term1_months as $num => $name) { $tw1 += $attendance[$num]['working_days'] ?? 0; $tp1 += $attendance[$num]['days_present'] ?? 0; }
+    // Term 2 totals
+    $tw2 = 0; $tp2 = 0;
+    foreach ($term2_months as $num => $name) { $tw2 += $attendance[$num]['working_days'] ?? 0; $tp2 += $attendance[$num]['days_present'] ?? 0; }
     $self_emoji_options = ['खूप मजा आली'=>"\xF0\x9F\x98\x84",'आवडले'=>"\xF0\x9F\x98\x8A",'ठीक वाटले'=>"\xF0\x9F\x98\x90",'कठीण वाटले'=>"\xF0\x9F\xA4\x94"];
     $peer_emoji_options = ['छान केले'=>"\xF0\x9F\x91\x8D",'मदत केली'=>"\xF0\x9F\xA4\x9D",'प्रयत्न केला'=>"\xF0\x9F\x92\xAA"];
+    // Domain short names for display
+    $domain_short = [1=>'शारीरिक आणि आरोग्य विकास',2=>'भावनिक आणि नैतिक विकास',3=>'बौद्धिक विकास',4=>'भाषा आणि साक्षरता विकास',5=>'सौंदर्यात्मक आणि सांस्कृतिक विकास',6=>'सकारात्मक शिक्षण सवयी'];
+    // Domain colors
+    $domain_colors = [
+        1 => ['bg'=>'#E65100','border'=>'#BF360C','light'=>'#FFF3E0'],
+        2 => ['bg'=>'#1565C0','border'=>'#0D47A1','light'=>'#E3F2FD'],
+        3 => ['bg'=>'#2E7D32','border'=>'#1B5E20','light'=>'#E8F5E9'],
+        4 => ['bg'=>'#6A1B9A','border'=>'#4A148C','light'=>'#F3E5F5'],
+        5 => ['bg'=>'#C62828','border'=>'#B71C1C','light'=>'#FFEBEE'],
+        6 => ['bg'=>'#00695C','border'=>'#004D40','light'=>'#E0F2F1'],
+    ];
     header('Content-Type: text/html; charset=utf-8');
 ?>
 <!DOCTYPE html>
@@ -161,55 +184,81 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HPC - <?= sanitize($data['name_mr'] ?: $data['name']) ?></title>
+<title>HPC - <?= $student_name ?></title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;color:#333;background:#f5f5f5;line-height:1.4;}
-.page{width:210mm;min-height:297mm;margin:0 auto;padding:8mm 10mm;page-break-after:always;position:relative;background:#fff;}
+body{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:#333;background:#f5f5f5;line-height:1.35;}
+.page{width:210mm;min-height:297mm;margin:0 auto;padding:6mm 8mm;page-break-after:always;position:relative;background:#fff;overflow:hidden;}
 .page:last-child{page-break-after:auto;}
-.cover-page{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.sh{background:linear-gradient(135deg,#E65100,#FF8F00);color:white;text-align:center;padding:6px 12px;font-size:15px;font-weight:700;border-radius:6px;margin-bottom:6px;}
-.shb{background:linear-gradient(135deg,#1565C0,#42A5F5);color:white;text-align:center;padding:5px 10px;font-size:13px;font-weight:600;border-radius:5px;margin:5px 0 4px;}
-.shg{background:linear-gradient(135deg,#2E7D32,#66BB6A);color:white;text-align:center;padding:5px 10px;font-size:13px;font-weight:600;border-radius:5px;margin:5px 0 4px;}
-table{width:100%;border-collapse:collapse;margin:3px 0;}
-td,th{border:1px solid #ccc;padding:4px 6px;text-align:left;vertical-align:top;font-size:11px;}
-th{background:#E3F2FD;font-weight:600;text-align:center;}
-.dh{background:linear-gradient(135deg,#E65100,#FF8F00);color:white;text-align:center;padding:6px;font-size:14px;font-weight:700;border-radius:6px;margin-bottom:5px;border:2px solid #BF360C;}
-.dh small{display:block;font-size:10px;font-weight:400;opacity:0.9;}
-.cg-box{background:#FFFDE7;border:2px solid #D32F2F;border-radius:6px;padding:6px 10px;margin:4px 0;}
-.cg-item{margin:2px 0;font-size:11px;display:flex;align-items:flex-start;gap:6px;}
-.cg-item b{color:#E65100;white-space:nowrap;}
-.cg-cb{width:16px;height:16px;border:2px solid #999;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
-.cg-cb.checked{border-color:#1565C0;background:#E3F2FD;color:#1565C0;font-weight:700;}
-.comp-box{background:#E8F5E9;border:1px solid #A5D6A7;border-radius:5px;padding:5px 8px;margin:3px 0;}
-.comp-item{margin:2px 0;font-size:10px;color:#1B5E20;display:flex;align-items:flex-start;gap:4px;}
-.comp-item .comp-code{color:#D32F2F;font-weight:700;white-space:nowrap;}
-.ab{border:1px solid #ddd;border-radius:4px;padding:5px;margin:2px 0;min-height:28px;background:#FAFAFA;font-size:10px;}
-.eo{display:inline-block;text-align:center;margin:0 5px;padding:3px 6px;border-radius:6px;border:2px solid transparent;position:relative;}
-.ec{border:3px solid #4CAF50 !important;background:#E8F5E9;}
-.ec::after{content:'\2713';position:absolute;top:-8px;right:-5px;background:#4CAF50;color:white;font-size:9px;font-weight:700;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;line-height:1;}
-.sg{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
-.sb{border:1px solid #ccc;border-radius:4px;padding:4px;}
-.sH{text-align:center;font-weight:600;color:#fff;background:linear-gradient(135deg,#C62828,#E53935);padding:4px;border-radius:3px;margin-bottom:3px;font-size:11px;}
-.sH2{text-align:center;font-weight:600;color:#fff;background:linear-gradient(135deg,#1565C0,#42A5F5);padding:4px;border-radius:3px;margin-bottom:3px;font-size:11px;}
-.ss{display:flex;justify-content:space-between;margin-top:15px;}
-.sb2{width:28%;text-align:center;border-top:2px solid #333;padding-top:5px;font-size:10px;font-weight:600;}
-.at th{background:#BBDEFB;font-size:9px;padding:3px 2px;}
-.at td{font-size:9px;text-align:center;padding:3px 2px;}
-.ap{font-size:14px;font-weight:700;color:#E65100;}
-.pf{position:absolute;bottom:5mm;left:10mm;right:10mm;text-align:center;font-size:8px;color:#999;border-top:1px solid #eee;padding-top:2px;}
+/* Watermark */
+.watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:55px;font-weight:700;color:rgba(0,0,0,0.04);white-space:nowrap;pointer-events:none;z-index:0;letter-spacing:4px;}
+/* School header bar */
+.school-bar{background:#333;color:#fff;text-align:center;padding:4px 10px;font-size:10px;letter-spacing:2px;margin-bottom:8px;}
+/* Domain title banner */
+.domain-banner{background:linear-gradient(135deg,#E65100,#FF8F00);color:#fff;text-align:center;padding:10px 15px;font-size:18px;font-weight:700;border-radius:8px;margin-bottom:8px;}
+/* Activity box */
+.activity-section{border:2px solid #999;border-radius:6px;padding:8px 10px;margin-bottom:8px;position:relative;}
+.activity-section .label{font-weight:700;font-size:12px;margin-bottom:4px;}
+.activity-box{background:#FFFDE7;border:1px solid #E0C200;border-radius:5px;padding:6px 8px;font-size:9px;font-style:italic;line-height:1.4;flex:1;}
+.level-badge{position:absolute;top:5px;right:8px;border:2px solid #2E7D32;border-radius:4px;padding:3px 8px;font-size:10px;font-weight:600;background:#E8F5E9;color:#2E7D32;}
+/* Domain info box */
+.domain-info-box{border:3px solid #4CAF50;border-radius:8px;padding:8px 12px;margin-bottom:8px;}
+.domain-info-title{font-size:13px;font-weight:700;text-align:center;margin-bottom:6px;}
+/* CG section */
+.cg-section{margin-bottom:6px;}
+.cg-title{font-weight:700;font-size:12px;margin-bottom:4px;}
+.cg-item{display:flex;align-items:flex-start;gap:6px;margin:3px 0;font-size:11px;}
+.cg-item b{color:#333;white-space:nowrap;}
+.cg-cb{width:16px;height:16px;border:2px solid #999;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto;}
+.cg-cb.checked{border-color:#1565C0;background:#1565C0;color:#fff;font-weight:700;}
+/* Semester header */
+.sem-header{background:#8BC34A;color:#333;font-weight:700;font-size:13px;padding:5px 12px;border-radius:4px;margin:6px 0 4px;}
+/* Competency section */
+.comp-section{margin:4px 0 6px;}
+.comp-title{font-weight:700;font-size:11px;margin-bottom:2px;}
+.comp-item{margin:2px 0;font-size:10px;color:#333;}
+.comp-item .star{color:#D32F2F;font-size:10px;margin-right:2px;}
+/* Rubric table */
+.rubric-table{width:100%;border-collapse:collapse;margin:6px 0;font-size:9px;}
+.rubric-table th{padding:5px 4px;text-align:center;font-weight:700;border:1px solid #999;}
+.rubric-table th.col-pailu{background:#FFE0B2;width:12%;font-size:10px;}
+.rubric-table th.col-pravah{background:#FFECB3;width:29%;font-size:10px;}
+.rubric-table th.col-parvat{background:#C8E6C9;width:29%;font-size:10px;}
+.rubric-table th.col-akash{background:#BBDEFB;width:30%;font-size:10px;}
+.rubric-table td{padding:5px 4px;border:1px solid #ccc;vertical-align:top;line-height:1.35;font-size:9px;}
+.rubric-table td.pailu-cell{font-weight:700;font-size:10px;text-align:center;background:#FFF8E1;}
+.rubric-table td.selected-cell{background:#E8F5E9;font-weight:600;}
+.rubric-check{color:#2E7D32;font-weight:700;font-size:12px;}
+/* Assessment grid */
+.assess-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;}
+.assess-box{border:2px solid #ccc;border-radius:5px;padding:6px 8px;}
+.assess-box .title{font-weight:700;font-size:10px;border-bottom:1px solid #ddd;padding-bottom:2px;margin-bottom:3px;}
+.assess-box .content{font-size:10px;line-height:1.4;}
+/* Footer */
+.page-footer{position:absolute;bottom:4mm;left:8mm;right:8mm;display:flex;justify-content:space-between;align-items:center;font-size:8px;color:#999;border-top:1px solid #eee;padding-top:2px;}
+.page-footer .left{text-align:left;}
+.page-footer .right{text-align:right;font-weight:600;font-size:7px;text-transform:uppercase;letter-spacing:1px;}
+/* Print toolbar */
 .np{text-align:center;margin:0 auto;padding:10px;background:#FFF3E0;max-width:210mm;}
-.mc{border:2px solid #1565C0;border-radius:8px;padding:6px;margin:5px 0;text-align:center;background:linear-gradient(180deg,#E3F2FD 0%,#BBDEFB 50%,#90CAF9 100%);}
-.mt{font-size:13px;font-weight:700;color:#1565C0;}
-.ms{font-size:9px;color:#666;margin-bottom:4px;}
-.lr{display:flex;align-items:center;margin:2px 4px;font-size:10px;}
-.lc{width:14px;height:14px;border:2px solid #666;margin-right:5px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;}
-.lc.ck{border-color:#D32F2F;background:#FFEBEE;color:#D32F2F;font-weight:700;}
-.ffb{border:3px solid #1565C0;border-radius:12px;padding:20px 18px;margin:15px 8px;min-height:450px;background:#FAFAFA;font-size:14px;line-height:2;color:#1565C0;font-weight:500;}
-@media print{.np{display:none !important;}.page{margin:0;padding:8mm 10mm;box-shadow:none;border:none;}body{background:white;}}
+/* Cover page */
+.cover-page{background:linear-gradient(180deg,#FFF3E0 0%,#FFE0B2 100%);}
+/* Signature section */
+.sig-section{display:flex;justify-content:space-between;margin-top:20px;padding:0 10px;}
+.sig-box{width:28%;text-align:center;border-top:2px solid #333;padding-top:5px;font-size:11px;font-weight:600;}
+/* Final feedback */
+.ffb{border:3px solid #ccc;border-radius:12px;padding:25px 22px;margin:15px 10px;min-height:440px;background:#FAFAFA;font-size:15px;line-height:2.2;color:#333;font-weight:500;}
+/* Attendance */
+.at-table{width:100%;border-collapse:collapse;margin:4px 0;}
+.at-table th{background:#BBDEFB;font-size:9px;padding:4px 3px;border:1px solid #999;text-align:center;font-weight:600;}
+.at-table td{font-size:9px;text-align:center;padding:4px 3px;border:1px solid #ccc;}
+/* Interests */
+.interest-table{width:100%;border-collapse:collapse;}
+.interest-table td{border:1px solid #E91E63;padding:3px 6px;font-size:9px;text-align:center;background:#fff;}
+.interest-check{display:inline-block;width:12px;height:12px;border:1px solid #666;text-align:center;line-height:12px;font-size:9px;margin-left:3px;}
+@media print{.np{display:none !important;}.page{margin:0;padding:6mm 8mm;box-shadow:none;border:none;}body{background:white;}}
 @media screen{.page{border:1px solid #ddd;margin:6px auto;box-shadow:0 2px 8px rgba(0,0,0,0.1);}}
-@media screen and (max-width:768px){.page{width:100%;min-height:auto;padding:6px;}.sg{grid-template-columns:1fr;}}
+@media screen and (max-width:768px){.page{width:100%;min-height:auto;padding:6px;}.assess-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -219,59 +268,76 @@ th{background:#E3F2FD;font-weight:600;text-align:center;}
 </div>
 
 <!-- PAGE 1: COVER -->
-<div class="page cover-page">
-<div style="margin-bottom:25px;font-size:50px;">&#x1F4CB;</div>
-<div style="font-size:28px;font-weight:700;color:#E65100;margin-bottom:8px;">समग्र प्रगती पत्रक</div>
-<div style="font-size:18px;color:#1565C0;margin-bottom:5px;">Holistic Progress Card (HPC)</div>
-<div style="font-size:12px;color:#555;margin:2px 0;">पायाभूत टप्पा (Foundational Stage)</div>
-<div style="font-size:12px;color:#555;margin:2px 0;">राष्ट्रीय शैक्षणिक धोरण (NEP) 2020 | PARAKH मार्गदर्शक तत्त्वे</div>
-<div style="font-size:16px;font-weight:600;color:#2E7D32;margin:15px 0 8px;border:2px solid #2E7D32;padding:8px 20px;border-radius:10px;">&#x1F3EB; <?= sanitize($school['name_mr'] ?: $school['name']) ?></div>
-<div style="margin:15px 0;">
-<div style="font-size:16px;font-weight:600;">&#x1F464; <?= sanitize($data['name_mr'] ?: $data['name']) ?></div>
-<div style="font-size:12px;color:#666;margin-top:3px;">इयत्ता: <?= sanitize($data['grade']) ?> | तुकडी: <?= sanitize($data['section'] ?: '-') ?></div>
+<div class="page cover-page" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+<div style="font-size:12px;font-weight:600;color:#555;margin-bottom:5px;">पथदर्शी प्रकल्प</div>
+<div style="background:#E65100;color:#fff;display:inline-block;padding:4px 16px;border-radius:4px;font-size:11px;font-weight:600;margin-bottom:15px;">'STARS' प्रकल्पांतर्गत</div>
+<div style="display:flex;justify-content:center;align-items:center;gap:40px;margin:10px 0;">
+<div style="text-align:center;font-size:9px;color:#666;">NCERT<br>PARAKH</div>
+<div style="text-align:center;font-size:10px;color:#B8860B;font-weight:600;">महाराष्ट्र शासन</div>
+<div style="text-align:center;font-size:9px;color:#666;">राज्य शैक्षणिक संशोधन व<br>प्रशिक्षण परिषद, महाराष्ट्र, पुणे.</div>
 </div>
-<div style="font-size:14px;color:#E65100;font-weight:600;">&#x1F4C5; शैक्षणिक वर्ष: <?= sanitize($data['academic_year']) ?></div>
-<div style="margin-top:25px;padding:10px 18px;border:2px dashed #FFB300;border-radius:10px;background:#FFF8E1;font-size:10px;max-width:380px;">
-<strong>सूचना:</strong> हे समग्र प्रगती पत्रक NEP 2020 अंतर्गत PARAKH मार्गदर्शक तत्त्वांनुसार तयार केले आहे.
+<div style="font-size:36px;font-weight:700;color:#D32F2F;margin:20px 0 5px;">समग्र प्रगतिपत्रक (HPC)</div>
+<div style="font-size:22px;font-weight:600;color:#333;margin-bottom:20px;">पायाभूत स्तर</div>
+<div style="border-top:4px solid #E65100;border-bottom:4px solid #E65100;width:90%;margin:0 auto;padding:10px 0;">
+<div style="font-size:16px;font-weight:600;color:#333;margin:5px 0;">&#x1F3EB; <?= $school_name ?></div>
+<div style="font-size:14px;font-weight:500;color:#555;margin:5px 0;">&#x1F464; <?= $student_name ?></div>
+<div style="font-size:12px;color:#666;">इयत्ता: <?= sanitize($data['grade']) ?> | तुकडी: <?= sanitize($data['section'] ?: '-') ?> | शैक्षणिक वर्ष: <?= sanitize($data['academic_year']) ?></div>
 </div>
-<div class="pf">समग्र प्रगती पत्रक (HPC) | <?= sanitize($school['name_mr'] ?: $school['name']) ?></div>
+<div class="page-footer"><span class="left"><?= $school_name ?></span><span class="right"></span></div>
 </div>
 
-<!-- PAGE 2: भाग अ (१) -->
+<!-- PAGE 2: समग्र प्रगती पुस्तक (HPC) - General Info + Attendance -->
 <div class="page">
-<div class="sh">&#x1F4DD; भाग अ (१) - सर्वसाधारण माहिती</div>
-<p style="text-align:center;font-size:8px;color:#888;margin-bottom:4px;">(पालकांशी चर्चा करून शिक्षकांनी भरावे.)</p>
-<table>
-<tr><td width="25%"><strong>&#x1F3EB; शाळेचे नाव:</strong></td><td colspan="3"><?= sanitize($school['name_mr'] ?: $school['name']) ?></td></tr>
-<tr><td><strong>जिल्हा/तालुका:</strong></td><td><?= sanitize($school['district'] ?? '') ?> / <?= sanitize($school['taluka'] ?? '') ?></td><td><strong>पिन:</strong></td><td><?= sanitize($school['pin_code'] ?? '') ?></td></tr>
-<tr><td><strong>युडायस नंबर:</strong></td><td><?= sanitize($school['udise_code'] ?? '') ?></td><td><strong>अपार आय.डी.:</strong></td><td><?= sanitize($data['apaar_id'] ?? '-') ?></td></tr>
-</table>
-<div class="shb">&#x1F464; विद्यार्थ्याची माहिती</div>
-<table>
-<tr><td width="25%"><strong>विद्यार्थ्यांचे नाव:</strong></td><td width="40%"><?= sanitize($data['name_mr'] ?: $data['name']) ?></td>
-<td width="15%" rowspan="5" style="text-align:center;vertical-align:middle;">
+<div class="watermark"><?= $school_name ?></div>
+<div class="school-bar"><?= $school_name ?></div>
+<div style="text-align:center;margin-bottom:8px;">
+<div style="font-size:22px;font-weight:700;color:#333;">समग्र प्रगती पुस्तक (HPC)</div>
+<div style="font-size:11px;color:#555;font-style:italic;">वार्षिक अहवाल | सन <?= sanitize($data['academic_year']) ?> | विद्यार्थी नमुना</div>
+</div>
+<!-- Student Info Section -->
+<div style="border-left:4px solid #4CAF50;padding:8px 12px;margin:8px 0;background:#FAFAFA;display:flex;gap:15px;">
+<div style="flex:1;">
+<div style="font-size:11px;margin:3px 0;"><strong>नाव:</strong> <?= $student_name ?></div>
+<div style="font-size:11px;margin:3px 0;"><strong>शाळेचे नाव:</strong> <?= $school_name ?></div>
+<div style="font-size:11px;margin:3px 0;"><strong>हजेरी क्र:</strong> <?= sanitize($data['roll_no'] ?? '-') ?> | <strong>सरल आयडी:</strong> <?= sanitize($data['saral_id'] ?? '____') ?></div>
+<div style="font-size:11px;margin:3px 0;"><strong>आधार:</strong> <?= sanitize($data['aadhar_no'] ?? '____________________') ?></div>
+<div style="font-size:11px;margin:3px 0;"><strong>APAAR:</strong> <?= sanitize($data['apaar_id'] ?? '____________________') ?></div>
+<div style="font-size:11px;margin:3px 0;"><strong>जन्मतारीख:</strong> <?= !empty($data['date_of_birth']) ? date('d/m/Y', strtotime($data['date_of_birth'])) : '____/____/________' ?> | <strong>पत्ता:</strong> <?= sanitize($data['address'] ?? '____________') ?></div>
+</div>
+<div style="flex:0 0 80px;text-align:center;">
 <?php if (!empty($data['photo']) && file_exists(__DIR__ . '/../' . $data['photo'])): ?>
-<img src="<?= APP_URL . '/' . $data['photo'] ?>" style="width:65px;height:85px;object-fit:cover;border-radius:4px;border:2px solid #ccc;">
+<img src="<?= APP_URL . '/' . $data['photo'] ?>" style="width:70px;height:90px;object-fit:cover;border:2px solid #ccc;border-radius:4px;">
 <?php else: ?>
-<div style="width:65px;height:85px;background:#f0f0f0;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;border:2px dashed #ccc;font-size:25px;">&#x1F4F7;</div>
+<div style="width:70px;height:90px;border:2px solid #ccc;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#999;background:#f9f9f9;">ID Photo</div>
 <?php endif; ?>
-</td></tr>
-<tr><td><strong>हजेरी क्र.:</strong></td><td><?= sanitize($data['roll_no'] ?? '-') ?></td></tr>
-<tr><td><strong>इयत्ता / तुकडी:</strong></td><td><?= sanitize($data['grade']) ?> / <?= sanitize($data['section'] ?? '-') ?></td></tr>
-<tr><td><strong>जन्म दिनांक:</strong></td><td><?= !empty($data['date_of_birth']) ? date('d/m/Y', strtotime($data['date_of_birth'])) : '-' ?></td></tr>
-<tr><td><strong>लिंग:</strong></td><td><?= sanitize($data['gender'] ?? '') ?></td></tr>
-<tr><td><strong>आईचे नाव:</strong></td><td><?= sanitize($data['mother_name'] ?? '-') ?></td><td>-</td></tr>
-<tr><td><strong>वडिलांचे नाव:</strong></td><td><?= sanitize($data['father_name'] ?? '-') ?></td><td>-</td></tr>
-<tr><td><strong>मातृभाषा:</strong></td><td><?= sanitize($data['mother_tongue'] ?? 'मराठी') ?></td><td><strong>माध्यम:</strong> <?= sanitize($data['medium_of_instruction'] ?? 'मराठी') ?></td></tr>
+</div>
+</div>
+<!-- Guardian Info -->
+<div style="border-left:4px solid #4CAF50;padding:8px 12px;margin:8px 0;background:#FAFAFA;">
+<div style="font-size:11px;margin:3px 0;"><strong>पालकांचे नाव:</strong> <?= sanitize($data['father_name'] ?? '') ?> / <?= sanitize($data['mother_name'] ?? '') ?></div>
+<div style="font-size:11px;margin:3px 0;"><strong>व्यवसाय:</strong> <?= sanitize($data['guardian_occupation'] ?? '________________') ?> | <strong>शिक्षण:</strong> <?= sanitize($data['guardian_education'] ?? '________________') ?></div>
+<div style="font-size:11px;margin:3px 0;"><strong>वर्ग शिक्षक:</strong> <?= sanitize($data['class_teacher'] ?? '___________________') ?> | <strong>शालार्थ:</strong> <?= sanitize($data['shalarth_id'] ?? '________________') ?></div>
+</div>
+<!-- Attendance Section -->
+<div style="font-size:14px;font-weight:700;margin:10px 0 5px;">वार्षिक उपस्थिती अहवाल</div>
+<div style="font-size:11px;font-weight:600;margin:4px 0;text-decoration:underline;">प्रथम सत्र ( Term 1 ):</div>
+<table class="at-table">
+<tr><th>महिना</th><?php foreach ($term1_months as $name): ?><th><?= $name ?></th><?php endforeach; ?><th>एकूण १</th></tr>
+<tr><td style="text-align:left;font-weight:600;">कामकाज</td><?php foreach ($term1_months as $num => $name): ?><td><?= ($attendance[$num]['working_days'] ?? 0) ?: '' ?></td><?php endforeach; ?><td style="font-weight:700;"><?= $tw1 ?: '' ?></td></tr>
+<tr><td style="text-align:left;font-weight:600;">उपस्थिती</td><?php foreach ($term1_months as $num => $name): ?><td><?= ($attendance[$num]['days_present'] ?? 0) ?: '' ?></td><?php endforeach; ?><td style="font-weight:700;"><?= $tp1 ?: '' ?></td></tr>
 </table>
-<div class="shg">&#x1F4CA; उपस्थिती (Attendance)</div>
-<table class="at">
-<tr><th>महिने</th><?php foreach ($month_names as $name): ?><th><?= $name ?></th><?php endforeach; ?></tr>
-<tr><td style="text-align:left;"><strong>कामाचे दिवस</strong></td><?php foreach ($month_names as $num => $name): ?><td><strong><?= ($attendance[$num]['working_days'] ?? 0) ?: '-' ?></strong></td><?php endforeach; ?></tr>
-<tr><td style="text-align:left;"><strong>उपस्थित दिवस</strong></td><?php foreach ($month_names as $num => $name): ?><td><?= ($attendance[$num]['days_present'] ?? 0) ?: '-' ?></td><?php endforeach; ?></tr>
-<tr><td style="text-align:left;"><strong>एकूण (%)</strong></td><td colspan="<?= count($month_names) ?>" style="text-align:center;"><span class="ap"><?= $pct ?>%</span> <span style="font-size:8px;color:#666;">(एकूण: <?= $tw ?> | उपस्थित: <?= $tp ?>)</span></td></tr>
+<div style="font-size:11px;font-weight:600;margin:8px 0 4px;text-decoration:underline;">द्वितीय सत्र ( Term 2 ):</div>
+<table class="at-table">
+<tr><th>महिना</th><?php foreach ($term2_months as $name): ?><th><?= $name ?></th><?php endforeach; ?><th>एकूण २</th></tr>
+<tr><td style="text-align:left;font-weight:600;">कामकाज</td><?php foreach ($term2_months as $num => $name): ?><td><?= ($attendance[$num]['working_days'] ?? 0) ?: '' ?></td><?php endforeach; ?><td style="font-weight:700;"><?= $tw2 ?: '' ?></td></tr>
+<tr><td style="text-align:left;font-weight:600;">उपस्थिती</td><?php foreach ($term2_months as $num => $name): ?><td><?= ($attendance[$num]['days_present'] ?? 0) ?: '' ?></td><?php endforeach; ?><td style="font-weight:700;"><?= $tp2 ?: '' ?></td></tr>
 </table>
-<div class="pf">समग्र प्रगती पत्रक (HPC) | <?= sanitize($school['name_mr'] ?: $school['name']) ?> | पान २</div>
+<!-- Annual Total -->
+<div style="display:flex;justify-content:center;gap:40px;margin:15px 0;padding:10px;border:2px solid #333;border-radius:8px;font-size:14px;font-style:italic;font-weight:600;">
+<div>वार्षिक एकूण उपस्थिती: <?= $tp ?: '________' ?></div>
+<div>टक्केवारी (%): <?= $pct ?: '________' ?>%</div>
+</div>
+<div class="page-footer"><span class="left"><?= $school_name ?></span><span class="right">CREATED BY <?= strtoupper($school_name) ?></span></div>
 </div>
 
 <!-- PAGE 3: भाग अ (२) - मी व माझा परिसर -->
@@ -456,6 +522,13 @@ foreach ($interest_list2 as $il):
 <!-- DOMAIN PAGES: 2 pages per domain = Pages 4-15 -->
 <?php
 $page_num = 4;
+$rubric_levels = ['पैलू'=>'pailu','प्रवाह'=>'pravah','पर्वत'=>'parvat','आकाश'=>'akash'];
+$rubric_descriptions = [
+    'pailu' => 'बालक शिकत आहे. त्याने/तिने थोडीफार जाणीव दाखवली आहे. मार्गदर्शन व प्रोत्साहन आवश्यक आहे.',
+    'pravah' => 'बालक समाधानकारक प्रगती करत आहे. नियमित सराव व मार्गदर्शनाने अधिक सुधारणा शक्य आहे.',
+    'parvat' => 'बालकाने चांगली प्रगती केली आहे. स्वतंत्रपणे कार्य करण्यास सक्षम आहे.',
+    'akash' => 'बालकाने उत्कृष्ट प्रगती केली आहे. सर्जनशीलता व नवोन्मेष दाखवत आहे. इतरांनाही मदत करतो.',
+];
 foreach ($domain_info as $did => $dn):
     $a = $assessments[$did] ?? [];
     $saved_goals = !empty($a['curricular_goals']) ? json_decode($a['curricular_goals'], true) : [];
@@ -464,251 +537,297 @@ foreach ($domain_info as $did => $dn):
     if (!is_array($saved_goals)) $saved_goals = [];
     if (!is_array($saved_comps)) $saved_comps = [];
     if (!is_array($saved_comps_t2)) $saved_comps_t2 = [];
+    $dc = $domain_colors[$did] ?? $domain_colors[1];
+    $all_comps = $dn['competencies'] ?? [];
+    // Determine overall level for this domain
+    $dom_level = '';
+    $abilities_keys = ['awareness','sensitivity','creativity'];
+    foreach ($abilities_keys as $abk) {
+        $lv = $a[$abk.'_level'] ?? '';
+        $lv2 = $a[$abk.'_level_term2'] ?? '';
+        if (!empty($lv)) $dom_level = $lv;
+        if (!empty($lv2)) $dom_level = $lv2;
+    }
+    // Map level to rubric column
+    $level_to_col = ['प्रारंभिक'=>'pailu','प्रवीण'=>'pravah','प्रगत'=>'parvat','उत्कृष्ट'=>'akash'];
+    $selected_col = $level_to_col[$dom_level] ?? '';
+    // Get activity and competency activities data
+    $comp_activities = !empty($a['competency_activities']) ? json_decode($a['competency_activities'], true) : [];
+    $comp_activities_t2 = !empty($a['competency_activities_term2']) ? json_decode($a['competency_activities_term2'], true) : [];
+    if (!is_array($comp_activities)) $comp_activities = [];
+    if (!is_array($comp_activities_t2)) $comp_activities_t2 = [];
 ?>
-<!-- Domain <?= $did ?> Page 1 -->
+<!-- Domain <?= $did ?> Page 1: Semester 1 -->
 <div class="page">
-<div class="dh">क्षेत्र क्र. <?= $did ?> : विकास क्षेत्र / विषय - <?= $dn['name_mr'] ?><small>(<?= $dn['name'] ?>)</small></div>
+<div class="watermark"><?= $school_name ?></div>
+<div class="school-bar"><?= $school_name ?></div>
 
-<div class="cg-box">
-<div style="font-weight:700;color:#333;margin-bottom:3px;font-size:12px;">अभ्यासक्रमाची ध्येये (CG) :</div>
+<!-- Domain Title Banner -->
+<div style="background:<?= $dc['bg'] ?>;color:#fff;text-align:center;padding:10px 15px;font-size:16px;font-weight:700;border-radius:8px;margin-bottom:6px;">
+क्षेत्र <?= $did ?>: <?= $dn['name_mr'] ?>
+<div style="font-size:10px;font-weight:400;opacity:0.85;">(<?= $dn['name'] ?>)</div>
+</div>
+
+<!-- Activity Section with Level Badge -->
+<div class="activity-section">
+<div class="label">&#x1F4CC; सविस्तर उपक्रम व कृती:</div>
+<?php if (!empty($dom_level)): ?>
+<div class="level-badge">स्तर: <?= sanitize($dom_level) ?> सहभाग</div>
+<?php endif; ?>
+<div style="display:flex;gap:8px;margin-top:4px;">
+<div class="activity-box">
+<strong>उपक्रम (सत्र १):</strong><br>
+<?= nl2br(sanitize($a['activity_mr'] ?? '')) ?>
+<?php
+// Show per-competency activities
+foreach ($comp_activities as $cc => $act):
+    if (!empty($act)): ?>
+<br><span style="color:#D32F2F;font-weight:600;"><?= sanitize($cc) ?>:</span> <?= sanitize($act) ?>
+<?php endif; endforeach; ?>
+</div>
+<div class="activity-box">
+<strong>निष्पत्ती (सत्र १):</strong><br>
+<?= nl2br(sanitize($a['assessment_questions_mr'] ?? '')) ?>
+</div>
+</div>
+</div>
+
+<!-- CG Goals Section -->
+<div class="domain-info-box">
+<div class="domain-info-title">अभ्यासक्रमाची ध्येये (Curricular Goals)</div>
 <?php foreach ($dn['goals'] as $code => $goal):
     $cn = str_replace(['-','*',' '], '', $code);
     $sel = in_array($code, $saved_goals) || in_array($cn, $saved_goals);
 ?>
 <div class="cg-item">
-<b><?= $code ?> :</b> <span><?= $goal ?></span>
+<b><?= $code ?>:</b> <span style="flex:1;"><?= $goal ?></span>
 <div class="cg-cb <?= $sel ? 'checked' : '' ?>"><?= $sel ? '&#x2714;' : '' ?></div>
 </div>
 <?php endforeach; ?>
 </div>
 
-<!-- Semester 1 -->
-<div class="sH">सत्र पहिले</div>
-<div class="comp-box">
-<div style="font-weight:700;font-size:11px;margin-bottom:2px;">क्षमता** :</div>
+<!-- Semester 1 Competencies (only selected) -->
+<div style="background:#8BC34A;color:#333;font-weight:700;font-size:12px;padding:4px 12px;border-radius:4px;margin:5px 0 3px;">सत्र पहिले - निवडलेल्या क्षमता</div>
 <?php
-$all_comps = $dn['competencies'] ?? [];
+$has_t1 = false;
 foreach ($all_comps as $ccode => $cdesc):
     $comp_sel = in_array($ccode, $saved_comps);
+    if ($comp_sel): $has_t1 = true;
 ?>
-<div class="comp-item">
-<?php if ($comp_sel): ?><span style="color:#D32F2F;font-size:10px;">&#x2733;&#xFE0F;</span><?php endif; ?>
-<span class="comp-code"><?= $ccode ?>-</span> <span>"<?= $cdesc ?>"</span>
+<div style="margin:2px 0;font-size:10px;color:#333;padding-left:8px;">
+<span style="color:#D32F2F;font-size:11px;">&#x2733;&#xFE0F;</span>
+<span style="color:#D32F2F;font-weight:700;"><?= $ccode ?></span> - "<?= $cdesc ?>"
 </div>
-<?php endforeach; ?>
-</div>
+<?php endif; endforeach;
+if (!$has_t1): ?>
+<div style="font-size:10px;color:#999;padding:4px 8px;font-style:italic;">कोणत्याही क्षमता निवडलेल्या नाहीत.</div>
+<?php endif; ?>
 
-<div class="shg" style="font-size:10px;padding:3px;">&#x1F4DD; शिक्षण अनुभव / कृती (Activity - Term 1)</div>
-<div class="ab"><?= nl2br(sanitize($a['activity_mr'] ?? '-')) ?></div>
-
-<div class="shb" style="font-size:10px;padding:3px;">&#x2753; मूल्यांकनासाठीचे प्रश्न (Questions - Term 1)</div>
-<div class="ab"><?= nl2br(sanitize($a['assessment_questions_mr'] ?? '-')) ?></div>
-
-<!-- Semester 2 -->
-<div class="sH" style="margin-top:4px;">सत्र दुसरे</div>
-<div class="comp-box">
-<div style="font-weight:700;font-size:11px;margin-bottom:2px;">क्षमता** :</div>
-<?php
-foreach ($all_comps as $ccode => $cdesc):
-    $comp_sel2 = in_array($ccode, $saved_comps_t2);
-?>
-<div class="comp-item">
-<?php if ($comp_sel2): ?><span style="color:#D32F2F;font-size:10px;">&#x2733;&#xFE0F;</span><?php endif; ?>
-<span class="comp-code"><?= $ccode ?>-</span> <span>"<?= $cdesc ?>"</span>
-</div>
-<?php endforeach; ?>
-</div>
-
-<div class="shg" style="font-size:10px;padding:3px;">&#x1F4DD; शिक्षण अनुभव / कृती (Activity - Term 2)</div>
-<div class="ab"><?= nl2br(sanitize($a['activity_mr_term2'] ?? '-')) ?></div>
-
-<div class="shb" style="font-size:10px;padding:3px;">&#x2753; मूल्यांकनासाठीचे प्रश्न (Questions - Term 2)</div>
-<div class="ab"><?= nl2br(sanitize($a['assessment_questions_mr_term2'] ?? '-')) ?></div>
-
-<div class="pf">समग्र प्रगती पत्रक (HPC) | क्षेत्र <?= $did ?>: <?= $dn['name_mr'] ?> | पान <?= $page_num ?></div>
+<!-- 4-column Rubric Table -->
+<div style="margin-top:6px;">
+<div style="font-weight:700;font-size:11px;margin-bottom:3px;">रुब्रिक (निकषसंच) - सत्र पहिले:</div>
+<table class="rubric-table">
+<tr>
+<th class="col-pailu">&#x1F33F; पैलू</th>
+<th class="col-pravah">&#x1F30A; प्रवाह</th>
+<th class="col-parvat">&#x26F0;&#xFE0F; पर्वत</th>
+<th class="col-akash">&#x2728; आकाश</th>
+</tr>
+<tr>
+<td class="pailu-cell <?= ($selected_col==='pailu') ? 'selected-cell' : '' ?>"><?= $rubric_descriptions['pailu'] ?><?= ($selected_col==='pailu') ? ' <span class="rubric-check">&#x2714;&#xFE0F;</span>' : '' ?></td>
+<td class="<?= ($selected_col==='pravah') ? 'selected-cell' : '' ?>"><?= $rubric_descriptions['pravah'] ?><?= ($selected_col==='pravah') ? ' <span class="rubric-check">&#x2714;&#xFE0F;</span>' : '' ?></td>
+<td class="<?= ($selected_col==='parvat') ? 'selected-cell' : '' ?>"><?= $rubric_descriptions['parvat'] ?><?= ($selected_col==='parvat') ? ' <span class="rubric-check">&#x2714;&#xFE0F;</span>' : '' ?></td>
+<td class="<?= ($selected_col==='akash') ? 'selected-cell' : '' ?>"><?= $rubric_descriptions['akash'] ?><?= ($selected_col==='akash') ? ' <span class="rubric-check">&#x2714;&#xFE0F;</span>' : '' ?></td>
+</tr>
+</table>
 </div>
 
-<!-- Domain <?= $did ?> Page 2: Rubric + Teacher Feedback + Self/Peer + Parent -->
-<div class="page">
-<div class="dh">मूल्यांकन – क्षेत्र <?= $did ?>: <?= $dn['name_mr'] ?><small>Rubric, Feedback & Assessments</small></div>
-
-<div class="shb" style="font-size:10px;padding:3px;">&#x1F4CA; रुब्रिक (निकषसंच)</div>
-<?php
-$abilities = ['awareness'=>['label'=>'जाणीवजागृती','emoji'=>'&#x1F441;&#xFE0F;'],'sensitivity'=>['label'=>'संवेदनशीलता','emoji'=>'&#x1F497;'],'creativity'=>['label'=>'सर्जनशीलता','emoji'=>'&#x1F3A8;']];
-$levels = ['beginner'=>['label'=>'प्रारंभिक','emoji'=>'&#x1F30A;','name'=>'निर्झर'],'proficient'=>['label'=>'प्रवीण','emoji'=>'&#x26F0;&#xFE0F;','name'=>'पर्वत'],'advanced'=>['label'=>'प्रगत','emoji'=>'&#x1F30C;','name'=>'आकाश']];
-foreach ($abilities as $ak => $ab_info):
-    $cl = $a[$ak.'_level'] ?? ''; $cl2 = $a[$ak.'_level_term2'] ?? '';
-?>
-<div style="margin:2px 0;">
-<div style="background:#E8EAF6;padding:2px 5px;border-radius:3px;font-weight:600;font-size:10px;"><?= $ab_info['emoji'] ?> <?= $ab_info['label'] ?></div>
-<div class="sg" style="margin-top:1px;">
-<div class="sb" style="padding:2px;"><div style="display:flex;gap:3px;"><?php foreach ($levels as $lk => $lv): $s = ($cl === $lv['label']); ?><div style="flex:1;text-align:center;font-size:8px;padding:3px;border-radius:3px;<?= $s ? 'background:#C8E6C9;font-weight:700;border:1px solid #4CAF50;' : 'background:#f9f9f9;border:1px solid #eee;' ?>"><?= $lv['emoji'] ?> <?= $lv['name'] ?> <?= $s ? '&#x2705;' : '' ?></div><?php endforeach; ?></div></div>
-<div class="sb" style="padding:2px;"><div style="display:flex;gap:3px;"><?php foreach ($levels as $lk => $lv): $s2 = ($cl2 === $lv['label']); ?><div style="flex:1;text-align:center;font-size:8px;padding:3px;border-radius:3px;<?= $s2 ? 'background:#C8E6C9;font-weight:700;border:1px solid #4CAF50;' : 'background:#f9f9f9;border:1px solid #eee;' ?>"><?= $lv['emoji'] ?> <?= $lv['name'] ?> <?= $s2 ? '&#x2705;' : '' ?></div><?php endforeach; ?></div></div>
-</div>
-</div>
-<?php endforeach; ?>
-
-<div class="shb" style="font-size:10px;padding:3px;">&#x1F469;&#x200D;&#x1F3EB; शिक्षक अभिप्राय</div>
-<div class="sg">
-<div class="sb"><div class="sH">सत्र पहिले</div><div class="ab"><?= nl2br(sanitize($a['teacher_feedback_mr'] ?? '-')) ?></div></div>
-<div class="sb"><div class="sH" style="background:linear-gradient(135deg,#1565C0,#42A5F5);">सत्र दुसरे</div><div class="ab"><?= nl2br(sanitize($a['teacher_feedback_mr_term2'] ?? '-')) ?></div></div>
-</div>
-
-<div class="shg" style="font-size:10px;padding:3px;">&#x1F60A; स्व-मूल्यांकन (Self Assessment)</div>
-<p style="font-size:9px;color:#666;margin:1px 0;">"या उपक्रमात मला कसे वाटले?"</p>
-<div class="sg">
-<div class="sb">
-<div class="sH">सत्र पहिले</div>
-<div style="display:flex;justify-content:center;gap:6px;margin:4px 0;">
+<!-- Assessment Grid: Self + Peer + Parent + Teacher for Term 1 -->
+<div class="assess-grid">
+<div class="assess-box">
+<div class="title">&#x1F60A; स्व-मूल्यांकन (सत्र १)</div>
+<div class="content">
 <?php
 $sev = $a['self_emoji'] ?? '';
 if (empty($sev) && !empty($a['self_assessment'])) {
-    $sv = $a['self_assessment'];
-    foreach ($self_emoji_options as $slb => $sem) {
-        if (mb_strpos($sv, $slb) !== false) { $sev = $slb; break; }
-    }
+    foreach ($self_emoji_options as $slb => $sem) { if (mb_strpos($a['self_assessment'], $slb) !== false) { $sev = $slb; break; } }
 }
 foreach ($self_emoji_options as $lb => $em): $is = ($sev === $lb); ?>
-<div class="eo <?= $is ? 'ec' : '' ?>"><div style="font-size:20px;"><?= $em ?></div><div style="font-size:8px;"><?= $lb ?></div></div>
+<span style="font-size:16px;<?= $is ? 'border:2px solid #4CAF50;border-radius:50%;padding:1px;background:#E8F5E9;' : '' ?>"><?= $em ?></span>
 <?php endforeach; ?>
-</div>
-<?php if (!empty($a['self_assessment'])): ?><div style="font-size:9px;padding:3px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['self_assessment']) ?></div><?php endif; ?>
-</div>
-<div class="sb">
-<div class="sH" style="background:linear-gradient(135deg,#1565C0,#42A5F5);">सत्र दुसरे</div>
-<div style="display:flex;justify-content:center;gap:6px;margin:4px 0;">
-<?php
-$sev2 = $a['self_emoji_term2'] ?? '';
-if (empty($sev2) && !empty($a['self_assessment_term2'])) {
-    $sv2 = $a['self_assessment_term2'];
-    foreach ($self_emoji_options as $slb => $sem) {
-        if (mb_strpos($sv2, $slb) !== false) { $sev2 = $slb; break; }
-    }
-}
-foreach ($self_emoji_options as $lb => $em): $is2 = ($sev2 === $lb); ?>
-<div class="eo <?= $is2 ? 'ec' : '' ?>"><div style="font-size:20px;"><?= $em ?></div><div style="font-size:8px;"><?= $lb ?></div></div>
-<?php endforeach; ?>
-</div>
-<?php if (!empty($a['self_assessment_term2'])): ?><div style="font-size:9px;padding:3px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['self_assessment_term2']) ?></div><?php endif; ?>
+<?php if (!empty($a['self_assessment'])): ?><div style="font-size:9px;margin-top:2px;"><?= sanitize($a['self_assessment']) ?></div><?php endif; ?>
 </div>
 </div>
-
-<div class="shb" style="font-size:10px;padding:3px;">&#x1F46B; सहकारी मूल्यांकन (Peer Assessment)</div>
-<div class="sg">
-<div class="sb">
-<div class="sH">सत्र पहिले</div>
-<div style="display:flex;justify-content:center;gap:6px;margin:4px 0;">
+<div class="assess-box">
+<div class="title">&#x1F46B; सहकारी मूल्यांकन (सत्र १)</div>
+<div class="content">
 <?php
 $pev = $a['peer_emoji'] ?? '';
 if (empty($pev) && !empty($a['peer_assessment'])) {
-    $pv = $a['peer_assessment'];
-    foreach ($peer_emoji_options as $plb => $pem) {
-        if (mb_strpos($pv, $plb) !== false) { $pev = $plb; break; }
-    }
+    foreach ($peer_emoji_options as $plb => $pem) { if (mb_strpos($a['peer_assessment'], $plb) !== false) { $pev = $plb; break; } }
 }
 foreach ($peer_emoji_options as $lb => $em): $ip = ($pev === $lb); ?>
-<div class="eo <?= $ip ? 'ec' : '' ?>"><div style="font-size:20px;"><?= $em ?></div><div style="font-size:8px;"><?= $lb ?></div></div>
+<span style="font-size:16px;<?= $ip ? 'border:2px solid #4CAF50;border-radius:50%;padding:1px;background:#E8F5E9;' : '' ?>"><?= $em ?></span>
 <?php endforeach; ?>
+<?php if (!empty($a['peer_assessment'])): ?><div style="font-size:9px;margin-top:2px;"><?= sanitize($a['peer_assessment']) ?></div><?php endif; ?>
 </div>
-<?php if (!empty($a['peer_assessment'])): ?><div style="font-size:9px;padding:3px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['peer_assessment']) ?></div><?php endif; ?>
 </div>
-<div class="sb">
-<div class="sH" style="background:linear-gradient(135deg,#1565C0,#42A5F5);">सत्र दुसरे</div>
-<div style="display:flex;justify-content:center;gap:6px;margin:4px 0;">
+<div class="assess-box">
+<div class="title">&#x1F468;&#x200D;&#x1F469;&#x200D;&#x1F467; पालक निरीक्षण (सत्र १)</div>
+<div class="content" style="font-size:9px;"><?= nl2br(sanitize($a['parent_observation_mr'] ?? '')) ?></div>
+</div>
+<div class="assess-box">
+<div class="title">&#x1F469;&#x200D;&#x1F3EB; शिक्षक अभिप्राय (सत्र १)</div>
+<div class="content" style="font-size:9px;"><?= nl2br(sanitize($a['teacher_feedback_mr'] ?? '')) ?></div>
+</div>
+</div>
+
+<div class="page-footer"><span class="left"><?= $school_name ?></span><span class="right">CREATED BY <?= strtoupper($school_name) ?></span></div>
+</div>
+
+<!-- Domain <?= $did ?> Page 2: Semester 2 -->
+<div class="page">
+<div class="watermark"><?= $school_name ?></div>
+<div class="school-bar"><?= $school_name ?></div>
+
+<!-- Domain Title Banner (Term 2) -->
+<div style="background:<?= $dc['bg'] ?>;color:#fff;text-align:center;padding:8px 15px;font-size:14px;font-weight:700;border-radius:8px;margin-bottom:6px;">
+क्षेत्र <?= $did ?>: <?= $dn['name_mr'] ?> — सत्र दुसरे
+</div>
+
+<!-- Activity Section Term 2 -->
+<div class="activity-section">
+<div class="label">&#x1F4CC; सविस्तर उपक्रम व कृती (सत्र २):</div>
+<div style="display:flex;gap:8px;margin-top:4px;">
+<div class="activity-box">
+<strong>उपक्रम (सत्र २):</strong><br>
+<?= nl2br(sanitize($a['activity_mr_term2'] ?? '')) ?>
+<?php
+foreach ($comp_activities_t2 as $cc => $act):
+    if (!empty($act)): ?>
+<br><span style="color:#D32F2F;font-weight:600;"><?= sanitize($cc) ?>:</span> <?= sanitize($act) ?>
+<?php endif; endforeach; ?>
+</div>
+<div class="activity-box">
+<strong>निष्पत्ती (सत्र २):</strong><br>
+<?= nl2br(sanitize($a['assessment_questions_mr_term2'] ?? '')) ?>
+</div>
+</div>
+</div>
+
+<!-- Semester 2 Competencies (only selected) -->
+<div style="background:#42A5F5;color:#fff;font-weight:700;font-size:12px;padding:4px 12px;border-radius:4px;margin:5px 0 3px;">सत्र दुसरे - निवडलेल्या क्षमता</div>
+<?php
+$has_t2 = false;
+foreach ($all_comps as $ccode => $cdesc):
+    $comp_sel2 = in_array($ccode, $saved_comps_t2);
+    if ($comp_sel2): $has_t2 = true;
+?>
+<div style="margin:2px 0;font-size:10px;color:#333;padding-left:8px;">
+<span style="color:#1565C0;font-size:11px;">&#x2733;&#xFE0F;</span>
+<span style="color:#1565C0;font-weight:700;"><?= $ccode ?></span> - "<?= $cdesc ?>"
+</div>
+<?php endif; endforeach;
+if (!$has_t2): ?>
+<div style="font-size:10px;color:#999;padding:4px 8px;font-style:italic;">कोणत्याही क्षमता निवडलेल्या नाहीत.</div>
+<?php endif; ?>
+
+<!-- 4-column Rubric Table Term 2 -->
+<?php
+// Determine Term 2 level
+$dom_level_t2 = '';
+foreach ($abilities_keys as $abk) { $lv2 = $a[$abk.'_level_term2'] ?? ''; if (!empty($lv2)) $dom_level_t2 = $lv2; }
+$selected_col_t2 = $level_to_col[$dom_level_t2] ?? '';
+?>
+<div style="margin-top:6px;">
+<div style="font-weight:700;font-size:11px;margin-bottom:3px;">रुब्रिक (निकषसंच) - सत्र दुसरे:</div>
+<table class="rubric-table">
+<tr>
+<th class="col-pailu">&#x1F33F; पैलू</th>
+<th class="col-pravah">&#x1F30A; प्रवाह</th>
+<th class="col-parvat">&#x26F0;&#xFE0F; पर्वत</th>
+<th class="col-akash">&#x2728; आकाश</th>
+</tr>
+<tr>
+<td class="pailu-cell <?= ($selected_col_t2==='pailu') ? 'selected-cell' : '' ?>"><?= $rubric_descriptions['pailu'] ?><?= ($selected_col_t2==='pailu') ? ' <span class="rubric-check">&#x2714;&#xFE0F;</span>' : '' ?></td>
+<td class="<?= ($selected_col_t2==='pravah') ? 'selected-cell' : '' ?>"><?= $rubric_descriptions['pravah'] ?><?= ($selected_col_t2==='pravah') ? ' <span class="rubric-check">&#x2714;&#xFE0F;</span>' : '' ?></td>
+<td class="<?= ($selected_col_t2==='parvat') ? 'selected-cell' : '' ?>"><?= $rubric_descriptions['parvat'] ?><?= ($selected_col_t2==='parvat') ? ' <span class="rubric-check">&#x2714;&#xFE0F;</span>' : '' ?></td>
+<td class="<?= ($selected_col_t2==='akash') ? 'selected-cell' : '' ?>"><?= $rubric_descriptions['akash'] ?><?= ($selected_col_t2==='akash') ? ' <span class="rubric-check">&#x2714;&#xFE0F;</span>' : '' ?></td>
+</tr>
+</table>
+</div>
+
+<!-- Assessment Grid: Self + Peer + Parent + Teacher for Term 2 -->
+<div class="assess-grid">
+<div class="assess-box">
+<div class="title">&#x1F60A; स्व-मूल्यांकन (सत्र २)</div>
+<div class="content">
+<?php
+$sev2 = $a['self_emoji_term2'] ?? '';
+if (empty($sev2) && !empty($a['self_assessment_term2'])) {
+    foreach ($self_emoji_options as $slb => $sem) { if (mb_strpos($a['self_assessment_term2'], $slb) !== false) { $sev2 = $slb; break; } }
+}
+foreach ($self_emoji_options as $lb => $em): $is2 = ($sev2 === $lb); ?>
+<span style="font-size:16px;<?= $is2 ? 'border:2px solid #4CAF50;border-radius:50%;padding:1px;background:#E8F5E9;' : '' ?>"><?= $em ?></span>
+<?php endforeach; ?>
+<?php if (!empty($a['self_assessment_term2'])): ?><div style="font-size:9px;margin-top:2px;"><?= sanitize($a['self_assessment_term2']) ?></div><?php endif; ?>
+</div>
+</div>
+<div class="assess-box">
+<div class="title">&#x1F46B; सहकारी मूल्यांकन (सत्र २)</div>
+<div class="content">
 <?php
 $pev2 = $a['peer_emoji_term2'] ?? '';
 if (empty($pev2) && !empty($a['peer_assessment_term2'])) {
-    $pv2 = $a['peer_assessment_term2'];
-    foreach ($peer_emoji_options as $plb => $pem) {
-        if (mb_strpos($pv2, $plb) !== false) { $pev2 = $plb; break; }
-    }
+    foreach ($peer_emoji_options as $plb => $pem) { if (mb_strpos($a['peer_assessment_term2'], $plb) !== false) { $pev2 = $plb; break; } }
 }
 foreach ($peer_emoji_options as $lb => $em): $ip2 = ($pev2 === $lb); ?>
-<div class="eo <?= $ip2 ? 'ec' : '' ?>"><div style="font-size:20px;"><?= $em ?></div><div style="font-size:8px;"><?= $lb ?></div></div>
+<span style="font-size:16px;<?= $ip2 ? 'border:2px solid #4CAF50;border-radius:50%;padding:1px;background:#E8F5E9;' : '' ?>"><?= $em ?></span>
 <?php endforeach; ?>
+<?php if (!empty($a['peer_assessment_term2'])): ?><div style="font-size:9px;margin-top:2px;"><?= sanitize($a['peer_assessment_term2']) ?></div><?php endif; ?>
 </div>
-<?php if (!empty($a['peer_assessment_term2'])): ?><div style="font-size:9px;padding:3px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['peer_assessment_term2']) ?></div><?php endif; ?>
+</div>
+<div class="assess-box">
+<div class="title">&#x1F468;&#x200D;&#x1F469;&#x200D;&#x1F467; पालक निरीक्षण (सत्र २)</div>
+<div class="content" style="font-size:9px;"><?= nl2br(sanitize($a['parent_observation_mr_term2'] ?? '')) ?></div>
+</div>
+<div class="assess-box">
+<div class="title">&#x1F469;&#x200D;&#x1F3EB; शिक्षक अभिप्राय (सत्र २)</div>
+<div class="content" style="font-size:9px;"><?= nl2br(sanitize($a['teacher_feedback_mr_term2'] ?? '')) ?></div>
 </div>
 </div>
 
-<div class="shg" style="font-size:10px;padding:3px;">&#x1F468;&#x200D;&#x1F469;&#x200D;&#x1F467; पालक निरीक्षण (Parent Observation)</div>
-<div class="sg">
-<div class="sb"><div class="sH">सत्र पहिले</div><div class="ab" style="min-height:30px;"><?= nl2br(sanitize($a['parent_observation_mr'] ?? '-')) ?></div></div>
-<div class="sb"><div class="sH" style="background:linear-gradient(135deg,#1565C0,#42A5F5);">सत्र दुसरे</div><div class="ab" style="min-height:30px;"><?= nl2br(sanitize($a['parent_observation_mr_term2'] ?? '-')) ?></div></div>
-</div>
-<div class="pf">समग्र प्रगती पत्रक (HPC) | क्षेत्र <?= $did ?>: <?= $dn['name_mr'] ?> | पान <?= $page_num + 1 ?></div>
+<div class="page-footer"><span class="left"><?= $school_name ?></span><span class="right">CREATED BY <?= strtoupper($school_name) ?></span></div>
 </div>
 <?php $page_num += 2; endforeach; ?>
 
-<!-- PAGE 16: भाग क -->
+<!-- PAGE 16: शिक्षकांचा अंतिम सर्वकष वार्षिक अभिप्राय -->
 <div class="page">
-<div style="background:linear-gradient(135deg,#1A237E,#283593);color:white;text-align:center;padding:5px;font-size:15px;font-weight:700;border-radius:6px;margin-bottom:2px;">भाग क</div>
-<div style="text-align:center;font-size:12px;font-weight:600;color:#1A237E;margin-bottom:1px;">शैक्षणिक वर्षाचा सारांश</div>
-<div style="text-align:center;font-size:10px;font-weight:600;color:#333;">प्रमुख कामगिरी वर्णन विधाने</div>
-<div style="text-align:center;font-size:8px;color:#666;margin-bottom:6px;">(बालकांच्या क्षमतेनुसार शिक्षकांचे गुणात्मक अभिप्राय)</div>
-<div style="display:flex;gap:6px;">
-<div style="flex:0 0 145px;">
-<?php
-$abn = ['awareness'=>['title'=>'जाणीवजागृती','sub'=>'(योग्य पर्याय निवडा.)'],'sensitivity'=>['title'=>'संवेदनशीलता','sub'=>'(योग्य पर्याय निवडा.)'],'creativity'=>['title'=>'सर्जनशीलता','sub'=>'(योग्य पर्याय निवडा.)']];
-foreach ($abn as $ak => $av):
-    $lc_counts = ['प्रारंभिक'=>0,'प्रवीण'=>0,'प्रगत'=>0];
-    foreach ($assessments as $da) {
-        $lv = $da[$ak.'_level'] ?? ''; if (isset($lc_counts[$lv])) $lc_counts[$lv]++;
-        $lv2 = $da[$ak.'_level_term2'] ?? ''; if (isset($lc_counts[$lv2])) $lc_counts[$lv2]++;
-    }
-    $mx = count($lc_counts) > 0 ? max($lc_counts) : 0; $dom_level = $mx > 0 ? array_keys($lc_counts, $mx)[0] : '';
-?>
-<div class="mc">
-<div class="mt"><?= $av['title'] ?></div>
-<div class="ms"><?= $av['sub'] ?></div>
-<?php foreach (['आकाश'=>'प्रगत','पर्वत'=>'प्रवीण','निर्झर'=>'प्रारंभिक'] as $mk => $ml): $chk = ($dom_level === $ml); ?>
-<div class="lr"><div class="lc <?= $chk ? 'ck' : '' ?>"><?= $chk ? '&#x2713;' : '' ?></div><span style="font-size:10px;"><?= $mk ?></span></div>
-<?php endforeach; ?>
-</div>
-<?php endforeach; ?>
-</div>
-<div style="flex:1;">
-<?php
-$dl = [1=>'शारीरिक विकास',2=>'सामाजिक, भावनिक व नैतिक विकास',3=>'बोधात्मक विकास',4=>'भाषा आणि साक्षरता विकास',5=>'सौंदर्यदृष्टी आणि सांस्कृतिक विकास'];
-foreach ($dl as $dc => $dn2):
-    $da = $assessments[$dc] ?? [];
-    $fb = $da['teacher_feedback_mr'] ?? '';
-    if (empty($fb)) $fb = $da['teacher_feedback_mr_term2'] ?? '';
-?>
-<div style="margin:2px 0;padding:3px 5px;border:1px solid #ccc;border-radius:4px;">
-<div style="font-size:10px;font-weight:700;color:#1A237E;border-bottom:1px solid #eee;padding-bottom:1px;margin-bottom:1px;"><?= $dc ?>) <?= $dn2 ?></div>
-<div style="font-size:9px;line-height:1.3;"><?php if ($fb): ?>&#8226; <?= sanitize(mb_substr($fb, 0, 200)) ?><?= mb_strlen($fb) > 200 ? '...' : '' ?><?php else: ?>&#8226; ______________________________________________<?php endif; ?></div>
-</div>
-<?php endforeach; ?>
-<div style="margin:2px 0;padding:3px 5px;border:1px solid #ccc;border-radius:4px;">
-<div style="font-size:10px;font-weight:700;color:#1A237E;border-bottom:1px solid #eee;padding-bottom:1px;margin-bottom:1px;">5.1) सकारात्मक अध्ययन सवयी</div>
-<div style="font-size:9px;line-height:1.3;"><?php $fb6 = $assessments[6]['teacher_feedback_mr'] ?? ''; if (empty($fb6)) $fb6 = $assessments[6]['teacher_feedback_mr_term2'] ?? ''; if ($fb6): ?>&#8226; <?= sanitize(mb_substr($fb6, 0, 200)) ?><?= mb_strlen($fb6) > 200 ? '...' : '' ?><?php else: ?>&#8226; ______________________________________________<?php endif; ?></div>
-</div>
-</div>
-</div>
-<div style="margin-top:4px;padding:4px;background:#FFF8E1;border:1px solid #FFB300;border-radius:4px;font-size:8px;"><strong>टीप:</strong> बालकांचा समग्र विकासाचा सारांश शैक्षणिक वर्षाच्या शेवटी प्रत्येक विकासक्षेत्रामध्ये वर्णनात्मक पद्धतीने देणे आवश्यक आहे.</div>
-<div class="pf">समग्र प्रगती पत्रक (HPC) | <?= sanitize($school['name_mr'] ?: $school['name']) ?> | पान १६</div>
+<div class="watermark"><?= $school_name ?></div>
+<div class="school-bar"><?= $school_name ?></div>
+
+<div style="text-align:center;margin:15px 0 10px;">
+<div style="font-size:22px;font-weight:700;color:#333;">शिक्षकांचा अंतिम सर्वकष वार्षिक अभिप्राय</div>
+<div style="border-bottom:3px solid #D32F2F;width:80%;margin:8px auto;"></div>
 </div>
 
-<!-- PAGE 17: Final Feedback -->
-<div class="page">
-<div style="background:linear-gradient(135deg,#1565C0,#1976D2);color:white;text-align:center;padding:8px 12px;font-size:18px;font-weight:700;border-radius:8px;margin-bottom:4px;">शिक्षकांचा अंतिम सर्वकष वार्षिक अभिप्राय</div>
-<div style="border-bottom:3px solid #1565C0;margin:0 15px 12px;"></div>
 <div class="ffb">
 <?php $ffb = $data['final_annual_feedback'] ?? '';
 if (!empty($ffb)):
     echo nl2br(sanitize($ffb));
 else:
-    for ($i = 0; $i < 14; $i++) echo '<div style="border-bottom:1px dashed #90CAF9;margin:16px 0;">&nbsp;</div>';
+    for ($i = 0; $i < 12; $i++) echo '<div style="border-bottom:1px dashed #ccc;margin:18px 0;">&nbsp;</div>';
 endif; ?>
 </div>
-<div class="ss">
-<div class="sb2"><div style="min-height:35px;"></div>वर्गशिक्षक स्वाक्षरी</div>
-<div class="sb2"><div style="min-height:35px;"></div>मुख्याध्यापक स्वाक्षरी व शिक्का</div>
-<div class="sb2"><div style="min-height:35px;"></div>पालक स्वाक्षरी</div>
+
+<!-- Signature Section -->
+<div class="sig-section">
+<div class="sig-box"><div style="min-height:40px;"></div>वर्गशिक्षकेची स्वाक्षरी</div>
+<div class="sig-box"><div style="min-height:40px;"></div>मुख्याध्यापक शिक्का</div>
+<div class="sig-box"><div style="min-height:40px;"></div>पालकाची स्वाक्षरी</div>
 </div>
-<div style="text-align:center;margin-top:12px;font-size:9px;color:#999;">दिनांक: _________________ | &#x1F3EB; <?= sanitize($school['name_mr'] ?: $school['name']) ?></div>
-<div class="pf">समग्र प्रगती पत्रक (HPC) | <?= sanitize($school['name_mr'] ?: $school['name']) ?> | पान १७</div>
+
+<div class="page-footer"><span class="left"><?= $school_name ?></span><span class="right">CREATED BY <?= strtoupper($school_name) ?></span></div>
 </div>
 
 </body>
