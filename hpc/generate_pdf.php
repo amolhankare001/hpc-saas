@@ -160,48 +160,48 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:#333;background:#f5f5f5;}
+body{font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;color:#333;background:#f5f5f5;line-height:1.4;}
 .page{width:210mm;min-height:297mm;margin:0 auto;padding:8mm 10mm;page-break-after:always;position:relative;background:#fff;}
 .page:last-child{page-break-after:auto;}
 .cover-page{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.sh{background:linear-gradient(135deg,#E65100,#FF8F00);color:white;text-align:center;padding:5px 10px;font-size:13px;font-weight:700;border-radius:6px;margin-bottom:6px;}
-.shb{background:linear-gradient(135deg,#1565C0,#42A5F5);color:white;text-align:center;padding:4px 8px;font-size:11px;font-weight:600;border-radius:5px;margin:5px 0 4px;}
-.shg{background:linear-gradient(135deg,#2E7D32,#66BB6A);color:white;text-align:center;padding:4px 8px;font-size:11px;font-weight:600;border-radius:5px;margin:5px 0 4px;}
+.sh{background:linear-gradient(135deg,#E65100,#FF8F00);color:white;text-align:center;padding:6px 12px;font-size:15px;font-weight:700;border-radius:6px;margin-bottom:6px;}
+.shb{background:linear-gradient(135deg,#1565C0,#42A5F5);color:white;text-align:center;padding:5px 10px;font-size:13px;font-weight:600;border-radius:5px;margin:5px 0 4px;}
+.shg{background:linear-gradient(135deg,#2E7D32,#66BB6A);color:white;text-align:center;padding:5px 10px;font-size:13px;font-weight:600;border-radius:5px;margin:5px 0 4px;}
 table{width:100%;border-collapse:collapse;margin:3px 0;}
-td,th{border:1px solid #ccc;padding:3px 5px;text-align:left;vertical-align:top;font-size:10px;}
+td,th{border:1px solid #ccc;padding:4px 6px;text-align:left;vertical-align:top;font-size:11px;}
 th{background:#E3F2FD;font-weight:600;text-align:center;}
-.dh{background:linear-gradient(135deg,#E65100,#FF8F00);color:white;text-align:center;padding:6px;font-size:13px;font-weight:700;border-radius:6px;margin-bottom:5px;border:2px solid #BF360C;}
-.dh small{display:block;font-size:9px;font-weight:400;opacity:0.9;}
+.dh{background:linear-gradient(135deg,#E65100,#FF8F00);color:white;text-align:center;padding:6px;font-size:14px;font-weight:700;border-radius:6px;margin-bottom:5px;border:2px solid #BF360C;}
+.dh small{display:block;font-size:10px;font-weight:400;opacity:0.9;}
 .cg-box{background:#FFFDE7;border:2px solid #D32F2F;border-radius:6px;padding:6px 10px;margin:4px 0;}
-.cg-item{margin:2px 0;font-size:10px;display:flex;align-items:flex-start;gap:6px;}
+.cg-item{margin:2px 0;font-size:11px;display:flex;align-items:flex-start;gap:6px;}
 .cg-item b{color:#E65100;white-space:nowrap;}
 .cg-cb{width:16px;height:16px;border:2px solid #999;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
 .cg-cb.checked{border-color:#1565C0;background:#E3F2FD;color:#1565C0;font-weight:700;}
 .comp-box{background:#E8F5E9;border:1px solid #A5D6A7;border-radius:5px;padding:5px 8px;margin:3px 0;}
-.comp-item{margin:2px 0;font-size:9px;color:#1B5E20;display:flex;align-items:flex-start;gap:4px;}
+.comp-item{margin:2px 0;font-size:10px;color:#1B5E20;display:flex;align-items:flex-start;gap:4px;}
 .comp-item .comp-code{color:#D32F2F;font-weight:700;white-space:nowrap;}
-.ab{border:1px solid #ddd;border-radius:4px;padding:4px;margin:2px 0;min-height:25px;background:#FAFAFA;font-size:9px;}
+.ab{border:1px solid #ddd;border-radius:4px;padding:5px;margin:2px 0;min-height:28px;background:#FAFAFA;font-size:10px;}
 .eo{display:inline-block;text-align:center;margin:0 5px;padding:3px 6px;border-radius:6px;border:2px solid transparent;position:relative;}
 .ec{border:3px solid #4CAF50 !important;background:#E8F5E9;}
 .ec::after{content:'\2713';position:absolute;top:-8px;right:-5px;background:#4CAF50;color:white;font-size:9px;font-weight:700;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;line-height:1;}
 .sg{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
 .sb{border:1px solid #ccc;border-radius:4px;padding:4px;}
-.sH{text-align:center;font-weight:600;color:#fff;background:linear-gradient(135deg,#C62828,#E53935);padding:3px;border-radius:3px;margin-bottom:3px;font-size:10px;}
-.sH2{text-align:center;font-weight:600;color:#fff;background:linear-gradient(135deg,#1565C0,#42A5F5);padding:3px;border-radius:3px;margin-bottom:3px;font-size:10px;}
+.sH{text-align:center;font-weight:600;color:#fff;background:linear-gradient(135deg,#C62828,#E53935);padding:4px;border-radius:3px;margin-bottom:3px;font-size:11px;}
+.sH2{text-align:center;font-weight:600;color:#fff;background:linear-gradient(135deg,#1565C0,#42A5F5);padding:4px;border-radius:3px;margin-bottom:3px;font-size:11px;}
 .ss{display:flex;justify-content:space-between;margin-top:15px;}
-.sb2{width:28%;text-align:center;border-top:2px solid #333;padding-top:5px;font-size:9px;font-weight:600;}
-.at th{background:#BBDEFB;font-size:8px;padding:2px 1px;}
-.at td{font-size:8px;text-align:center;padding:2px 1px;}
-.ap{font-size:13px;font-weight:700;color:#E65100;}
-.pf{position:absolute;bottom:5mm;left:10mm;right:10mm;text-align:center;font-size:7px;color:#999;border-top:1px solid #eee;padding-top:2px;}
+.sb2{width:28%;text-align:center;border-top:2px solid #333;padding-top:5px;font-size:10px;font-weight:600;}
+.at th{background:#BBDEFB;font-size:9px;padding:3px 2px;}
+.at td{font-size:9px;text-align:center;padding:3px 2px;}
+.ap{font-size:14px;font-weight:700;color:#E65100;}
+.pf{position:absolute;bottom:5mm;left:10mm;right:10mm;text-align:center;font-size:8px;color:#999;border-top:1px solid #eee;padding-top:2px;}
 .np{text-align:center;margin:0 auto;padding:10px;background:#FFF3E0;max-width:210mm;}
 .mc{border:2px solid #1565C0;border-radius:8px;padding:6px;margin:5px 0;text-align:center;background:linear-gradient(180deg,#E3F2FD 0%,#BBDEFB 50%,#90CAF9 100%);}
-.mt{font-size:12px;font-weight:700;color:#1565C0;}
-.ms{font-size:8px;color:#666;margin-bottom:4px;}
-.lr{display:flex;align-items:center;margin:2px 4px;font-size:9px;}
+.mt{font-size:13px;font-weight:700;color:#1565C0;}
+.ms{font-size:9px;color:#666;margin-bottom:4px;}
+.lr{display:flex;align-items:center;margin:2px 4px;font-size:10px;}
 .lc{width:14px;height:14px;border:2px solid #666;margin-right:5px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;}
 .lc.ck{border-color:#D32F2F;background:#FFEBEE;color:#D32F2F;font-weight:700;}
-.ffb{border:3px solid #1565C0;border-radius:12px;padding:20px 18px;margin:15px 8px;min-height:450px;background:#FAFAFA;font-size:13px;line-height:2;color:#1565C0;font-weight:500;}
+.ffb{border:3px solid #1565C0;border-radius:12px;padding:20px 18px;margin:15px 8px;min-height:450px;background:#FAFAFA;font-size:14px;line-height:2;color:#1565C0;font-weight:500;}
 @media print{.np{display:none !important;}.page{margin:0;padding:8mm 10mm;box-shadow:none;border:none;}body{background:white;}}
 @media screen{.page{border:1px solid #ddd;margin:6px auto;box-shadow:0 2px 8px rgba(0,0,0,0.1);}}
 @media screen and (max-width:768px){.page{width:100%;min-height:auto;padding:6px;}.sg{grid-template-columns:1fr;}}
@@ -358,7 +358,7 @@ foreach ($domain_info as $did => $dn):
 <div class="dh">क्षेत्र क्र. <?= $did ?> : विकास क्षेत्र / विषय - <?= $dn['name_mr'] ?><small>(<?= $dn['name'] ?>)</small></div>
 
 <div class="cg-box">
-<div style="font-weight:700;color:#333;margin-bottom:3px;font-size:11px;">अभ्यासक्रमाची ध्येये (CG) :</div>
+<div style="font-weight:700;color:#333;margin-bottom:3px;font-size:12px;">अभ्यासक्रमाची ध्येये (CG) :</div>
 <?php foreach ($dn['goals'] as $code => $goal):
     $cn = str_replace(['-','*',' '], '', $code);
     $sel = in_array($code, $saved_goals) || in_array($cn, $saved_goals);
@@ -373,7 +373,7 @@ foreach ($domain_info as $did => $dn):
 <!-- Semester 1 -->
 <div class="sH">सत्र पहिले</div>
 <div class="comp-box">
-<div style="font-weight:700;font-size:10px;margin-bottom:2px;">क्षमता** :</div>
+<div style="font-weight:700;font-size:11px;margin-bottom:2px;">क्षमता** :</div>
 <?php
 $all_comps = $dn['competencies'] ?? [];
 foreach ($all_comps as $ccode => $cdesc):
@@ -386,16 +386,16 @@ foreach ($all_comps as $ccode => $cdesc):
 <?php endforeach; ?>
 </div>
 
-<div class="shg" style="font-size:9px;padding:2px;">&#x1F4DD; शिक्षण अनुभव / कृती (Activity - Term 1)</div>
+<div class="shg" style="font-size:10px;padding:3px;">&#x1F4DD; शिक्षण अनुभव / कृती (Activity - Term 1)</div>
 <div class="ab"><?= nl2br(sanitize($a['activity_mr'] ?? '-')) ?></div>
 
-<div class="shb" style="font-size:9px;padding:2px;">&#x2753; मूल्यांकनासाठीचे प्रश्न (Questions - Term 1)</div>
+<div class="shb" style="font-size:10px;padding:3px;">&#x2753; मूल्यांकनासाठीचे प्रश्न (Questions - Term 1)</div>
 <div class="ab"><?= nl2br(sanitize($a['assessment_questions_mr'] ?? '-')) ?></div>
 
 <!-- Semester 2 -->
 <div class="sH" style="margin-top:4px;">सत्र दुसरे</div>
 <div class="comp-box">
-<div style="font-weight:700;font-size:10px;margin-bottom:2px;">क्षमता** :</div>
+<div style="font-weight:700;font-size:11px;margin-bottom:2px;">क्षमता** :</div>
 <?php
 foreach ($all_comps as $ccode => $cdesc):
     $comp_sel2 = in_array($ccode, $saved_comps_t2);
@@ -407,10 +407,10 @@ foreach ($all_comps as $ccode => $cdesc):
 <?php endforeach; ?>
 </div>
 
-<div class="shg" style="font-size:9px;padding:2px;">&#x1F4DD; शिक्षण अनुभव / कृती (Activity - Term 2)</div>
+<div class="shg" style="font-size:10px;padding:3px;">&#x1F4DD; शिक्षण अनुभव / कृती (Activity - Term 2)</div>
 <div class="ab"><?= nl2br(sanitize($a['activity_mr_term2'] ?? '-')) ?></div>
 
-<div class="shb" style="font-size:9px;padding:2px;">&#x2753; मूल्यांकनासाठीचे प्रश्न (Questions - Term 2)</div>
+<div class="shb" style="font-size:10px;padding:3px;">&#x2753; मूल्यांकनासाठीचे प्रश्न (Questions - Term 2)</div>
 <div class="ab"><?= nl2br(sanitize($a['assessment_questions_mr_term2'] ?? '-')) ?></div>
 
 <div class="pf">समग्र प्रगती पत्रक (HPC) | क्षेत्र <?= $did ?>: <?= $dn['name_mr'] ?> | पान <?= $page_num ?></div>
@@ -428,10 +428,10 @@ foreach ($abilities as $ak => $ab_info):
     $cl = $a[$ak.'_level'] ?? ''; $cl2 = $a[$ak.'_level_term2'] ?? '';
 ?>
 <div style="margin:2px 0;">
-<div style="background:#E8EAF6;padding:1px 5px;border-radius:3px;font-weight:600;font-size:9px;"><?= $ab_info['emoji'] ?> <?= $ab_info['label'] ?></div>
+<div style="background:#E8EAF6;padding:2px 5px;border-radius:3px;font-weight:600;font-size:10px;"><?= $ab_info['emoji'] ?> <?= $ab_info['label'] ?></div>
 <div class="sg" style="margin-top:1px;">
-<div class="sb" style="padding:2px;"><div style="display:flex;gap:3px;"><?php foreach ($levels as $lk => $lv): $s = ($cl === $lv['label']); ?><div style="flex:1;text-align:center;font-size:7px;padding:2px;border-radius:3px;<?= $s ? 'background:#C8E6C9;font-weight:700;border:1px solid #4CAF50;' : 'background:#f9f9f9;border:1px solid #eee;' ?>"><?= $lv['emoji'] ?> <?= $lv['name'] ?> <?= $s ? '&#x2705;' : '' ?></div><?php endforeach; ?></div></div>
-<div class="sb" style="padding:2px;"><div style="display:flex;gap:3px;"><?php foreach ($levels as $lk => $lv): $s2 = ($cl2 === $lv['label']); ?><div style="flex:1;text-align:center;font-size:7px;padding:2px;border-radius:3px;<?= $s2 ? 'background:#C8E6C9;font-weight:700;border:1px solid #4CAF50;' : 'background:#f9f9f9;border:1px solid #eee;' ?>"><?= $lv['emoji'] ?> <?= $lv['name'] ?> <?= $s2 ? '&#x2705;' : '' ?></div><?php endforeach; ?></div></div>
+<div class="sb" style="padding:2px;"><div style="display:flex;gap:3px;"><?php foreach ($levels as $lk => $lv): $s = ($cl === $lv['label']); ?><div style="flex:1;text-align:center;font-size:8px;padding:3px;border-radius:3px;<?= $s ? 'background:#C8E6C9;font-weight:700;border:1px solid #4CAF50;' : 'background:#f9f9f9;border:1px solid #eee;' ?>"><?= $lv['emoji'] ?> <?= $lv['name'] ?> <?= $s ? '&#x2705;' : '' ?></div><?php endforeach; ?></div></div>
+<div class="sb" style="padding:2px;"><div style="display:flex;gap:3px;"><?php foreach ($levels as $lk => $lv): $s2 = ($cl2 === $lv['label']); ?><div style="flex:1;text-align:center;font-size:8px;padding:3px;border-radius:3px;<?= $s2 ? 'background:#C8E6C9;font-weight:700;border:1px solid #4CAF50;' : 'background:#f9f9f9;border:1px solid #eee;' ?>"><?= $lv['emoji'] ?> <?= $lv['name'] ?> <?= $s2 ? '&#x2705;' : '' ?></div><?php endforeach; ?></div></div>
 </div>
 </div>
 <?php endforeach; ?>
@@ -443,7 +443,7 @@ foreach ($abilities as $ak => $ab_info):
 </div>
 
 <div class="shg" style="font-size:10px;padding:3px;">&#x1F60A; स्व-मूल्यांकन (Self Assessment)</div>
-<p style="font-size:8px;color:#666;margin:1px 0;">"या उपक्रमात मला कसे वाटले?"</p>
+<p style="font-size:9px;color:#666;margin:1px 0;">"या उपक्रमात मला कसे वाटले?"</p>
 <div class="sg">
 <div class="sb">
 <div class="sH">सत्र पहिले</div>
@@ -457,10 +457,10 @@ if (empty($sev) && !empty($a['self_assessment'])) {
     }
 }
 foreach ($self_emoji_options as $lb => $em): $is = ($sev === $lb); ?>
-<div class="eo <?= $is ? 'ec' : '' ?>"><div style="font-size:18px;"><?= $em ?></div><div style="font-size:7px;"><?= $lb ?></div></div>
+<div class="eo <?= $is ? 'ec' : '' ?>"><div style="font-size:20px;"><?= $em ?></div><div style="font-size:8px;"><?= $lb ?></div></div>
 <?php endforeach; ?>
 </div>
-<?php if (!empty($a['self_assessment'])): ?><div style="font-size:8px;padding:2px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['self_assessment']) ?></div><?php endif; ?>
+<?php if (!empty($a['self_assessment'])): ?><div style="font-size:9px;padding:3px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['self_assessment']) ?></div><?php endif; ?>
 </div>
 <div class="sb">
 <div class="sH" style="background:linear-gradient(135deg,#1565C0,#42A5F5);">सत्र दुसरे</div>
@@ -474,10 +474,10 @@ if (empty($sev2) && !empty($a['self_assessment_term2'])) {
     }
 }
 foreach ($self_emoji_options as $lb => $em): $is2 = ($sev2 === $lb); ?>
-<div class="eo <?= $is2 ? 'ec' : '' ?>"><div style="font-size:18px;"><?= $em ?></div><div style="font-size:7px;"><?= $lb ?></div></div>
+<div class="eo <?= $is2 ? 'ec' : '' ?>"><div style="font-size:20px;"><?= $em ?></div><div style="font-size:8px;"><?= $lb ?></div></div>
 <?php endforeach; ?>
 </div>
-<?php if (!empty($a['self_assessment_term2'])): ?><div style="font-size:8px;padding:2px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['self_assessment_term2']) ?></div><?php endif; ?>
+<?php if (!empty($a['self_assessment_term2'])): ?><div style="font-size:9px;padding:3px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['self_assessment_term2']) ?></div><?php endif; ?>
 </div>
 </div>
 
@@ -495,10 +495,10 @@ if (empty($pev) && !empty($a['peer_assessment'])) {
     }
 }
 foreach ($peer_emoji_options as $lb => $em): $ip = ($pev === $lb); ?>
-<div class="eo <?= $ip ? 'ec' : '' ?>"><div style="font-size:18px;"><?= $em ?></div><div style="font-size:7px;"><?= $lb ?></div></div>
+<div class="eo <?= $ip ? 'ec' : '' ?>"><div style="font-size:20px;"><?= $em ?></div><div style="font-size:8px;"><?= $lb ?></div></div>
 <?php endforeach; ?>
 </div>
-<?php if (!empty($a['peer_assessment'])): ?><div style="font-size:8px;padding:2px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['peer_assessment']) ?></div><?php endif; ?>
+<?php if (!empty($a['peer_assessment'])): ?><div style="font-size:9px;padding:3px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['peer_assessment']) ?></div><?php endif; ?>
 </div>
 <div class="sb">
 <div class="sH" style="background:linear-gradient(135deg,#1565C0,#42A5F5);">सत्र दुसरे</div>
@@ -512,10 +512,10 @@ if (empty($pev2) && !empty($a['peer_assessment_term2'])) {
     }
 }
 foreach ($peer_emoji_options as $lb => $em): $ip2 = ($pev2 === $lb); ?>
-<div class="eo <?= $ip2 ? 'ec' : '' ?>"><div style="font-size:18px;"><?= $em ?></div><div style="font-size:7px;"><?= $lb ?></div></div>
+<div class="eo <?= $ip2 ? 'ec' : '' ?>"><div style="font-size:20px;"><?= $em ?></div><div style="font-size:8px;"><?= $lb ?></div></div>
 <?php endforeach; ?>
 </div>
-<?php if (!empty($a['peer_assessment_term2'])): ?><div style="font-size:8px;padding:2px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['peer_assessment_term2']) ?></div><?php endif; ?>
+<?php if (!empty($a['peer_assessment_term2'])): ?><div style="font-size:9px;padding:3px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['peer_assessment_term2']) ?></div><?php endif; ?>
 </div>
 </div>
 
@@ -550,7 +550,7 @@ foreach ($abn as $ak => $av):
 <div class="mt"><?= $av['title'] ?></div>
 <div class="ms"><?= $av['sub'] ?></div>
 <?php foreach (['आकाश'=>'प्रगत','पर्वत'=>'प्रवीण','निर्झर'=>'प्रारंभिक'] as $mk => $ml): $chk = ($dom_level === $ml); ?>
-<div class="lr"><div class="lc <?= $chk ? 'ck' : '' ?>"><?= $chk ? '&#x2713;' : '' ?></div><span style="font-size:9px;"><?= $mk ?></span></div>
+<div class="lr"><div class="lc <?= $chk ? 'ck' : '' ?>"><?= $chk ? '&#x2713;' : '' ?></div><span style="font-size:10px;"><?= $mk ?></span></div>
 <?php endforeach; ?>
 </div>
 <?php endforeach; ?>
@@ -564,17 +564,17 @@ foreach ($dl as $dc => $dn2):
     if (empty($fb)) $fb = $da['teacher_feedback_mr_term2'] ?? '';
 ?>
 <div style="margin:2px 0;padding:3px 5px;border:1px solid #ccc;border-radius:4px;">
-<div style="font-size:9px;font-weight:700;color:#1A237E;border-bottom:1px solid #eee;padding-bottom:1px;margin-bottom:1px;"><?= $dc ?>) <?= $dn2 ?></div>
-<div style="font-size:8px;line-height:1.3;"><?php if ($fb): ?>&#8226; <?= sanitize(mb_substr($fb, 0, 200)) ?><?= mb_strlen($fb) > 200 ? '...' : '' ?><?php else: ?>&#8226; ______________________________________________<?php endif; ?></div>
+<div style="font-size:10px;font-weight:700;color:#1A237E;border-bottom:1px solid #eee;padding-bottom:1px;margin-bottom:1px;"><?= $dc ?>) <?= $dn2 ?></div>
+<div style="font-size:9px;line-height:1.3;"><?php if ($fb): ?>&#8226; <?= sanitize(mb_substr($fb, 0, 200)) ?><?= mb_strlen($fb) > 200 ? '...' : '' ?><?php else: ?>&#8226; ______________________________________________<?php endif; ?></div>
 </div>
 <?php endforeach; ?>
 <div style="margin:2px 0;padding:3px 5px;border:1px solid #ccc;border-radius:4px;">
-<div style="font-size:9px;font-weight:700;color:#1A237E;border-bottom:1px solid #eee;padding-bottom:1px;margin-bottom:1px;">5.1) सकारात्मक अध्ययन सवयी</div>
-<div style="font-size:8px;line-height:1.3;"><?php $fb6 = $assessments[6]['teacher_feedback_mr'] ?? ''; if (empty($fb6)) $fb6 = $assessments[6]['teacher_feedback_mr_term2'] ?? ''; if ($fb6): ?>&#8226; <?= sanitize(mb_substr($fb6, 0, 200)) ?><?= mb_strlen($fb6) > 200 ? '...' : '' ?><?php else: ?>&#8226; ______________________________________________<?php endif; ?></div>
+<div style="font-size:10px;font-weight:700;color:#1A237E;border-bottom:1px solid #eee;padding-bottom:1px;margin-bottom:1px;">5.1) सकारात्मक अध्ययन सवयी</div>
+<div style="font-size:9px;line-height:1.3;"><?php $fb6 = $assessments[6]['teacher_feedback_mr'] ?? ''; if (empty($fb6)) $fb6 = $assessments[6]['teacher_feedback_mr_term2'] ?? ''; if ($fb6): ?>&#8226; <?= sanitize(mb_substr($fb6, 0, 200)) ?><?= mb_strlen($fb6) > 200 ? '...' : '' ?><?php else: ?>&#8226; ______________________________________________<?php endif; ?></div>
 </div>
 </div>
 </div>
-<div style="margin-top:4px;padding:4px;background:#FFF8E1;border:1px solid #FFB300;border-radius:4px;font-size:7px;"><strong>टीप:</strong> बालकांचा समग्र विकासाचा सारांश शैक्षणिक वर्षाच्या शेवटी प्रत्येक विकासक्षेत्रामध्ये वर्णनात्मक पद्धतीने देणे आवश्यक आहे.</div>
+<div style="margin-top:4px;padding:4px;background:#FFF8E1;border:1px solid #FFB300;border-radius:4px;font-size:8px;"><strong>टीप:</strong> बालकांचा समग्र विकासाचा सारांश शैक्षणिक वर्षाच्या शेवटी प्रत्येक विकासक्षेत्रामध्ये वर्णनात्मक पद्धतीने देणे आवश्यक आहे.</div>
 <div class="pf">समग्र प्रगती पत्रक (HPC) | <?= sanitize($school['name_mr'] ?: $school['name']) ?> | पान १६</div>
 </div>
 

@@ -177,6 +177,8 @@ CREATE TABLE IF NOT EXISTS hpc_domain_assessments (
     -- Parent/Caregiver Observation
     parent_observation TEXT,
     parent_observation_mr TEXT,
+    -- Per-competency assessment activities (JSON: {"C-1.1": "activity text", ...})
+    competency_activities TEXT,
     -- Term 2 (द्वितीय सत्र) fields
     curricular_goals_term2 TEXT,
     competencies_term2 TEXT,
@@ -189,6 +191,7 @@ CREATE TABLE IF NOT EXISTS hpc_domain_assessments (
     self_assessment_term2 TEXT,
     peer_assessment_term2 TEXT,
     parent_observation_mr_term2 TEXT,
+    competency_activities_term2 TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (hpc_card_id) REFERENCES hpc_cards(id) ON DELETE CASCADE

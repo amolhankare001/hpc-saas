@@ -153,6 +153,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
         $goals_selected_t2 = $_POST[$prefix . 'goals_term2'] ?? [];
         $comps_selected_t2 = $_POST[$prefix . 'competencies_term2'] ?? [];
 
+        // Collect per-competency activities (Term 1)
+        $comp_acts = [];
+        foreach ($comps_selected as $cc) {
+            $key = $prefix . 'comp_activity_' . $cc;
+            if (!empty($_POST[$key])) {
+                $comp_acts[$cc] = trim($_POST[$key]);
+            }
+        }
+        // Collect per-competency activities (Term 2)
+        $comp_acts_t2 = [];
+        foreach ($comps_selected_t2 as $cc2) {
+            $key2 = $prefix . 'comp_activity_t2_' . $cc2;
+            if (!empty($_POST[$key2])) {
+                $comp_acts_t2[$cc2] = trim($_POST[$key2]);
+            }
+        }
+
         $data = [
             'hpc_card_id' => $hpc_card_id,
             'domain_id' => $domain_id,
@@ -171,6 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
             'self_emoji' => trim($_POST[$prefix . 'self_emoji'] ?? ''),
             'peer_emoji' => trim($_POST[$prefix . 'peer_emoji'] ?? ''),
             'parent_observation_mr' => trim($_POST[$prefix . 'parent_observation'] ?? ''),
+            'competency_activities' => json_encode($comp_acts, JSON_UNESCAPED_UNICODE),
             // Term 2 fields
             'curricular_goals_term2' => json_encode($goals_selected_t2, JSON_UNESCAPED_UNICODE),
             'competencies_term2' => json_encode($comps_selected_t2, JSON_UNESCAPED_UNICODE),
@@ -185,6 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
             'parent_observation_mr_term2' => trim($_POST[$prefix . 'parent_observation_term2'] ?? ''),
             'self_emoji_term2' => trim($_POST[$prefix . 'self_emoji_term2'] ?? ''),
             'peer_emoji_term2' => trim($_POST[$prefix . 'peer_emoji_term2'] ?? ''),
+            'competency_activities_term2' => json_encode($comp_acts_t2, JSON_UNESCAPED_UNICODE),
         ];
 
         // Check if assessment already exists
@@ -193,31 +212,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
         $existing = $stmt->fetch();
 
         if ($existing) {
-            $stmt = $db->prepare("UPDATE hpc_domain_assessments SET curricular_goals=?, competencies=?, activity_mr=?, assessment_questions_mr=?, awareness_level=?, sensitivity_level=?, creativity_level=?, teacher_feedback_mr=?, self_assessment=?, peer_assessment=?, parent_observation_mr=?, curricular_goals_term2=?, competencies_term2=?, activity_mr_term2=?, assessment_questions_mr_term2=?, awareness_level_term2=?, sensitivity_level_term2=?, creativity_level_term2=?, teacher_feedback_mr_term2=?, self_assessment_term2=?, peer_assessment_term2=?, parent_observation_mr_term2=?, self_emoji=?, peer_emoji=?, self_emoji_term2=?, peer_emoji_term2=? WHERE id=?");
+            $stmt = $db->prepare("UPDATE hpc_domain_assessments SET curricular_goals=?, competencies=?, activity_mr=?, assessment_questions_mr=?, awareness_level=?, sensitivity_level=?, creativity_level=?, teacher_feedback_mr=?, self_assessment=?, peer_assessment=?, parent_observation_mr=?, competency_activities=?, curricular_goals_term2=?, competencies_term2=?, activity_mr_term2=?, assessment_questions_mr_term2=?, awareness_level_term2=?, sensitivity_level_term2=?, creativity_level_term2=?, teacher_feedback_mr_term2=?, self_assessment_term2=?, peer_assessment_term2=?, parent_observation_mr_term2=?, competency_activities_term2=?, self_emoji=?, peer_emoji=?, self_emoji_term2=?, peer_emoji_term2=? WHERE id=?");
             $stmt->execute([
                 $data['curricular_goals'], $data['competencies'], $data['activity_mr'],
                 $data['assessment_questions_mr'], $data['awareness_level'], $data['sensitivity_level'],
                 $data['creativity_level'], $data['teacher_feedback_mr'], $data['self_assessment'],
-                $data['peer_assessment'], $data['parent_observation_mr'],
+                $data['peer_assessment'], $data['parent_observation_mr'], $data['competency_activities'],
                 $data['curricular_goals_term2'], $data['competencies_term2'], $data['activity_mr_term2'],
                 $data['assessment_questions_mr_term2'], $data['awareness_level_term2'], $data['sensitivity_level_term2'],
                 $data['creativity_level_term2'], $data['teacher_feedback_mr_term2'], $data['self_assessment_term2'],
-                $data['peer_assessment_term2'], $data['parent_observation_mr_term2'],
+                $data['peer_assessment_term2'], $data['parent_observation_mr_term2'], $data['competency_activities_term2'],
                 $data['self_emoji'], $data['peer_emoji'], $data['self_emoji_term2'], $data['peer_emoji_term2'],
                 $existing['id']
             ]);
         } else {
-            $stmt = $db->prepare("INSERT INTO hpc_domain_assessments (hpc_card_id, domain_id, domain_name, domain_name_mr, curricular_goals, competencies, activity_mr, assessment_questions_mr, awareness_level, sensitivity_level, creativity_level, teacher_feedback_mr, self_assessment, peer_assessment, parent_observation_mr, curricular_goals_term2, competencies_term2, activity_mr_term2, assessment_questions_mr_term2, awareness_level_term2, sensitivity_level_term2, creativity_level_term2, teacher_feedback_mr_term2, self_assessment_term2, peer_assessment_term2, parent_observation_mr_term2, self_emoji, peer_emoji, self_emoji_term2, peer_emoji_term2) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            $stmt = $db->prepare("INSERT INTO hpc_domain_assessments (hpc_card_id, domain_id, domain_name, domain_name_mr, curricular_goals, competencies, activity_mr, assessment_questions_mr, awareness_level, sensitivity_level, creativity_level, teacher_feedback_mr, self_assessment, peer_assessment, parent_observation_mr, competency_activities, curricular_goals_term2, competencies_term2, activity_mr_term2, assessment_questions_mr_term2, awareness_level_term2, sensitivity_level_term2, creativity_level_term2, teacher_feedback_mr_term2, self_assessment_term2, peer_assessment_term2, parent_observation_mr_term2, competency_activities_term2, self_emoji, peer_emoji, self_emoji_term2, peer_emoji_term2) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             $stmt->execute([
                 $data['hpc_card_id'], $data['domain_id'], $data['domain_name'], $data['domain_name_mr'],
                 $data['curricular_goals'], $data['competencies'], $data['activity_mr'],
                 $data['assessment_questions_mr'], $data['awareness_level'], $data['sensitivity_level'],
                 $data['creativity_level'], $data['teacher_feedback_mr'], $data['self_assessment'],
-                $data['peer_assessment'], $data['parent_observation_mr'],
+                $data['peer_assessment'], $data['parent_observation_mr'], $data['competency_activities'],
                 $data['curricular_goals_term2'], $data['competencies_term2'], $data['activity_mr_term2'],
                 $data['assessment_questions_mr_term2'], $data['awareness_level_term2'], $data['sensitivity_level_term2'],
                 $data['creativity_level_term2'], $data['teacher_feedback_mr_term2'], $data['self_assessment_term2'],
-                $data['peer_assessment_term2'], $data['parent_observation_mr_term2'],
+                $data['peer_assessment_term2'], $data['parent_observation_mr_term2'], $data['competency_activities_term2'],
                 $data['self_emoji'], $data['peer_emoji'], $data['self_emoji_term2'], $data['peer_emoji_term2']
             ]);
         }
@@ -429,21 +448,37 @@ require_once __DIR__ . '/../includes/header.php';
                                         </div>
                                     </div>
 
-                                    <!-- Competencies with full text descriptions -->
+                                    <!-- Competencies with full text descriptions + per-competency activity dropdowns -->
                                     <div class="mb-4">
                                         <h6 class="text-primary"><i class="bi bi-check2-all"></i> क्षमता (Competencies) - एक किंवा अधिक निवडा:</h6>
-                                        <div class="row g-2">
-                                            <?php 
-                                            $comp_descs = $competency_descriptions[$domain_id] ?? [];
-                                            foreach ($comp_descs as $comp_code => $comp_desc): ?>
-                                            <div class="col-md-12">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="domain_<?= $domain_id ?>_competencies[]" value="<?= $comp_code ?>" <?= in_array($comp_code, $existing_comps ?? []) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label"><strong><?= $comp_code ?>-</strong> "<?= $comp_desc ?>"</label>
-                                                </div>
+                                        <p class="text-muted small mb-2">क्षमता निवडल्यावर त्यासाठी मूल्यांकनासाठी कृती/उपक्रम ड्रॉपडाउन दिसेल</p>
+                                        <?php 
+                                        $comp_descs = $competency_descriptions[$domain_id] ?? [];
+                                        $existing_comp_activities = !empty($existing['competency_activities']) ? json_decode($existing['competency_activities'], true) : [];
+                                        foreach ($comp_descs as $comp_code => $comp_desc): 
+                                            $is_checked = in_array($comp_code, $existing_comps ?? []);
+                                        ?>
+                                        <div class="mb-2 competency-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input competency-checkbox" type="checkbox" name="domain_<?= $domain_id ?>_competencies[]" value="<?= $comp_code ?>" id="comp_<?= $domain_id ?>_<?= $comp_code ?>" data-comp-code="<?= $comp_code ?>" <?= $is_checked ? 'checked' : '' ?>>
+                                                <label class="form-check-label" for="comp_<?= $domain_id ?>_<?= $comp_code ?>"><strong><?= $comp_code ?>-</strong> "<?= $comp_desc ?>"</label>
                                             </div>
-                                            <?php endforeach; ?>
+                                            <!-- Per-competency activity dropdown (मूल्यांकनासाठी कृती/उपक्रम) -->
+                                            <div class="comp-activity-dropdown ms-4 mt-1 mb-2" id="comp_activity_<?= $domain_id ?>_<?= $comp_code ?>" style="<?= $is_checked ? '' : 'display:none;' ?>">
+                                                <?php if (isset($competency_activities[$comp_code])): ?>
+                                                <label class="form-label text-muted small">📋 मूल्यांकनासाठी कृती/उपक्रम निवडा (<?= $comp_code ?>):</label>
+                                                <select class="form-select form-select-sm comp-activity-select" name="domain_<?= $domain_id ?>_comp_activity_<?= $comp_code ?>">
+                                                    <option value="">-- कृती/उपक्रम निवडा --</option>
+                                                    <?php foreach ($competency_activities[$comp_code] as $idx => $activity): ?>
+                                                        <option value="<?= htmlspecialchars($activity, ENT_QUOTES) ?>" <?= (($existing_comp_activities[$comp_code] ?? '') === $activity) ? 'selected' : '' ?>>
+                                                            <?= (($existing_comp_activities[$comp_code] ?? '') === $activity) ? '✅ ' : '' ?>📌 <?= $idx + 1 ?>. <?= mb_substr($activity, 0, 100) ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                <?php endif; ?>
+                                            </div>
                                         </div>
+                                        <?php endforeach; ?>
                                     </div>
 
                                     <!-- Activity -->
@@ -606,21 +641,37 @@ require_once __DIR__ . '/../includes/header.php';
                                         </div>
                                     </div>
 
-                                    <!-- Term 2: Competencies with full text descriptions -->
+                                    <!-- Term 2: Competencies with full text descriptions + per-competency activity dropdowns -->
                                     <div class="mb-4">
                                         <h6 class="text-success"><i class="bi bi-check2-all"></i> क्षमता - सत्र 2 (Competencies - Term 2):</h6>
-                                        <div class="row g-2">
-                                            <?php 
-                                            $comp_descs_t2 = $competency_descriptions[$domain_id] ?? [];
-                                            foreach ($comp_descs_t2 as $comp_code_t2 => $comp_desc_t2): ?>
-                                            <div class="col-md-12">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="domain_<?= $domain_id ?>_competencies_term2[]" value="<?= $comp_code_t2 ?>" <?= in_array($comp_code_t2, $existing_comps_t2 ?? []) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label"><strong><?= $comp_code_t2 ?>-</strong> "<?= $comp_desc_t2 ?>"</label>
-                                                </div>
+                                        <p class="text-muted small mb-2">क्षमता निवडल्यावर त्यासाठी मूल्यांकनासाठी कृती/उपक्रम ड्रॉपडाउन दिसेल</p>
+                                        <?php 
+                                        $comp_descs_t2 = $competency_descriptions[$domain_id] ?? [];
+                                        $existing_comp_activities_t2 = !empty($existing['competency_activities_term2']) ? json_decode($existing['competency_activities_term2'], true) : [];
+                                        foreach ($comp_descs_t2 as $comp_code_t2 => $comp_desc_t2): 
+                                            $is_checked_t2 = in_array($comp_code_t2, $existing_comps_t2 ?? []);
+                                        ?>
+                                        <div class="mb-2 competency-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input competency-checkbox" type="checkbox" name="domain_<?= $domain_id ?>_competencies_term2[]" value="<?= $comp_code_t2 ?>" id="comp_t2_<?= $domain_id ?>_<?= $comp_code_t2 ?>" data-comp-code="<?= $comp_code_t2 ?>" data-term="2" <?= $is_checked_t2 ? 'checked' : '' ?>>
+                                                <label class="form-check-label" for="comp_t2_<?= $domain_id ?>_<?= $comp_code_t2 ?>"><strong><?= $comp_code_t2 ?>-</strong> "<?= $comp_desc_t2 ?>"</label>
                                             </div>
-                                            <?php endforeach; ?>
+                                            <!-- Per-competency activity dropdown Term 2 -->
+                                            <div class="comp-activity-dropdown ms-4 mt-1 mb-2" id="comp_activity_t2_<?= $domain_id ?>_<?= $comp_code_t2 ?>" style="<?= $is_checked_t2 ? '' : 'display:none;' ?>">
+                                                <?php if (isset($competency_activities[$comp_code_t2])): ?>
+                                                <label class="form-label text-muted small">📋 मूल्यांकनासाठी कृती/उपक्रम निवडा - सत्र 2 (<?= $comp_code_t2 ?>):</label>
+                                                <select class="form-select form-select-sm comp-activity-select" name="domain_<?= $domain_id ?>_comp_activity_t2_<?= $comp_code_t2 ?>">
+                                                    <option value="">-- कृती/उपक्रम निवडा --</option>
+                                                    <?php foreach ($competency_activities[$comp_code_t2] as $idx => $activity_t2): ?>
+                                                        <option value="<?= htmlspecialchars($activity_t2, ENT_QUOTES) ?>" <?= (($existing_comp_activities_t2[$comp_code_t2] ?? '') === $activity_t2) ? 'selected' : '' ?>>
+                                                            <?= (($existing_comp_activities_t2[$comp_code_t2] ?? '') === $activity_t2) ? '✅ ' : '' ?>📌 <?= $idx + 1 ?>. <?= mb_substr($activity_t2, 0, 100) ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                <?php endif; ?>
+                                            </div>
                                         </div>
+                                        <?php endforeach; ?>
                                     </div>
 
                                     <!-- Term 2: Activity -->
@@ -763,7 +814,19 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="card-header bg-primary text-white"><i class="bi bi-pen"></i> शिक्षकांचा अंतिम सर्वकष वार्षिक अभिप्राय (Final Annual Teacher's Feedback)</div>
                 <div class="card-body">
                     <p class="text-muted">शैक्षणिक वर्षाच्या शेवटी विद्यार्थ्यांच्या समग्र विकासाबद्दल वर्णनात्मक अभिप्राय लिहा:</p>
-                    <textarea class="form-control" name="final_annual_feedback" rows="8" placeholder="विद्यार्थ्याचा समग्र वार्षिक अभिप्राय येथे लिहा..."><?= sanitize($hpc_card['final_annual_feedback'] ?? '') ?></textarea>
+                    <div class="mb-2">
+                        <label class="form-label text-muted small">📋 तयार नमुना अभिप्राय निवडा:</label>
+                        <select class="form-select form-select-sm demo-dropdown" data-target="final_annual_feedback_textarea">
+                            <option value="">-- नमुना अभिप्राय निवडा (Demo Feedback) --</option>
+                            <?php if (isset($demo_final_annual_feedback)): ?>
+                                <?php foreach ($demo_final_annual_feedback as $idx => $fb): ?>
+                                    <option value="<?= htmlspecialchars($fb, ENT_QUOTES) ?>">📌 नमुना <?= $idx + 1 ?>: <?= mb_substr($fb, 0, 90) ?>...</option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    <textarea class="form-control" name="final_annual_feedback" id="final_annual_feedback_textarea" rows="8" placeholder="विद्यार्थ्याचा समग्र वार्षिक अभिप्राय येथे लिहा... किंवा वरील ड्रॉपडाउनमधून नमुना निवडा"><?= sanitize($hpc_card['final_annual_feedback'] ?? '') ?></textarea>
+                    <small class="text-muted">💡 ड्रॉपडाउनमधून निवडा आणि आवश्यकतेनुसार बदल करा</small>
                 </div>
             </div>
         </div>
@@ -863,6 +926,25 @@ document.querySelectorAll('.emoji-radio-label').forEach(function(label) {
         this.style.borderColor = '#4CAF50';
         this.style.background = '#E8F5E9';
         this.querySelector('.emoji-radio').checked = true;
+    });
+});
+
+// Competency checkbox → show/hide activity dropdown
+document.querySelectorAll('.competency-checkbox').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+        var compCode = this.getAttribute('data-comp-code');
+        var term = this.getAttribute('data-term');
+        var prefix = term === '2' ? 'comp_activity_t2_' : 'comp_activity_';
+        // Find the closest .competency-item parent and its dropdown
+        var item = this.closest('.competency-item');
+        var dropdown = item ? item.querySelector('.comp-activity-dropdown') : null;
+        if (dropdown) {
+            dropdown.style.display = this.checked ? '' : 'none';
+            if (!this.checked) {
+                var sel = dropdown.querySelector('select');
+                if (sel) sel.selectedIndex = 0;
+            }
+        }
     });
 });
 
