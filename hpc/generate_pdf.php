@@ -333,8 +333,8 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
                 <div style="font-weight:600;color:#E65100;margin-bottom:5px;">📋 अभ्यासक्रमाची ध्येये:</div>
                 <?php foreach ($dn['goals'] as $code => $goal): 
                     // Match both CG-1 and CG1 formats (create.php uses CG1, generate uses CG-1)
-                    $code_nohyphen = str_replace('-', '', $code);
-                    $is_selected = in_array($code, $goals ?: []) || in_array($code_nohyphen, $goals ?: []);
+                    $code_normalized = str_replace(['-', '*'], '', $code);
+                    $is_selected = in_array($code, $goals ?: []) || in_array($code_normalized, $goals ?: []);
                 ?>
                     <div class="cg-item"><b><?= $code ?>:</b> <?= $is_selected ? '☑️' : '☐' ?> <?= $goal ?></div>
                 <?php endforeach; ?>
