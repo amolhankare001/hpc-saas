@@ -271,73 +271,180 @@ th{background:#E3F2FD;font-weight:600;text-align:center;}
 
 <!-- PAGE 3: भाग अ (२) - मी व माझा परिसर -->
 <div class="page">
-<div style="background:linear-gradient(135deg,#D84315,#FF8F00);color:white;text-align:center;padding:4px;font-size:11px;font-weight:600;border-radius:15px;margin-bottom:2px;">भाग – अ (२)</div>
-<div style="background:linear-gradient(135deg,#BF360C,#E65100);color:white;text-align:center;padding:6px 12px;font-size:16px;font-weight:700;border-radius:20px;margin-bottom:8px;">&#x1F31F; मी व माझा परिसर &#x1F31F;</div>
-<div style="display:flex;gap:12px;margin:6px 0;">
-<div style="text-align:center;flex:0 0 100px;">
-<div style="border:3px solid #4CAF50;border-radius:8px;padding:3px;background:#E8F5E9;">
-<div style="font-weight:600;font-size:9px;color:#2E7D32;margin-bottom:2px;">माझा फोटो</div>
+<div style="background:linear-gradient(135deg,#D84315,#FF8F00);color:white;text-align:center;padding:5px 10px;font-size:12px;font-weight:700;border-radius:15px 15px 0 0;margin-bottom:0;border:2px solid #BF360C;">भाग – अ (२)</div>
+<div style="background:linear-gradient(135deg,#BF360C,#E65100);color:white;text-align:center;padding:8px 14px;font-size:18px;font-weight:700;border-radius:0 0 20px 20px;margin-bottom:6px;border:2px solid #BF360C;border-top:0;">मी व माझा परिसर</div>
+
+<!-- Row 1: Photo + Name/Age/Birthday + Address -->
+<div style="display:flex;gap:8px;margin:4px 0;position:relative;">
+<!-- Decorative Stars -->
+<span style="position:absolute;top:-2px;left:30px;font-size:14px;color:#FFD600;">&#x2B50;</span>
+<span style="position:absolute;top:2px;left:80px;font-size:10px;color:#8BC34A;">&#x2B50;</span>
+<span style="position:absolute;top:-4px;right:15px;font-size:12px;color:#FF9800;">&#x2B50;</span>
+
+<!-- Photo Frame -->
+<div style="text-align:center;flex:0 0 105px;">
+<div style="border:3px solid #4CAF50;border-radius:12px;padding:4px;background:#E8F5E9;position:relative;">
+<div style="font-weight:700;font-size:10px;color:#2E7D32;margin-bottom:2px;">&#x2B50; माझा फोटो &#x2B50;</div>
 <?php if (!empty($data['photo']) && file_exists(__DIR__ . '/../' . $data['photo'])): ?>
-<img src="<?= APP_URL . '/' . $data['photo'] ?>" style="width:85px;height:100px;object-fit:cover;border-radius:6px;">
+<img src="<?= APP_URL . '/' . $data['photo'] ?>" style="width:90px;height:105px;object-fit:cover;border-radius:8px;">
 <?php else: ?>
-<div style="width:85px;height:100px;background:#C8E6C9;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:30px;margin:0 auto;">&#x1F4F7;</div>
+<div style="width:90px;height:105px;background:#C8E6C9;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:35px;margin:0 auto;">&#x1F4F7;</div>
 <?php endif; ?>
 </div>
 </div>
+
+<!-- Name/Age/Birthday block -->
 <div style="flex:1;">
-<div style="background:#E3F2FD;border:2px solid #42A5F5;border-radius:8px;padding:6px;">
-<div style="font-size:10px;margin:2px 0;"><strong>माझे नाव:</strong> <?= sanitize($data['name_mr'] ?: $data['name']) ?></div>
-<div style="font-size:10px;margin:2px 0;"><strong>माझे वय:</strong> <?= !empty($data['date_of_birth']) ? (new DateTime($data['date_of_birth']))->diff(new DateTime())->y . ' वर्षे' : '-' ?></div>
-<div style="font-size:10px;margin:2px 0;"><strong>वाढदिवस:</strong> <?= !empty($data['date_of_birth']) ? date('d/m/Y', strtotime($data['date_of_birth'])) : '-' ?></div>
-<div style="font-size:10px;margin:2px 0;"><strong>पत्ता:</strong> _________________________</div>
+<div style="display:flex;gap:6px;align-items:stretch;">
+<div style="flex:1;">
+<div style="font-size:11px;margin:3px 0;"><strong>माझे</strong></div>
+<div style="font-size:11px;margin:2px 0;"><strong>वय</strong> <span style="border-bottom:1px solid #333;padding:0 10px;"><?= !empty($data['date_of_birth']) ? (new DateTime($data['date_of_birth']))->diff(new DateTime())->y : '___' ?></span> <strong>वर्षे</strong></div>
+<div style="font-size:11px;margin:2px 0;"><strong>आहे.</strong></div>
+</div>
+<!-- Birthday Bubble -->
+<div style="background:linear-gradient(135deg,#7B1FA2,#9C27B0);color:white;border-radius:50%;width:80px;height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;flex:0 0 80px;">
+<div style="font-size:9px;font-weight:600;">माझा</div>
+<div style="font-size:9px;font-weight:700;">वाढदिवस</div>
+<div style="font-size:8px;border-bottom:1px dotted #fff;padding:0 4px;margin:1px 0;"><?= !empty($data['date_of_birth']) ? date('d/m/Y', strtotime($data['date_of_birth'])) : '...........' ?></div>
+<div style="font-size:8px;">&#x2B50; या दिवशी</div>
+<div style="font-size:8px;">असतो</div>
 </div>
 </div>
+<!-- Address -->
+<div style="margin-top:4px;font-size:10px;"><strong>माझ्या घराचा पत्ता</strong> <span style="font-size:14px;">&#x1F3E0;</span></div>
+<div style="border-bottom:1px dotted #666;margin:2px 0;min-height:12px;font-size:10px;"><?= sanitize($data['address'] ?? '') ?></div>
+<div style="border-bottom:1px dotted #666;margin:2px 0;min-height:12px;"></div>
 </div>
-<div style="border:2px solid #4CAF50;border-radius:8px;padding:6px;margin:5px 0;background:#F1F8E9;">
-<div style="font-size:11px;font-weight:700;color:#2E7D32;margin-bottom:3px;">माझे कुटुंब</div>
-<div style="font-size:10px;margin:1px 0;"><strong>आईचे नाव:</strong> <?= sanitize($data['mother_name'] ?? '_______________') ?></div>
-<div style="font-size:10px;margin:1px 0;"><strong>वडिलांचे नाव:</strong> <?= sanitize($data['father_name'] ?? '_______________') ?></div>
-<div style="font-size:10px;margin:1px 0;"><strong>पालकाचे नाव:</strong> <?= sanitize($data['guardian_name'] ?? '_______________') ?></div>
 </div>
-<div style="border:2px solid #42A5F5;border-radius:8px;padding:6px;margin:5px 0;background:#E3F2FD;">
-<div style="font-size:11px;font-weight:700;color:#1565C0;margin-bottom:2px;">हे माझे मित्र/मैत्रिणी आहेत:</div>
-<?php $friends = array_filter([$data['best_friend1'] ?? '', $data['best_friend2'] ?? '', $data['best_friend3'] ?? '']);
-if (!empty($friends)): foreach ($friends as $f): ?>
-<span style="display:inline-block;background:#BBDEFB;padding:2px 8px;border-radius:10px;margin:2px;font-size:10px;"><?= sanitize($f) ?></span>
-<?php endforeach; else: ?>
-<div style="font-size:10px;">1. __________ 2. __________ 3. __________</div>
+
+<!-- Row 2: Smileys + Family + Friends -->
+<div style="display:flex;gap:8px;margin:4px 0;">
+<!-- Left: Smileys + Family -->
+<div style="flex:1;">
+<!-- Smiley Faces -->
+<div style="display:flex;justify-content:center;gap:8px;margin:3px 0;">
+<span style="font-size:28px;">&#x1F60A;</span>
+<span style="font-size:28px;">&#x1F60D;</span>
+<span style="position:relative;top:-4px;font-size:10px;color:#1565C0;">&#x2B50;</span>
+</div>
+<!-- Family Section -->
+<div style="border:3px solid #4CAF50;border-radius:12px;padding:6px;background:#F1F8E9;">
+<div style="font-size:12px;font-weight:700;color:#2E7D32;margin-bottom:3px;">माझे कुटुंब</div>
+<div style="font-size:10px;margin:2px 0;border-bottom:1px dotted #999;padding-bottom:2px;"><?= sanitize($data['mother_name'] ?? '......................................') ?></div>
+<div style="font-size:10px;margin:2px 0;border-bottom:1px dotted #999;padding-bottom:2px;"><?= sanitize($data['father_name'] ?? '......................................') ?></div>
+<div style="font-size:10px;margin:2px 0;border-bottom:1px dotted #999;padding-bottom:2px;"><?= sanitize($data['guardian_name'] ?? '......................................') ?></div>
+</div>
+</div>
+
+<!-- Right: Friends Box -->
+<div style="flex:1;">
+<div style="border:3px solid #29B6F6;border-radius:12px;padding:8px;background:#E1F5FE;min-height:100px;position:relative;">
+<span style="position:absolute;top:-6px;left:10px;font-size:12px;color:#F44336;">&#x2B50;</span>
+<?php $friends = array_filter([$data['best_friend1'] ?? '', $data['best_friend2'] ?? '', $data['best_friend3'] ?? '']); ?>
+<?php if (!empty($friends)): ?>
+<?php foreach ($friends as $idx => $f): ?>
+<div style="font-size:10px;margin:3px 0;display:flex;align-items:center;gap:4px;">
+<span style="color:#29B6F6;font-size:8px;">&#x25CF;</span>
+<span style="font-size:10px;"><?= sanitize($f) ?></span>
+</div>
+<?php endforeach; ?>
+<?php else: ?>
+<div style="font-size:10px;margin:3px 0;">&#x25CF; .........................................</div>
+<div style="font-size:10px;margin:3px 0;">&#x25CF; .........................................</div>
+<div style="font-size:10px;margin:3px 0;">&#x25CF; .........................................</div>
 <?php endif; ?>
+<div style="position:absolute;bottom:3px;right:6px;background:#FF7043;color:white;padding:2px 8px;border-radius:8px;font-size:8px;font-weight:600;">हे माझे मित्र/मैत्रिणी आहेत.</div>
 </div>
-<div style="border:2px solid #FFB300;border-radius:8px;padding:6px;margin:5px 0;background:#FFF8E1;text-align:center;">
-<span style="font-size:12px;font-weight:700;color:#E65100;">मोठे होऊन मला </span>
-<span style="font-size:14px;font-weight:700;color:#D84315;"><?= !empty($data['aspiration']) ? sanitize($data['aspiration']) : '_____________' ?></span>
-<span style="font-size:12px;font-weight:700;color:#E65100;"> व्हायचे आहे.</span>
 </div>
-<div style="font-size:12px;font-weight:700;text-align:center;color:#E65100;margin:5px 0;">माझा आवडता</div>
-<table style="border:none;">
+</div>
+
+<!-- Row 3: Aspiration -->
+<div style="border:3px solid #9C27B0;border-radius:12px;padding:6px 10px;margin:4px 0;background:#F3E5F5;text-align:center;">
+<span style="font-size:13px;font-weight:700;color:#6A1B9A;">मोठे होऊन मला</span>
+<div style="font-size:16px;font-weight:700;color:#D84315;border-bottom:2px dotted #9C27B0;display:inline-block;padding:0 20px;margin:2px 0;"><?= !empty($data['aspiration']) ? sanitize($data['aspiration']) : '..........................................' ?></div>
+<div style="font-size:13px;font-weight:700;color:#6A1B9A;">व्हायचे आहे.</div>
+</div>
+
+<!-- Row 4: Favourites -->
+<div style="text-align:center;margin:4px 0;">
+<span style="font-size:10px;color:#FFD600;">&#x2B50;</span>
+<span style="font-size:14px;font-weight:700;color:#E65100;">माझा आवडता</span>
+<span style="font-size:10px;color:#FFD600;">&#x2B50;</span>
+</div>
+<table style="border:none;width:100%;">
 <tr style="border:none;">
-<td style="background:#FFEBEE;border:2px solid #EF9A9A;border-radius:6px;text-align:center;width:16%;padding:4px;"><div style="font-size:14px;">&#x1F3A8;</div><strong style="font-size:9px;">रंग</strong><br><span style="color:#C62828;font-weight:600;font-size:10px;"><?= !empty($data['favourite_color']) ? sanitize($data['favourite_color']) : '___' ?></span></td>
-<td style="background:#E8F5E9;border:2px solid #A5D6A7;border-radius:6px;text-align:center;width:16%;padding:4px;"><div style="font-size:14px;">&#x1F33A;</div><strong style="font-size:9px;">फूल</strong><br><span style="color:#2E7D32;font-weight:600;font-size:10px;"><?= !empty($data['favourite_flower']) ? sanitize($data['favourite_flower']) : '___' ?></span></td>
-<td style="background:#E3F2FD;border:2px solid #90CAF9;border-radius:6px;text-align:center;width:16%;padding:4px;"><div style="font-size:14px;">&#x1F43E;</div><strong style="font-size:9px;">प्राणी</strong><br><span style="color:#1565C0;font-weight:600;font-size:10px;"><?= !empty($data['favourite_animal']) ? sanitize($data['favourite_animal']) : '___' ?></span></td>
-<td style="background:#FFF3E0;border:2px solid #FFB74D;border-radius:6px;text-align:center;width:16%;padding:4px;"><div style="font-size:14px;">&#x1F34E;</div><strong style="font-size:9px;">अन्नपदार्थ</strong><br><span style="color:#E65100;font-weight:600;font-size:10px;"><?= !empty($data['favourite_food']) ? sanitize($data['favourite_food']) : '___' ?></span></td>
-<td style="background:#F3E5F5;border:2px solid #CE93D8;border-radius:6px;text-align:center;width:16%;padding:4px;"><div style="font-size:14px;">&#x1F3CF;</div><strong style="font-size:9px;">खेळ</strong><br><span style="color:#7B1FA2;font-weight:600;font-size:10px;"><?= !empty($data['favourite_sport']) ? sanitize($data['favourite_sport']) : '___' ?></span></td>
-<td style="background:#E0F7FA;border:2px solid #80DEEA;border-radius:6px;text-align:center;width:16%;padding:4px;"><div style="font-size:14px;">&#x1F4DA;</div><strong style="font-size:9px;">विषय</strong><br><span style="color:#00838F;font-weight:600;font-size:10px;"><?= !empty($data['favourite_subject']) ? sanitize($data['favourite_subject']) : '___' ?></span></td>
+<td style="background:#FFEBEE;border:2px solid #EF9A9A;border-radius:8px;text-align:center;width:16%;padding:4px;">
+<div style="font-size:16px;">&#x1F3A8;</div><strong style="font-size:10px;">रंग</strong>
+<div style="border-bottom:2px solid #C62828;margin:2px auto;width:70%;"></div>
+<span style="color:#C62828;font-weight:700;font-size:11px;"><?= !empty($data['favourite_color']) ? sanitize($data['favourite_color']) : '' ?></span>
+</td>
+<td style="background:#E8F5E9;border:2px solid #A5D6A7;border-radius:8px;text-align:center;width:16%;padding:4px;">
+<div style="font-size:16px;">&#x2744;&#xFE0F;</div><strong style="font-size:10px;">फूल</strong>
+<div style="border-bottom:2px solid #2E7D32;margin:2px auto;width:70%;"></div>
+<span style="color:#2E7D32;font-weight:700;font-size:11px;"><?= !empty($data['favourite_flower']) ? sanitize($data['favourite_flower']) : '' ?></span>
+</td>
+<td style="background:#FFF3E0;border:2px solid #FFB74D;border-radius:8px;text-align:center;width:16%;padding:4px;">
+<div style="font-size:16px;">&#x1F34E;</div><strong style="font-size:10px;">अन्नपदार्थ</strong>
+<div style="border-bottom:2px solid #E65100;margin:2px auto;width:70%;"></div>
+<span style="color:#E65100;font-weight:700;font-size:11px;"><?= !empty($data['favourite_food']) ? sanitize($data['favourite_food']) : '' ?></span>
+</td>
+</tr>
+<tr style="border:none;">
+<td style="background:#E3F2FD;border:2px solid #90CAF9;border-radius:8px;text-align:center;width:16%;padding:4px;">
+<div style="font-size:16px;">&#x1F43E;</div><strong style="font-size:10px;">प्राणी</strong>
+<div style="border-bottom:2px solid #1565C0;margin:2px auto;width:70%;"></div>
+<span style="color:#1565C0;font-weight:700;font-size:11px;"><?= !empty($data['favourite_animal']) ? sanitize($data['favourite_animal']) : '' ?></span>
+</td>
+<td style="background:#F3E5F5;border:2px solid #CE93D8;border-radius:8px;text-align:center;width:16%;padding:4px;">
+<div style="font-size:16px;">&#x26BD;</div><strong style="font-size:10px;">खेळ</strong>
+<div style="border-bottom:2px solid #7B1FA2;margin:2px auto;width:70%;"></div>
+<span style="color:#7B1FA2;font-weight:700;font-size:11px;"><?= !empty($data['favourite_sport']) ? sanitize($data['favourite_sport']) : '' ?></span>
+</td>
+<td style="background:#E0F7FA;border:2px solid #80DEEA;border-radius:8px;text-align:center;width:16%;padding:4px;">
+<div style="font-size:16px;">&#x1F4DA;</div><strong style="font-size:10px;">विषय</strong>
+<div style="border-bottom:2px solid #00838F;margin:2px auto;width:70%;"></div>
+<span style="color:#00838F;font-weight:700;font-size:11px;"><?= !empty($data['favourite_subject']) ? sanitize($data['favourite_subject']) : '' ?></span>
+</td>
 </tr>
 </table>
-<div style="margin:5px 0;padding:5px;border:2px solid #EC407A;border-radius:6px;background:#FCE4EC;">
-<div style="font-size:10px;font-weight:700;color:#C2185B;margin-bottom:2px;">माझी आवड आहे :</div>
-<div style="display:flex;flex-wrap:wrap;gap:2px;">
+
+<!-- Row 5: Interests (माझी आवड आहे) -->
+<div style="margin:5px 0;padding:5px 6px;border:2px solid #EC407A;border-radius:8px;background:#FCE4EC;">
+<div style="font-size:11px;font-weight:700;color:#C2185B;margin-bottom:3px;">माझी आवड आहे. :</div>
+<table style="border:none;width:100%;">
+<tr style="border:none;">
 <?php
-$interest_list = ['वाचन','नृत्य','गायन','वादन','क्रीडा','लेखन','बागकाम','योगाभ्यास','कला','हस्तकला','पाककला','इतर'];
+$interest_list = ['वाचन','नृत्य','गायन','वादन','क्रीडा किंवा खेळ','सर्जनशील लेखन'];
 $student_interests = array_map(function($i) { return $i['name_mr'] ?: $i['name']; }, $interests);
 foreach ($interest_list as $il):
     $checked = false;
     foreach ($student_interests as $si) { if (mb_strpos($si, $il) !== false || mb_strpos($il, $si) !== false) { $checked = true; break; } }
 ?>
-<span style="display:inline-block;border:1px solid <?= $checked ? '#4CAF50' : '#ccc' ?>;padding:1px 5px;border-radius:3px;font-size:8px;background:<?= $checked ? '#C8E6C9' : '#fff' ?>;font-weight:<?= $checked ? '600' : '400' ?>;"><?= $il ?> <?= $checked ? '&#x2611;' : '&#x2610;' ?></span>
+<td style="border:1px solid #E91E63;padding:2px 4px;font-size:9px;background:#FFF;text-align:center;"><?= $il ?> <span style="display:inline-block;width:12px;height:12px;border:1px solid #666;text-align:center;line-height:12px;font-size:8px;"><?= $checked ? '&#x2714;' : '' ?></span></td>
 <?php endforeach; ?>
+</tr>
+<tr style="border:none;">
+<?php
+$interest_list2 = ['बागकाम','योगाभ्यास','कला','हस्तकला','पाककला','इतर'];
+foreach ($interest_list2 as $il):
+    $checked = false;
+    foreach ($student_interests as $si) { if (mb_strpos($si, $il) !== false || mb_strpos($il, $si) !== false) { $checked = true; break; } }
+?>
+<td style="border:1px solid #E91E63;padding:2px 4px;font-size:9px;background:#FFF;text-align:center;"><?= $il ?> <span style="display:inline-block;width:12px;height:12px;border:1px solid #666;text-align:center;line-height:12px;font-size:8px;"><?= $checked ? '&#x2714;' : '' ?></span></td>
+<?php endforeach; ?>
+</tr>
+</table>
 </div>
+
+<!-- Row 6: Family Activities -->
+<div style="margin:3px 0;font-size:10px;">
+<strong>इतर व्यक्तींसोबत (वडील, आई, पालक, भावंड इ.) घरातील खालील कामे नियमित करतो/करते.</strong>
+<div style="border-bottom:1px solid #333;margin:3px 0;min-height:12px;"></div>
+<div style="border-bottom:1px solid #333;margin:3px 0;min-height:12px;"></div>
 </div>
+
+<div style="border-top:2px solid #EC407A;margin:3px 15px;"></div>
+<div style="font-size:8px;color:#666;text-align:left;margin-top:2px;">एकापेक्षा जास्त पर्याय निवडू शकता. पर्यायाच्या चौकटीवर (&#x2714;) अशी खूण करावी.</div>
 <div class="pf">समग्र प्रगती पत्रक (HPC) | <?= sanitize($school['name_mr'] ?: $school['name']) ?> | पान ३</div>
 </div>
 

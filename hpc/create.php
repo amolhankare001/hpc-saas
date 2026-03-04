@@ -948,6 +948,53 @@ document.querySelectorAll('.competency-checkbox').forEach(function(cb) {
     });
 });
 
+// Per-competency activity dropdown → auto-append to Activity textarea
+document.querySelectorAll('.comp-activity-select').forEach(function(sel) {
+    sel.addEventListener('change', function() {
+        if (!this.value) return;
+        // Find which domain this belongs to by traversing up to find the domain accordion body
+        var accordionBody = this.closest('.accordion-body');
+        if (!accordionBody) return;
+        // Determine if this is Term 1 or Term 2 by checking the select name
+        var selectName = this.getAttribute('name') || '';
+        var isTerm2 = selectName.indexOf('_comp_activity_t2_') !== -1;
+        // Find the Activity textarea in the same accordion body
+        var textareas = accordionBody.querySelectorAll('textarea');
+        var targetTextarea = null;
+        for (var i = 0; i < textareas.length; i++) {
+            var tName = textareas[i].getAttribute('name') || '';
+            if (isTerm2 && tName.indexOf('_activity_term2') !== -1) {
+                targetTextarea = textareas[i];
+                break;
+            } else if (!isTerm2 && tName.indexOf('_activity') !== -1 && tName.indexOf('_activity_term2') === -1) {
+                targetTextarea = textareas[i];
+                break;
+            }
+        }
+        if (targetTextarea) {
+            // Get the competency code from the dropdown label
+            var compCode = '';
+            var label = this.closest('.comp-activity-dropdown');
+            if (label) {
+                var labelText = label.querySelector('label');
+                if (labelText) {
+                    var match = labelText.textContent.match(/\(([^)]+)\)/);
+                    if (match) compCode = match[1];
+                }
+            }
+            var prefix = compCode ? compCode + ': ' : '';
+            if (targetTextarea.value.trim()) {
+                targetTextarea.value = targetTextarea.value.trim() + '\n' + prefix + this.value;
+            } else {
+                targetTextarea.value = prefix + this.value;
+            }
+            // Flash effect
+            targetTextarea.style.backgroundColor = '#d4edda';
+            setTimeout(function() { targetTextarea.style.backgroundColor = ''; }, 1000);
+        }
+    });
+});
+
 // Demo dropdown → textarea copy functionality
 document.querySelectorAll('.demo-dropdown').forEach(function(dropdown) {
     dropdown.addEventListener('change', function() {
