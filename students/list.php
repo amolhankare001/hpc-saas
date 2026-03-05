@@ -6,6 +6,11 @@ requireLogin();
 $db = getDB();
 $school_id = $_SESSION['school_id'];
 
+// CSRF token generation
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $search = trim($_GET['search'] ?? '');
 $page = max(1, intval($_GET['page'] ?? 1));
 $per_page = 20;
@@ -116,6 +121,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     <a href="<?= APP_URL ?>/students/edit.php?id=<?= $s['id'] ?>" class="btn btn-outline-primary" title="संपादित करा"><i class="bi bi-pencil"></i></a>
                                     <a href="<?= APP_URL ?>/hpc/create.php?student_id=<?= $s['id'] ?>" class="btn btn-outline-success" title="HPC तयार करा"><i class="bi bi-card-checklist"></i></a>
                                     <form method="POST" action="<?= APP_URL ?>/students/delete.php" class="d-inline" onsubmit="return confirmDelete()">
+                                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                         <input type="hidden" name="id" value="<?= $s['id'] ?>">
                                         <button type="submit" class="btn btn-outline-danger btn-sm" title="हटवा"><i class="bi bi-trash"></i></button>
                                     </form>
