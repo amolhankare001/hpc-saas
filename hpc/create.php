@@ -441,7 +441,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                         <div class="d-flex flex-wrap gap-2 mb-3">
                             <?php foreach ($domains as $did => $dom): ?>
-                            <button type="button" class="btn btn-sm btn-outline-primary domain-progress-btn" data-domain="<?= $did ?>" onclick="document.getElementById('domain<?= $did ?>').classList.add('show');document.querySelector('[data-bs-target=\"#domain<?= $did ?>\"]').classList.remove('collapsed');">
+                            <button type="button" class="btn btn-sm btn-outline-primary domain-progress-btn" data-domain="<?= $did ?>" onclick="var el=document.getElementById('domain<?= $did ?>');el.classList.add('show');document.querySelector('[data-bs-target=&quot;#domain<?= $did ?>&quot;]').classList.remove('collapsed');setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'start'});},200);">
                                 <span class="domain-icon"><?= ['1'=>'🏃','2'=>'💗','3'=>'🧠','4'=>'📖','5'=>'🎨','6'=>'📚'][$did] ?? '📋' ?></span>
                                 <?= mb_substr($dom['name_mr'], 0, 10) ?>...
                                 <span class="badge bg-secondary ms-1 domain-pct" id="domPct<?= $did ?>">0%</span>
