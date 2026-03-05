@@ -281,12 +281,12 @@ require_once __DIR__ . '/../includes/header.php';
                 <p><?= nl2br(sanitize($a['assessment_questions_mr'] ?? '-')) ?></p>
             </div>
 
-            <!-- Rubric Assessment - Term 1 -->
+            <!-- Rubric Assessment - Term 1 (4-level system) -->
             <div class="mb-3">
                 <h6 class="text-primary">मूल्यांकन रुब्रिक:</h6>
                 <table class="table table-bordered text-center">
                     <thead>
-                        <tr><th>क्षमता</th><th>प्रारंभिक</th><th>प्रवीण</th><th>प्रगत</th></tr>
+                        <tr><th>क्षमता</th><th style="background:#fff3cd">🌱 पैलू</th><th style="background:#d1ecf1">🌊 प्रवाह</th><th style="background:#d4edda">🏔 पर्वत</th><th style="background:#cce5ff">🌌 आकाश</th></tr>
                     </thead>
                     <tbody>
                         <?php foreach (['awareness' => 'जागरूकता', 'sensitivity' => 'संवेदनशीलता', 'creativity' => 'सर्जनशीलता'] as $key => $label):
@@ -294,9 +294,10 @@ require_once __DIR__ . '/../includes/header.php';
                         ?>
                         <tr>
                             <td class="fw-bold"><?= $label ?></td>
-                            <td class="<?= $val === 'प्रारंभिक' ? 'bg-warning' : '' ?>"><?= $val === 'प्रारंभिक' ? '✓' : '' ?></td>
-                            <td class="<?= $val === 'प्रवीण' ? 'bg-info' : '' ?>"><?= $val === 'प्रवीण' ? '✓' : '' ?></td>
-                            <td class="<?= $val === 'प्रगत' ? 'bg-success text-white' : '' ?>"><?= $val === 'प्रगत' ? '✓' : '' ?></td>
+                            <td class="<?= in_array($val, ['pailu','प्रारंभिक']) ? 'bg-warning' : '' ?>"><?= in_array($val, ['pailu','प्रारंभिक']) ? '✓' : '' ?></td>
+                            <td class="<?= in_array($val, ['pravah']) ? 'bg-info' : '' ?>"><?= in_array($val, ['pravah']) ? '✓' : '' ?></td>
+                            <td class="<?= in_array($val, ['parvat','प्रवीण']) ? 'bg-success text-white' : '' ?>"><?= in_array($val, ['parvat','प्रवीण']) ? '✓' : '' ?></td>
+                            <td class="<?= in_array($val, ['akash','प्रगत']) ? 'bg-primary text-white' : '' ?>"><?= in_array($val, ['akash','प्रगत']) ? '✓' : '' ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -369,12 +370,12 @@ require_once __DIR__ . '/../includes/header.php';
                 <p><?= nl2br(sanitize($a['assessment_questions_mr_term2'] ?? '-')) ?></p>
             </div>
 
-            <!-- Rubric Assessment - Term 2 -->
+            <!-- Rubric Assessment - Term 2 (4-level system) -->
             <div class="mb-3">
                 <h6 class="text-success">मूल्यांकन रुब्रिक - सत्र 2:</h6>
                 <table class="table table-bordered text-center">
                     <thead>
-                        <tr><th>क्षमता</th><th>प्रारंभिक</th><th>प्रवीण</th><th>प्रगत</th></tr>
+                        <tr><th>क्षमता</th><th style="background:#fff3cd">🌱 पैलू</th><th style="background:#d1ecf1">🌊 प्रवाह</th><th style="background:#d4edda">🏔 पर्वत</th><th style="background:#cce5ff">🌌 आकाश</th></tr>
                     </thead>
                     <tbody>
                         <?php foreach (['awareness' => 'जागरूकता', 'sensitivity' => 'संवेदनशीलता', 'creativity' => 'सर्जनशीलता'] as $key => $label):
@@ -382,9 +383,10 @@ require_once __DIR__ . '/../includes/header.php';
                         ?>
                         <tr>
                             <td class="fw-bold"><?= $label ?></td>
-                            <td class="<?= $val_t2 === 'प्रारंभिक' ? 'bg-warning' : '' ?>"><?= $val_t2 === 'प्रारंभिक' ? '✓' : '' ?></td>
-                            <td class="<?= $val_t2 === 'प्रवीण' ? 'bg-info' : '' ?>"><?= $val_t2 === 'प्रवीण' ? '✓' : '' ?></td>
-                            <td class="<?= $val_t2 === 'प्रगत' ? 'bg-success text-white' : '' ?>"><?= $val_t2 === 'प्रगत' ? '✓' : '' ?></td>
+                            <td class="<?= in_array($val_t2, ['pailu','प्रारंभिक']) ? 'bg-warning' : '' ?>"><?= in_array($val_t2, ['pailu','प्रारंभिक']) ? '✓' : '' ?></td>
+                            <td class="<?= in_array($val_t2, ['pravah']) ? 'bg-info' : '' ?>"><?= in_array($val_t2, ['pravah']) ? '✓' : '' ?></td>
+                            <td class="<?= in_array($val_t2, ['parvat','प्रवीण']) ? 'bg-success text-white' : '' ?>"><?= in_array($val_t2, ['parvat','प्रवीण']) ? '✓' : '' ?></td>
+                            <td class="<?= in_array($val_t2, ['akash','प्रगत']) ? 'bg-primary text-white' : '' ?>"><?= in_array($val_t2, ['akash','प्रगत']) ? '✓' : '' ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
