@@ -18,7 +18,7 @@ define('DB_CHARSET', 'utf8mb4');
 // Application Configuration
 define('APP_NAME', 'HPC कार्ड SaaS');
 define('APP_NAME_EN', 'HPC Card SaaS');
-define('APP_URL', 'http://localhost:8080');
+define('APP_URL', (isset($db_creds) ? ($db_creds['app_url'] ?? '') : '') ?: (getenv('APP_URL') ?: 'http://localhost:8080'));
 define('APP_VERSION', '1.0.0');
 define('UPLOAD_DIR', __DIR__ . '/../uploads/');
 
