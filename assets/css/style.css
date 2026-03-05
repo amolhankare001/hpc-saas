@@ -125,22 +125,15 @@ body {
 }
 .domain-card h5 { color: var(--primary); font-weight: 600; }
 
-/* Assessment Rubric */
-.rubric-table th { background: var(--primary); color: white; text-align: center; }
-.rubric-table td { text-align: center; vertical-align: middle; }
-.rubric-level {
-    display: inline-block;
-    padding: 6px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.3s;
-    border: 2px solid transparent;
-    font-size: 0.85rem;
-}
-.rubric-level.beginner { background: #FFECB3; color: #F57F17; }
-.rubric-level.proficient { background: #C8E6C9; color: #2E7D32; }
-.rubric-level.advanced { background: #BBDEFB; color: #1565C0; }
-.rubric-level.selected { border-color: var(--primary); box-shadow: 0 0 8px rgba(230,81,0,0.3); transform: scale(1.05); }
+/* Assessment Rubric - 4 Level System */
+.rubric-table th { text-align: center; font-size: 0.85rem; }
+.rubric-table td { vertical-align: top; }
+.rubric-radio { accent-color: var(--primary); width: 16px; height: 16px; flex-shrink: 0; }
+.rubric-radio:checked + small { font-weight: 600; color: var(--text-dark); }
+.rubric-table label:has(input:checked) { background: rgba(230,81,0,0.08); border-radius: 6px; padding: 4px; }
+/* Fallback for browsers without :has */
+.rubric-table td { transition: background 0.2s; }
+.rubric-table input[type="radio"]:checked { box-shadow: 0 0 0 3px rgba(230,81,0,0.2); }
 
 /* Attendance Table */
 .attendance-table th { background: var(--primary); color: white; text-align: center; font-size: 0.85rem; }

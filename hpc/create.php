@@ -551,37 +551,44 @@ require_once __DIR__ . '/../includes/header.php';
                                         <small class="text-muted">💡 ड्रॉपडाउनमधून निवडा आणि आवश्यकतेनुसार बदल करा</small>
                                     </div>
 
-                                    <!-- Assessment Rubric -->
+                                    <!-- Assessment Rubric - 4 Level Dropdown System -->
                                     <div class="mb-4">
                                         <h6 class="text-primary"><i class="bi bi-star"></i> मूल्यांकन रुब्रिक (Assessment Rubric)</h6>
-                                        <p class="text-muted small">प्रत्येक क्षमतेसाठी योग्य पातळी निवडा:</p>
+                                        <p class="text-muted small">प्रत्येक क्षमतेसाठी योग्य पातळी ड्रॉपडाउनमधून निवडा:</p>
+                                        <div class="table-responsive">
                                         <table class="table table-bordered rubric-table">
-                                            <thead>
+                                            <thead class="table-light">
                                                 <tr>
-                                                    <th style="width:25%">क्षमता</th>
-                                                    <th style="width:25%">प्रारंभिक (Beginner)<br><small>प्रवाह/Stream</small></th>
-                                                    <th style="width:25%">प्रवीण (Proficient)<br><small>पर्वत/Mountain</small></th>
-                                                    <th style="width:25%">प्रगत (Advanced)<br><small>आकाश/Sky</small></th>
+                                                    <th style="width:16%">क्षमता</th>
+                                                    <th style="width:21%;background:#fff3cd;">🌱 पैलू<br><small>(Seedling)</small></th>
+                                                    <th style="width:21%;background:#d1ecf1;">🌊 प्रवाह<br><small>(Stream)</small></th>
+                                                    <th style="width:21%;background:#d4edda;">🏔 पर्वत<br><small>(Mountain)</small></th>
+                                                    <th style="width:21%;background:#cce5ff;">🌌 आकाश<br><small>(Sky)</small></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php foreach (['awareness' => 'जागरूकता (Awareness)', 'sensitivity' => 'संवेदनशीलता (Sensitivity)', 'creativity' => 'सर्जनशीलता (Creativity)'] as $key => $label): ?>
+                                                <?php foreach (['awareness' => 'जागरूकता', 'sensitivity' => 'संवेदनशीलता', 'creativity' => 'सर्जनशीलता'] as $key => $label): ?>
                                                 <tr>
-                                                    <td class="fw-bold"><?= $label ?></td>
-                                                    <?php foreach (['प्रारंभिक' => 'beginner', 'प्रवीण' => 'proficient', 'प्रगत' => 'advanced'] as $val => $cls): ?>
-                                                    <td>
-                                                        <div class="rubric-group">
-                                                            <label class="rubric-level <?= $cls ?> <?= ($existing[$key . '_level'] ?? '') === $val ? 'selected' : '' ?>" data-value="<?= $val ?>">
-                                                                <input type="radio" name="domain_<?= $domain_id ?>_<?= $key ?>" value="<?= $val ?>" class="d-none" <?= ($existing[$key . '_level'] ?? '') === $val ? 'checked' : '' ?>>
-                                                                <?= $val ?>
-                                                            </label>
-                                                        </div>
+                                                    <td class="fw-bold align-middle"><?= $label ?></td>
+                                                    <?php
+                                                    $rubric_levels = ['pailu' => 'पैलू', 'pravah' => 'प्रवाह', 'parvat' => 'पर्वत', 'akash' => 'आकाश'];
+                                                    $level_colors = ['pailu' => '#fff3cd', 'pravah' => '#d1ecf1', 'parvat' => '#d4edda', 'akash' => '#cce5ff'];
+                                                    foreach ($rubric_levels as $level_key => $level_label):
+                                                        $desc = $demo_rubric_descriptions[$domain_id][$key][$level_key] ?? '';
+                                                        $is_selected = ($existing[$key . '_level'] ?? '') === $level_key;
+                                                    ?>
+                                                    <td style="background:<?= $level_colors[$level_key] ?>20;vertical-align:top;padding:6px;">
+                                                        <label class="d-flex align-items-start gap-1" style="cursor:pointer;">
+                                                            <input type="radio" name="domain_<?= $domain_id ?>_<?= $key ?>" value="<?= $level_key ?>" class="mt-1 rubric-radio" <?= $is_selected ? 'checked' : '' ?>>
+                                                            <small style="font-size:11px;line-height:1.3;"><?= htmlspecialchars($desc) ?></small>
+                                                        </label>
                                                     </td>
                                                     <?php endforeach; ?>
                                                 </tr>
                                                 <?php endforeach; ?>
                                             </tbody>
                                         </table>
+                                        </div>
                                     </div>
 
                                     <!-- Teacher's Feedback -->
@@ -742,36 +749,44 @@ require_once __DIR__ . '/../includes/header.php';
                                         <textarea class="form-control" name="domain_<?= $domain_id ?>_assessment_questions_term2" id="domain_<?= $domain_id ?>_assessment_questions_term2" rows="3" placeholder="सत्र 2 मूल्यांकन प्रश्न लिहा..."><?= sanitize($existing['assessment_questions_mr_term2'] ?? '') ?></textarea>
                                     </div>
 
-                                    <!-- Term 2: Assessment Rubric -->
+                                    <!-- Term 2: Assessment Rubric - 4 Level Dropdown System -->
                                     <div class="mb-4">
                                         <h6 class="text-success"><i class="bi bi-star"></i> मूल्यांकन रुब्रिक - सत्र 2 (Assessment Rubric - Term 2)</h6>
+                                        <p class="text-muted small">प्रत्येक क्षमतेसाठी योग्य पातळी ड्रॉपडाउनमधून निवडा:</p>
+                                        <div class="table-responsive">
                                         <table class="table table-bordered rubric-table">
-                                            <thead>
+                                            <thead class="table-light">
                                                 <tr>
-                                                    <th style="width:25%">क्षमता</th>
-                                                    <th style="width:25%">प्रारंभिक (Beginner)<br><small>प्रवाह/Stream</small></th>
-                                                    <th style="width:25%">प्रवीण (Proficient)<br><small>पर्वत/Mountain</small></th>
-                                                    <th style="width:25%">प्रगत (Advanced)<br><small>आकाश/Sky</small></th>
+                                                    <th style="width:16%">क्षमता</th>
+                                                    <th style="width:21%;background:#fff3cd;">🌱 पैलू<br><small>(Seedling)</small></th>
+                                                    <th style="width:21%;background:#d1ecf1;">🌊 प्रवाह<br><small>(Stream)</small></th>
+                                                    <th style="width:21%;background:#d4edda;">🏔 पर्वत<br><small>(Mountain)</small></th>
+                                                    <th style="width:21%;background:#cce5ff;">🌌 आकाश<br><small>(Sky)</small></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php foreach (['awareness' => 'जागरूकता (Awareness)', 'sensitivity' => 'संवेदनशीलता (Sensitivity)', 'creativity' => 'सर्जनशीलता (Creativity)'] as $key => $label): ?>
+                                                <?php foreach (['awareness' => 'जागरूकता', 'sensitivity' => 'संवेदनशीलता', 'creativity' => 'सर्जनशीलता'] as $key => $label): ?>
                                                 <tr>
-                                                    <td class="fw-bold"><?= $label ?></td>
-                                                    <?php foreach (['प्रारंभिक' => 'beginner', 'प्रवीण' => 'proficient', 'प्रगत' => 'advanced'] as $val => $cls): ?>
-                                                    <td>
-                                                        <div class="rubric-group">
-                                                            <label class="rubric-level <?= $cls ?> <?= ($existing[$key . '_level_term2'] ?? '') === $val ? 'selected' : '' ?>" data-value="<?= $val ?>">
-                                                                <input type="radio" name="domain_<?= $domain_id ?>_<?= $key ?>_term2" value="<?= $val ?>" class="d-none" <?= ($existing[$key . '_level_term2'] ?? '') === $val ? 'checked' : '' ?>>
-                                                                <?= $val ?>
-                                                            </label>
-                                                        </div>
+                                                    <td class="fw-bold align-middle"><?= $label ?></td>
+                                                    <?php
+                                                    $rubric_levels_t2 = ['pailu' => 'पैलू', 'pravah' => 'प्रवाह', 'parvat' => 'पर्वत', 'akash' => 'आकाश'];
+                                                    $level_colors_t2 = ['pailu' => '#fff3cd', 'pravah' => '#d1ecf1', 'parvat' => '#d4edda', 'akash' => '#cce5ff'];
+                                                    foreach ($rubric_levels_t2 as $level_key => $level_label):
+                                                        $desc_t2 = $demo_rubric_descriptions[$domain_id][$key][$level_key] ?? '';
+                                                        $is_selected_t2 = ($existing[$key . '_level_term2'] ?? '') === $level_key;
+                                                    ?>
+                                                    <td style="background:<?= $level_colors_t2[$level_key] ?>20;vertical-align:top;padding:6px;">
+                                                        <label class="d-flex align-items-start gap-1" style="cursor:pointer;">
+                                                            <input type="radio" name="domain_<?= $domain_id ?>_<?= $key ?>_term2" value="<?= $level_key ?>" class="mt-1 rubric-radio" <?= $is_selected_t2 ? 'checked' : '' ?>>
+                                                            <small style="font-size:11px;line-height:1.3;"><?= htmlspecialchars($desc_t2) ?></small>
+                                                        </label>
                                                     </td>
                                                     <?php endforeach; ?>
                                                 </tr>
                                                 <?php endforeach; ?>
                                             </tbody>
                                         </table>
+                                        </div>
                                     </div>
 
                                     <!-- Term 2: Teacher's Feedback -->

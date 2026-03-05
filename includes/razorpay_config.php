@@ -32,13 +32,14 @@ define('RAZORPAY_API_URL', 'https://api.razorpay.com/v1');
  */
 function createRazorpayOrder($amount, $receipt, $notes = []) {
     if (empty(RAZORPAY_KEY_ID) || empty(RAZORPAY_KEY_SECRET)) {
+        error_log('Razorpay: Keys not configured. KEY_ID empty=' . (empty(RAZORPAY_KEY_ID) ? 'yes' : 'no') . ', SECRET empty=' . (empty(RAZORPAY_KEY_SECRET) ? 'yes' : 'no'));
         return false;
     }
     
     $orderData = [
-        'amount' => intval($amount * 100), // Razorpay expects amount in paise
+        'amount' => intval(round($amount * 100)), // Razorpay expects amount in paise
         'currency' => 'INR',
-        'receipt' => $receipt,
+        'receipt' => substr($receipt, 0, 40), // Razorpay receipt max 40 chars
         'notes' => $notes,
     ];
     
@@ -49,15 +50,26 @@ function createRazorpayOrder($amount, $receipt, $notes = []) {
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     curl_setopt($ch, CURLOPT_USERPWD, RAZORPAY_KEY_ID . ':' . RAZORPAY_KEY_SECRET);
     curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
     
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
     curl_close($ch);
     
-    if ($httpCode === 200) {
-        return json_decode($response, true);
+    if ($curlError) {
+        error_log('Razorpay cURL error: ' . $curlError);
+        return false;
     }
     
+    $decoded = json_decode($response, true);
+    
+    if ($httpCode === 200 && isset($decoded['id'])) {
+        return $decoded;
+    }
+    
+    // Log the error for debugging
+    error_log('Razorpay order creation failed. HTTP=' . $httpCode . ' Response=' . $response);
     return false;
 }
 

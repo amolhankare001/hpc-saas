@@ -148,10 +148,10 @@ try {
 
 // Rubric levels (4 levels matching reference)
 $rubric_levels = [
-    ['key'=>'pailu','name'=>'पैलू','emoji'=>'🌾','desc'=>'सुरुवातीचा टप्पा','db_value'=>null],
-    ['key'=>'pravah','name'=>'प्रवाह','emoji'=>'🌊','desc'=>'प्रगतीपथावर','db_value'=>'प्रारंभिक'],
-    ['key'=>'parvat','name'=>'पर्वत','emoji'=>'⛰️','desc'=>'चांगली प्रगती','db_value'=>'प्रवीण'],
-    ['key'=>'aakash','name'=>'आकाश','emoji'=>'✨','desc'=>'उत्कृष्ट कामगिरी','db_value'=>'प्रगत'],
+    ['key'=>'pailu','name'=>'पैलू','emoji'=>'🌱','desc'=>'सुरुवातीचा टप्पा','db_values'=>['pailu']],
+    ['key'=>'pravah','name'=>'प्रवाह','emoji'=>'🌊','desc'=>'प्रगतीपथावर','db_values'=>['pravah','प्रारंभिक']],
+    ['key'=>'parvat','name'=>'पर्वत','emoji'=>'🏔','desc'=>'चांगली प्रगती','db_values'=>['parvat','प्रवीण']],
+    ['key'=>'akash','name'=>'आकाश','emoji'=>'🌌','desc'=>'उत्कृष्ट कामगिरी','db_values'=>['akash','प्रगत']],
 ];
 
 $abilities = [
@@ -497,7 +497,7 @@ foreach ($domain_info as $did => $dn):
 </div>
 <!-- Rubric Term 1 -->
 <?php
-$rubric_desc_keys = ['pailu'=>'beginner','pravah'=>'beginner','parvat'=>'proficient','aakash'=>'advanced'];
+$rubric_desc_keys = ['pailu'=>'pailu','pravah'=>'pravah','parvat'=>'parvat','akash'=>'akash'];
 $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
 ?>
 <div style="font-weight:700;font-size:11px;margin:3px 0 2px;color:#1A237E;">📊 रुब्रिक (निकषसंच) – सत्र पहिले</div>
@@ -514,7 +514,7 @@ $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
 <tr>
     <td class="ac"><?= $ab_info['emoji'] ?><br><?= $ab_info['label'] ?></td>
     <?php foreach ($rubric_levels as $lv):
-        $is_sel = ($lv['db_value'] !== null && $cur === $lv['db_value']);
+        $is_sel = !empty($cur) && in_array($cur, $lv['db_values'] ?? []);
         $rdkey = $rubric_desc_keys[$lv['key']] ?? 'beginner';
         $rdtext = $domain_rubric[$ak][$rdkey] ?? '';
     ?>
@@ -542,7 +542,7 @@ $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
 <tr>
     <td class="ac"><?= $ab_info['emoji'] ?><br><?= $ab_info['label'] ?></td>
     <?php foreach ($rubric_levels as $lv):
-        $is_sel2 = ($lv['db_value'] !== null && $cur2 === $lv['db_value']);
+        $is_sel2 = !empty($cur2) && in_array($cur2, $lv['db_values'] ?? []);
         $rdkey2 = $rubric_desc_keys[$lv['key']] ?? 'beginner';
         $rdtext2 = $domain_rubric[$ak][$rdkey2] ?? '';
     ?>
