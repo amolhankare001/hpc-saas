@@ -454,9 +454,10 @@ foreach ($domain_info as $did => $dn):
 <div style="font-weight:700;font-size:10px;margin-bottom:2px;">क्षमता (Competencies) :</div>
 <?php foreach ($dn['competencies'] as $ccode => $cdesc):
     $comp_sel = in_array($ccode, $saved_comps);
+    if (!$comp_sel) continue; // Only show selected competencies
 ?>
 <div class="ci">
-    <?php if ($comp_sel): ?><span style="color:#D32F2F;font-size:10px;">✳️</span><?php endif; ?>
+    <span style="color:#D32F2F;font-size:10px;">✳️</span>
     <span class="cc"><?= $ccode ?></span>
     <span>"<?= $cdesc ?>"</span>
 </div>
@@ -472,9 +473,10 @@ foreach ($domain_info as $did => $dn):
 <div style="font-weight:700;font-size:10px;margin-bottom:2px;">क्षमता (Competencies) :</div>
 <?php foreach ($dn['competencies'] as $ccode => $cdesc):
     $comp_sel2 = in_array($ccode, $saved_comps_t2);
+    if (!$comp_sel2) continue; // Only show selected competencies
 ?>
 <div class="ci">
-    <?php if ($comp_sel2): ?><span style="color:#D32F2F;font-size:10px;">✳️</span><?php endif; ?>
+    <span style="color:#D32F2F;font-size:10px;">✳️</span>
     <span class="cc"><?= $ccode ?></span>
     <span>"<?= $cdesc ?>"</span>
 </div>
