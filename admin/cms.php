@@ -4,8 +4,17 @@ require_once __DIR__ . '/../config/database.php';
 requireAdmin();
 $db = getDB();
 
+// CSRF token
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['page_slug'])) {
+    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '')) {
+        flash('error', 'Invalid CSRF token');
+        redirect(APP_URL . '/admin/cms.php');
+    }
     $slug = $_POST['page_slug'];
     $title = trim($_POST['page_title'] ?? '');
     $title_mr = trim($_POST['page_title_mr'] ?? '');
@@ -74,6 +83,7 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
             <div class="card-body">
                 <form method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                     <input type="hidden" name="page_slug" value="<?= $editing['page_slug'] ?>">
                     
                     <div class="row mb-3">
