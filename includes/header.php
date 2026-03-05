@@ -84,13 +84,13 @@ $current_school = isLoggedIn() ? getSchool() : null;
     <div class="container mt-3">
         <?php if ($success = flash('success')): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="bi bi-check-circle"></i> <?= $success ?>
+                <i class="bi bi-check-circle"></i> <?= sanitize($success) ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>
         <?php if ($error = flash('error')): ?>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-triangle"></i> <?= $error ?>
+                <i class="bi bi-exclamation-triangle"></i> <?= sanitize($error) ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>

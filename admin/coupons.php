@@ -10,8 +10,16 @@ $db = getDB();
 $errors = [];
 $success = '';
 
+// CSRF token generation
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '')) {
+        $errors[] = 'Invalid CSRF token';
+    } else {
     $action = $_POST['action'] ?? '';
     
     if ($action === 'create') {
@@ -50,6 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $db->prepare("DELETE FROM coupon_codes WHERE id = ?")->execute([$coupon_id]);
         $success = 'कूपन कोड हटवला';
     }
+    } // end CSRF check
 }
 
 // Fetch all coupons
@@ -96,6 +105,7 @@ $coupons = $db->query("SELECT c.*, a.name as creator_name FROM coupon_codes c LE
                 <div class="card-header bg-primary text-white"><i class="bi bi-plus-circle"></i> नवीन कूपन तयार करा</div>
                 <div class="card-body">
                     <form method="POST">
+                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                         <input type="hidden" name="action" value="create">
                         <div class="mb-3">
                             <label class="form-label">कूपन कोड</label>
@@ -166,6 +176,7 @@ $coupons = $db->query("SELECT c.*, a.name as creator_name FROM coupon_codes c LE
                                     </td>
                                     <td>
                                         <form method="POST" class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                             <input type="hidden" name="action" value="toggle">
                                             <input type="hidden" name="coupon_id" value="<?= $c['id'] ?>">
                                             <button type="submit" class="btn btn-sm btn-outline-warning" title="<?= $c['is_active'] ? 'निष्क्रिय करा' : 'सक्रिय करा' ?>">
@@ -173,6 +184,7 @@ $coupons = $db->query("SELECT c.*, a.name as creator_name FROM coupon_codes c LE
                                             </button>
                                         </form>
                                         <form method="POST" class="d-inline" onsubmit="return confirm('खात्री आहे?');">
+                                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="coupon_id" value="<?= $c['id'] ?>">
                                             <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>

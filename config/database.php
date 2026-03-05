@@ -1,9 +1,18 @@
 <?php
-// Database Configuration
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'hpc_saas');
-define('DB_USER', 'hpc_user');
-define('DB_PASS', 'hpc_pass_2024');
+// Database Configuration - load from local file or use defaults
+$local_db_file = __DIR__ . '/db_credentials.local.php';
+if (file_exists($local_db_file)) {
+    $db_creds = require $local_db_file;
+    define('DB_HOST', $db_creds['host'] ?? 'localhost');
+    define('DB_NAME', $db_creds['name'] ?? 'hpc_saas');
+    define('DB_USER', $db_creds['user'] ?? 'hpc_user');
+    define('DB_PASS', $db_creds['pass'] ?? '');
+} else {
+    define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+    define('DB_NAME', getenv('DB_NAME') ?: 'hpc_saas');
+    define('DB_USER', getenv('DB_USER') ?: 'hpc_user');
+    define('DB_PASS', getenv('DB_PASS') ?: '');
+}
 define('DB_CHARSET', 'utf8mb4');
 
 // Application Configuration

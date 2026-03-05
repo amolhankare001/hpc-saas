@@ -8,6 +8,7 @@ uploads/logos/*
 .env
 *.log
 config/razorpay_keys.local.php
+config/db_credentials.local.php
 
 # IDE
 .vscode/
