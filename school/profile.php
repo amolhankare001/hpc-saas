@@ -6,7 +6,16 @@ requireLogin();
 $db = getDB();
 $school = getSchool();
 
+// CSRF token generation
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '')) {
+        flash('error', 'Invalid CSRF token');
+        redirect(APP_URL . '/school/profile.php');
+    }
     $working_days = intval($_POST['working_days'] ?? 0);
     $stmt = $db->prepare("UPDATE schools SET name=?, name_mr=?, address_line1=?, address_line2=?, village=?, taluka=?, district=?, state=?, pin_code=?, udise_code=?, phone=?, working_days=? WHERE id=?");
     $stmt->execute([
@@ -45,6 +54,7 @@ require_once __DIR__ . '/../includes/header.php';
 <h2 class="mb-4"><i class="bi bi-gear"></i> शाळा प्रोफाइल</h2>
 
 <form method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
     <div class="card mb-4">
         <div class="card-header"><i class="bi bi-building"></i> शाळेची माहिती</div>
         <div class="card-body">

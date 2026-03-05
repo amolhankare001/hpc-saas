@@ -6,8 +6,17 @@ requireLogin();
 $db = getDB();
 $school_id = $_SESSION['school_id'];
 
+// CSRF token generation
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Handle add teacher
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '')) {
+        flash('error', 'Invalid CSRF token');
+        redirect(APP_URL . '/teachers/list.php');
+    }
     if ($_POST['action'] === 'add') {
         $stmt = $db->prepare("INSERT INTO teachers (school_id, name, name_mr, teacher_code, email, phone, class_assigned, section) VALUES (?,?,?,?,?,?,?,?)");
         $stmt->execute([
@@ -68,6 +77,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <td><span class="badge bg-info"><?= $t['student_count'] ?></span></td>
                             <td>
                                 <form method="POST" class="d-inline" onsubmit="return confirmDelete()">
+                                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="teacher_id" value="<?= $t['id'] ?>">
                                     <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
@@ -87,6 +97,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="modal-dialog">
         <div class="modal-content">
             <form method="POST">
+                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                 <input type="hidden" name="action" value="add">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title"><i class="bi bi-person-plus"></i> नवीन शिक्षक जोडा</h5>
