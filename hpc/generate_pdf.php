@@ -216,11 +216,11 @@ th{background:#E3F2FD;font-weight:600;text-align:center;}
 .ci{margin:4px 0;font-size:12px;color:#1B5E20;display:flex;align-items:flex-start;gap:6px;line-height:1.5;}
 .cc{color:#D32F2F;font-weight:700;white-space:nowrap;min-width:42px;font-size:13px;}
 .ab{border:1px solid #ddd;border-radius:6px;padding:6px 8px;margin:3px 0;min-height:28px;background:#FAFAFA;font-size:12px;line-height:1.6;}
-.rtbl{width:100%;border-collapse:collapse;margin:4px 0;}
-.rtbl td,.rtbl th{border:1px solid #aaa;padding:5px 6px;text-align:center;vertical-align:top;font-size:11px;}
-.rtbl th{background:#E8EAF6;font-weight:700;font-size:12px;}
-.rtbl .ac{background:#F3E5F5;font-weight:700;font-size:12px;width:90px;vertical-align:middle;}
-.rtbl .lh{font-size:8px;font-weight:700;}
+.rtbl{width:100%;border-collapse:collapse;margin:6px 0;}
+.rtbl td,.rtbl th{border:1px solid #aaa;padding:8px 7px;text-align:center;vertical-align:top;font-size:12px;line-height:1.5;}
+.rtbl th{background:#E8EAF6;font-weight:700;font-size:13px;padding:10px 8px;}
+.rtbl .ac{background:#F3E5F5;font-weight:700;font-size:13px;width:100px;vertical-align:middle;padding:10px 6px;}
+.rtbl .lh{font-size:10px;font-weight:700;}
 .rtbl .sel{background:#C8E6C9 !important;font-weight:700;border:2px solid #4CAF50;}
 .eo{display:inline-block;text-align:center;margin:0 4px;padding:3px 6px;border-radius:8px;border:2px solid transparent;position:relative;}
 .ec{border:3px solid #4CAF50 !important;background:#E8F5E9;}
@@ -603,12 +603,12 @@ foreach ($domain_info as $did => $dn):
 $rubric_desc_keys = ['pailu'=>'pailu','pravah'=>'pravah','parvat'=>'parvat','akash'=>'akash'];
 $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
 ?>
-<div style="font-weight:700;font-size:11px;margin:3px 0 2px;color:#1A237E;">📊 रुब्रिक (निकषसंच) – सत्र पहिले</div>
+<div style="font-weight:700;font-size:14px;margin:6px 0 4px;color:#1A237E;">📊 रुब्रिक (निकषसंच) – सत्र पहिले</div>
 <table class="rtbl">
 <tr>
-    <th style="width:80px;">क्षमता</th>
+    <th style="width:90px;font-size:14px;">क्षमता</th>
     <?php foreach ($rubric_levels as $lv): ?>
-    <th class="lh" style="width:24%;"><?= $lv['emoji'] ?> <?= $lv['name'] ?><br><span style="font-size:7px;font-weight:400;"><?= $lv['desc'] ?></span></th>
+    <th class="lh" style="width:24%;"><?= $lv['emoji'] ?> <?= $lv['name'] ?><br><span style="font-size:9px;font-weight:400;"><?= $lv['desc'] ?></span></th>
     <?php endforeach; ?>
 </tr>
 <?php foreach ($abilities as $ak => $ab_info):
@@ -625,22 +625,22 @@ $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
         $saved_rdtext = $a[$ak.'_desc'] ?? '';
         if ($is_sel && !empty($saved_rdtext)) $rdtext = $saved_rdtext;
     ?>
-    <td class="<?= $is_sel ? 'sel' : '' ?>" style="font-size:7px;line-height:1.2;">
-        <?php if ($is_sel): ?><div style="font-size:13px;">✅</div><?php endif; ?>
-        <div style="font-weight:600;"><?= $lv['name'] ?></div>
-        <?php if ($rdtext): ?><div style="margin-top:1px;color:#555;"><?= mb_substr($rdtext, 0, 80) ?></div><?php endif; ?>
+    <td class="<?= $is_sel ? 'sel' : '' ?>" style="font-size:10px;line-height:1.4;padding:8px 6px;">
+        <?php if ($is_sel): ?><div style="font-size:15px;">✅</div><?php endif; ?>
+        <div style="font-weight:700;font-size:11px;"><?= $lv['name'] ?></div>
+        <?php if ($rdtext): ?><div style="margin-top:2px;color:#555;font-size:10px;"><?= mb_substr($rdtext, 0, 120) ?></div><?php endif; ?>
     </td>
     <?php endforeach; ?>
 </tr>
 <?php endforeach; ?>
 </table>
 <!-- Rubric Term 2 -->
-<div style="font-weight:700;font-size:11px;margin:5px 0 2px;color:#1A237E;">📊 रुब्रिक (निकषसंच) – सत्र दुसरे</div>
+<div style="font-weight:700;font-size:14px;margin:8px 0 4px;color:#1A237E;">📊 रुब्रिक (निकषसंच) – सत्र दुसरे</div>
 <table class="rtbl">
 <tr>
-    <th style="width:80px;">क्षमता</th>
+    <th style="width:90px;font-size:14px;">क्षमता</th>
     <?php foreach ($rubric_levels as $lv): ?>
-    <th class="lh" style="width:24%;"><?= $lv['emoji'] ?> <?= $lv['name'] ?><br><span style="font-size:7px;font-weight:400;"><?= $lv['desc'] ?></span></th>
+    <th class="lh" style="width:24%;"><?= $lv['emoji'] ?> <?= $lv['name'] ?><br><span style="font-size:9px;font-weight:400;"><?= $lv['desc'] ?></span></th>
     <?php endforeach; ?>
 </tr>
 <?php foreach ($abilities as $ak => $ab_info):
@@ -657,17 +657,17 @@ $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
         $saved_rdtext2 = $a[$ak.'_desc_term2'] ?? '';
         if ($is_sel2 && !empty($saved_rdtext2)) $rdtext2 = $saved_rdtext2;
     ?>
-    <td class="<?= $is_sel2 ? 'sel' : '' ?>" style="font-size:7px;line-height:1.2;">
-        <?php if ($is_sel2): ?><div style="font-size:13px;">✅</div><?php endif; ?>
-        <div style="font-weight:600;"><?= $lv['name'] ?></div>
-        <?php if ($rdtext2): ?><div style="margin-top:1px;color:#555;"><?= mb_substr($rdtext2, 0, 80) ?></div><?php endif; ?>
+    <td class="<?= $is_sel2 ? 'sel' : '' ?>" style="font-size:10px;line-height:1.4;padding:8px 6px;">
+        <?php if ($is_sel2): ?><div style="font-size:15px;">✅</div><?php endif; ?>
+        <div style="font-weight:700;font-size:11px;"><?= $lv['name'] ?></div>
+        <?php if ($rdtext2): ?><div style="margin-top:2px;color:#555;font-size:10px;"><?= mb_substr($rdtext2, 0, 120) ?></div><?php endif; ?>
     </td>
     <?php endforeach; ?>
 </tr>
 <?php endforeach; ?>
 </table>
 <!-- Teacher Feedback -->
-<div class="sh-b" style="font-size:10px;padding:3px;margin-top:4px;">👩‍🏫 शिक्षक अभिप्राय (Teacher Feedback)</div>
+<div class="sh-b" style="font-size:13px;padding:6px 10px;margin-top:6px;">👩‍🏫 शिक्षक अभिप्राय (Teacher Feedback)</div>
 <div class="g2">
     <div class="bx"><div class="sh-r">सत्र पहिले</div><div class="ab" style="min-height:28px;"><?= nl2br(sanitize($a['teacher_feedback_mr'] ?? '-')) ?></div></div>
     <div class="bx"><div class="sh-b2">सत्र दुसरे</div><div class="ab" style="min-height:28px;"><?= nl2br(sanitize($a['teacher_feedback_mr_term2'] ?? '-')) ?></div></div>
