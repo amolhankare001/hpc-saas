@@ -789,22 +789,7 @@ foreach ($dsn as $dc => $dn2):
 <?php endforeach; ?>
 </div>
 </div>
-<!-- Credit Framework Summary -->
-<div style="margin-top:5px;">
-<div style="font-weight:700;font-size:11px;color:#1A237E;margin-bottom:3px;">🎖️ क्रेडिट फ्रेमवर्क (Credit Framework):</div>
-<table style="width:100%;border-collapse:collapse;">
-<tr><th style="background:#1A237E;color:#fff;font-size:8px;padding:3px;">क्षेत्र</th><th style="background:#1A237E;color:#fff;font-size:8px;padding:3px;">क्रेडिट</th><th style="background:#1A237E;color:#fff;font-size:8px;padding:3px;">NCF स्तर</th><th style="background:#1A237E;color:#fff;font-size:8px;padding:3px;">गुण (सत्र १)</th><th style="background:#1A237E;color:#fff;font-size:8px;padding:3px;">गुण (सत्र २)</th></tr>
-<?php foreach ($credits as $cr): ?>
-<tr>
-<td style="font-size:8px;padding:2px 4px;font-weight:600;"><?= sanitize($cr['domain_name_mr'] ?? '') ?></td>
-<td style="font-size:8px;text-align:center;padding:2px;"><?= number_format($cr['credits'] ?? 4.5, 1) ?></td>
-<td style="font-size:8px;text-align:center;padding:2px;"><?= number_format($cr['ncf_level'] ?? 0.2, 1) ?></td>
-<td style="font-size:8px;text-align:center;padding:2px;background:#E8F5E9;font-weight:600;"><?= number_format($cr['credit_points_earned'] ?? 0, 2) ?></td>
-<td style="font-size:8px;text-align:center;padding:2px;background:#E3F2FD;font-weight:600;"><?= number_format($cr['credit_points_earned_term2'] ?? 0, 2) ?></td>
-</tr>
-<?php endforeach; ?>
-</table>
-</div>
+<!-- Credit Framework removed (optional - can be re-enabled if needed) -->
 <div style="margin-top:4px;padding:4px;background:#FFF8E1;border:1px solid #FFB300;border-radius:4px;font-size:8px;">
 <strong>टीप:</strong> बालकांचा समग्र विकासाचा सारांश शैक्षणिक वर्षाच्या शेवटी प्रत्येक विकासक्षेत्रामध्ये वर्णनात्मक पद्धतीने देणे आवश्यक आहे. प्रत्येक क्षेत्राचे मूल्यांकन ४ स्तरांवर (जाणीवजागृती, संवेदनशीलता, सर्जनशीलता) केले जाते.
 </div>
