@@ -402,8 +402,11 @@ require_once __DIR__ . '/../includes/header.php';
                             <tbody>
                                 <tr>
                                     <td class="fw-bold">कामकाजाचे दिवस</td>
-                                    <?php foreach ($month_keys as $num => $key): ?>
-                                        <td><input type="number" class="form-control form-control-sm attendance-working" name="working_<?= $key ?>" min="0" max="31" value="<?= $attendance_data[$num]['working_days'] ?? '' ?>"></td>
+                                    <?php $sw_days = intval($school['working_days'] ?? 0);
+                                    foreach ($month_keys as $num => $key): ?>
+                                        <td>
+                                            <input type="number" class="form-control form-control-sm attendance-working" name="working_<?= $key ?>" value="<?= $sw_days ?>" readonly style="background:#f0f0f0;">
+                                        </td>
                                     <?php endforeach; ?>
                                     <td class="fw-bold" id="total_working">0</td>
                                     <td rowspan="2" class="align-middle fw-bold text-primary" id="attendance_percentage">0%</td>

@@ -496,6 +496,10 @@ foreach ($domain_info as $did => $dn):
     <small>Assessment Rubric, Feedback & Observations</small>
 </div>
 <!-- Rubric Term 1 -->
+<?php
+$rubric_desc_keys = ['pailu'=>'beginner','pravah'=>'beginner','parvat'=>'proficient','aakash'=>'advanced'];
+$domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
+?>
 <div style="font-weight:700;font-size:11px;margin:3px 0 2px;color:#1A237E;">📊 रुब्रिक (निकषसंच) – सत्र पहिले</div>
 <table class="rtbl">
 <tr>
@@ -511,10 +515,13 @@ foreach ($domain_info as $did => $dn):
     <td class="ac"><?= $ab_info['emoji'] ?><br><?= $ab_info['label'] ?></td>
     <?php foreach ($rubric_levels as $lv):
         $is_sel = ($lv['db_value'] !== null && $cur === $lv['db_value']);
+        $rdkey = $rubric_desc_keys[$lv['key']] ?? 'beginner';
+        $rdtext = $domain_rubric[$ak][$rdkey] ?? '';
     ?>
-    <td class="<?= $is_sel ? 'sel' : '' ?>" style="font-size:8px;line-height:1.3;">
+    <td class="<?= $is_sel ? 'sel' : '' ?>" style="font-size:7px;line-height:1.2;">
         <?php if ($is_sel): ?><div style="font-size:13px;">✅</div><?php endif; ?>
-        <div><?= $lv['name'] ?></div>
+        <div style="font-weight:600;"><?= $lv['name'] ?></div>
+        <?php if ($rdtext): ?><div style="margin-top:1px;color:#555;"><?= mb_substr($rdtext, 0, 80) ?></div><?php endif; ?>
     </td>
     <?php endforeach; ?>
 </tr>
@@ -536,10 +543,13 @@ foreach ($domain_info as $did => $dn):
     <td class="ac"><?= $ab_info['emoji'] ?><br><?= $ab_info['label'] ?></td>
     <?php foreach ($rubric_levels as $lv):
         $is_sel2 = ($lv['db_value'] !== null && $cur2 === $lv['db_value']);
+        $rdkey2 = $rubric_desc_keys[$lv['key']] ?? 'beginner';
+        $rdtext2 = $domain_rubric[$ak][$rdkey2] ?? '';
     ?>
-    <td class="<?= $is_sel2 ? 'sel' : '' ?>" style="font-size:8px;line-height:1.3;">
+    <td class="<?= $is_sel2 ? 'sel' : '' ?>" style="font-size:7px;line-height:1.2;">
         <?php if ($is_sel2): ?><div style="font-size:13px;">✅</div><?php endif; ?>
-        <div><?= $lv['name'] ?></div>
+        <div style="font-weight:600;"><?= $lv['name'] ?></div>
+        <?php if ($rdtext2): ?><div style="margin-top:1px;color:#555;"><?= mb_substr($rdtext2, 0, 80) ?></div><?php endif; ?>
     </td>
     <?php endforeach; ?>
 </tr>
