@@ -47,6 +47,11 @@ $current_school = isLoggedIn() ? getSchool() : null;
                             <i class="bi bi-credit-card"></i> सदस्यता
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= APP_URL ?>/pages/flowchart.php">
+                            <i class="bi bi-diagram-3"></i> मार्गदर्शन
+                        </a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
@@ -66,6 +71,7 @@ $current_school = isLoggedIn() ? getSchool() : null;
                     <li class="nav-item"><a class="nav-link" href="<?= APP_URL ?>/admin/dashboard.php"><i class="bi bi-speedometer2"></i> डॅशबोर्ड</a></li>
                     <li class="nav-item"><a class="nav-link" href="<?= APP_URL ?>/admin/schools.php"><i class="bi bi-building"></i> शाळा</a></li>
                     <li class="nav-item"><a class="nav-link" href="<?= APP_URL ?>/admin/plans.php"><i class="bi bi-tags"></i> योजना</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?= APP_URL ?>/admin/cms.php"><i class="bi bi-file-earmark-text"></i> CMS</a></li>
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link text-warning" href="<?= APP_URL ?>/admin/logout.php"><i class="bi bi-box-arrow-right"></i> बाहेर पडा</a></li>

@@ -267,7 +267,27 @@ INSERT INTO plans (name, name_mr, max_students, price, duration_months, features
 ('स्टँडर्ड', 'स्टँडर्ड योजना', 20, 249.00, 12, '["20 विद्यार्थी", "HPC कार्ड", "PDF डाउनलोड", "बॅच प्रिंट", "प्राधान्य सहाय्य"]'),
 ('प्रीमियम', 'प्रीमियम योजना', 9999, 499.00, 12, '["अमर्यादित विद्यार्थी", "सर्व सुविधा", "बॅच प्रिंट", "कस्टम ब्रँडिंग", "प्राधान्य सहाय्य"]');
 
+-- CMS Pages (editable from admin panel)
+CREATE TABLE IF NOT EXISTS cms_pages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    page_slug VARCHAR(50) NOT NULL UNIQUE,
+    page_title VARCHAR(255) NOT NULL,
+    page_title_mr VARCHAR(255) NOT NULL,
+    page_content LONGTEXT,
+    is_active TINYINT(1) DEFAULT 1,
+    updated_by INT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Insert default admin
 INSERT INTO admins (username, password_hash, name, email, is_super) VALUES
 ('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Super Admin', 'admin@hpcsaas.com', 1);
 -- Default password: password
+
+-- Insert default CMS pages
+INSERT INTO cms_pages (page_slug, page_title, page_title_mr, page_content) VALUES
+('terms', 'Terms & Conditions', 'अटी व शर्ती', '<h3>अटी व शर्ती</h3><p>HPC कार्ड SaaS प्लॅटफॉर्म वापरण्यासाठी खालील अटी व शर्ती लागू आहेत.</p>'),
+('privacy', 'Privacy Policy', 'गोपनीयता धोरण', '<h3>गोपनीयता धोरण</h3><p>आम्ही आपल्या गोपनीयतेला महत्त्व देतो.</p>'),
+('about', 'About Us', 'आमच्याबद्दल', '<h3>आमच्याबद्दल</h3><p>HPC कार्ड SaaS हे NEP 2020 अंतर्गत सर्वांगीण प्रगती पत्रक तयार करण्यासाठी डिजिटल प्लॅटफॉर्म आहे.</p>'),
+('contact', 'Contact Us', 'संपर्क', '<h3>संपर्क करा</h3><p>ईमेल: info@hpcsaas.com</p>');

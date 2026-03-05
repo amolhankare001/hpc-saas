@@ -104,6 +104,7 @@ $all_plans = $db->query("SELECT * FROM plans WHERE is_active = 1 ORDER BY price 
                 <a class="nav-link" href="<?= APP_URL ?>/admin/schools.php"><i class="bi bi-building"></i> शाळा</a>
                 <a class="nav-link" href="<?= APP_URL ?>/admin/plans.php"><i class="bi bi-credit-card"></i> योजना</a>
                 <a class="nav-link" href="<?= APP_URL ?>/admin/coupons.php"><i class="bi bi-ticket-perforated"></i> कूपन</a>
+                <a class="nav-link" href="<?= APP_URL ?>/admin/cms.php"><i class="bi bi-file-earmark-text"></i> CMS पृष्ठे</a>
                 <a class="nav-link text-danger" href="<?= APP_URL ?>/admin/logout.php"><i class="bi bi-box-arrow-right"></i> लॉगआउट</a>
             </div>
         </div>
