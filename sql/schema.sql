@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS schools (
     subscription_end DATE DEFAULT NULL,
     is_active TINYINT(1) DEFAULT 1,
     working_days INT DEFAULT 0,
+    working_days_monthly TEXT DEFAULT NULL COMMENT 'JSON: {"apr":22,"may":20,...} per-month working days',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE SET NULL

@@ -402,10 +402,16 @@ require_once __DIR__ . '/../includes/header.php';
                             <tbody>
                                 <tr>
                                     <td class="fw-bold">कामकाजाचे दिवस</td>
-                                    <?php $sw_days = intval($school['working_days'] ?? 0);
-                                    foreach ($month_keys as $num => $key): ?>
+                                    <?php 
+                                    // Load per-month working days from school profile (school-level, same for all students)
+                                    $monthly_wd = !empty($school['working_days_monthly']) ? json_decode($school['working_days_monthly'], true) : [];
+                                    $sw_days_fallback = intval($school['working_days'] ?? 0);
+                                    foreach ($month_keys as $num => $key): 
+                                        // Use per-month value if available, fallback to single value, but allow saved attendance to override
+                                        $wd_val = $attendance_data[$num]['working_days'] ?? ($monthly_wd[$key] ?? $sw_days_fallback);
+                                    ?>
                                         <td>
-                                            <input type="number" class="form-control form-control-sm attendance-working" name="working_<?= $key ?>" value="<?= $sw_days ?>" readonly style="background:#f0f0f0;">
+                                            <input type="number" class="form-control form-control-sm attendance-working" name="working_<?= $key ?>" value="<?= intval($wd_val) ?>" readonly style="background:#f0f0f0;">
                                         </td>
                                     <?php endforeach; ?>
                                     <td class="fw-bold" id="total_working">0</td>

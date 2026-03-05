@@ -16,15 +16,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         flash('error', 'Invalid CSRF token');
         redirect(APP_URL . '/school/profile.php');
     }
-    $working_days = intval($_POST['working_days'] ?? 0);
-    $stmt = $db->prepare("UPDATE schools SET name=?, name_mr=?, address_line1=?, address_line2=?, village=?, taluka=?, district=?, state=?, pin_code=?, udise_code=?, phone=?, working_days=? WHERE id=?");
+    // Build monthly working days JSON
+    $month_keys = ['apr','may','jun','jul','aug','sep','oct','nov','dec','jan','feb','mar'];
+    $monthly_wd = [];
+    foreach ($month_keys as $mk) {
+        $monthly_wd[$mk] = intval($_POST['wd_' . $mk] ?? 0);
+    }
+    $working_days_monthly_json = json_encode($monthly_wd);
+    // Keep legacy working_days as average for backward compat
+    $total_wd = array_sum($monthly_wd);
+    $working_days = $total_wd > 0 ? intval(round($total_wd / count(array_filter($monthly_wd)))) : 0;
+
+    $stmt = $db->prepare("UPDATE schools SET name=?, name_mr=?, address_line1=?, address_line2=?, village=?, taluka=?, district=?, state=?, pin_code=?, udise_code=?, phone=?, working_days=?, working_days_monthly=? WHERE id=?");
     $stmt->execute([
         trim($_POST['name']), trim($_POST['name_mr']),
         trim($_POST['address_line1']), trim($_POST['address_line2']),
         trim($_POST['village']), trim($_POST['taluka']),
         trim($_POST['district']), trim($_POST['state'] ?? 'महाराष्ट्र'),
         trim($_POST['pin_code']), trim($_POST['udise_code']),
-        trim($_POST['phone']), $working_days, $_SESSION['school_id']
+        trim($_POST['phone']), $working_days, $working_days_monthly_json, $_SESSION['school_id']
     ]);
 
     // Handle logo upload
@@ -73,19 +83,43 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="col-md-3"><label class="form-label">UDISE कोड</label><input type="text" class="form-control" name="udise_code" maxlength="11" value="<?= sanitize($school['udise_code']) ?>"></div>
                 <div class="col-md-3"><label class="form-label">फोन</label><input type="tel" class="form-control" name="phone" value="<?= sanitize($school['phone']) ?>"></div>
                 <div class="col-md-3"><label class="form-label">ईमेल</label><input type="email" class="form-control" value="<?= sanitize($school['email']) ?>" disabled></div>
-                <div class="col-md-3">
-                    <label class="form-label">कामकाजाचे दिवस (प्रति महिना) <i class="bi bi-info-circle" title="सर्व विद्यार्थ्यांसाठी समान"></i></label>
-                    <input type="number" class="form-control" name="working_days" min="0" max="31" value="<?= intval($school['working_days'] ?? 0) ?>">
-                    <small class="text-muted">हे सर्व विद्यार्थ्यांसाठी लागू होईल</small>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">शाळेचा लोगो</label>
-                    <?php if ($school['logo']): ?>
-                        <div class="mb-2"><img src="<?= APP_URL . '/' . $school['logo'] ?>" style="max-height:60px;"></div>
-                    <?php endif; ?>
-                    <input type="file" class="form-control" name="logo" accept="image/*">
-                </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Monthly Working Days Card -->
+    <div class="card mb-4">
+        <div class="card-header"><i class="bi bi-calendar3"></i> कामकाजाचे दिवस (प्रति महिना) <small class="text-muted">— सर्व विद्यार्थ्यांसाठी समान</small></div>
+        <div class="card-body">
+            <p class="text-muted small mb-3">प्रत्येक महिन्याचे कामकाजाचे दिवस टाका. हे सर्व विद्यार्थ्यांसाठी स्वयंचलित लागू होईल. फक्त उपस्थित दिवस विद्यार्थीनिहाय बदलतात.</p>
+            <?php
+            $monthly_wd_data = !empty($school['working_days_monthly']) ? json_decode($school['working_days_monthly'], true) : [];
+            $wd_months = [
+                'apr' => 'एप्रिल', 'may' => 'मे', 'jun' => 'जून',
+                'jul' => 'जुलै', 'aug' => 'ऑगस्ट', 'sep' => 'सप्टेंबर',
+                'oct' => 'ऑक्टोबर', 'nov' => 'नोव्हेंबर', 'dec' => 'डिसेंबर',
+                'jan' => 'जानेवारी', 'feb' => 'फेब्रुवारी', 'mar' => 'मार्च'
+            ];
+            ?>
+            <div class="row g-2">
+                <?php foreach ($wd_months as $mk => $mlabel): ?>
+                <div class="col-md-2 col-4">
+                    <label class="form-label small"><?= $mlabel ?></label>
+                    <input type="number" class="form-control form-control-sm" name="wd_<?= $mk ?>" min="0" max="31" value="<?= intval($monthly_wd_data[$mk] ?? 0) ?>" placeholder="0">
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logo Upload -->
+    <div class="card mb-4">
+        <div class="card-header"><i class="bi bi-image"></i> शाळेचा लोगो</div>
+        <div class="card-body">
+            <?php if ($school['logo']): ?>
+                <div class="mb-2"><img src="<?= APP_URL . '/' . $school['logo'] ?>" style="max-height:60px;"></div>
+            <?php endif; ?>
+            <input type="file" class="form-control" name="logo" accept="image/*">
         </div>
     </div>
 
