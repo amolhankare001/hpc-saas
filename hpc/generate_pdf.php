@@ -193,33 +193,33 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:#333;background:#f0f0f0;}
+body{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:#333;background:#f0f0f0;}
 .page{width:210mm;min-height:297mm;margin:0 auto;padding:6mm 8mm;page-break-after:always;position:relative;background:#fff;}
 .page:last-child{page-break-after:auto;}
 .cover{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,#FFF8E1 0%,#FFE0B2 100%);}
 .sh-o{background:linear-gradient(135deg,#E65100,#FF8F00);color:#fff;text-align:center;padding:5px 10px;font-size:13px;font-weight:700;border-radius:6px;margin-bottom:5px;}
 .sh-b{background:linear-gradient(135deg,#1565C0,#42A5F5);color:#fff;text-align:center;padding:4px 8px;font-size:11px;font-weight:600;border-radius:5px;margin:4px 0 3px;}
 .sh-g{background:linear-gradient(135deg,#2E7D32,#66BB6A);color:#fff;text-align:center;padding:4px 8px;font-size:11px;font-weight:600;border-radius:5px;margin:4px 0 3px;}
-.sh-r{background:linear-gradient(135deg,#C62828,#E53935);color:#fff;text-align:center;padding:3px 6px;font-size:10px;font-weight:600;border-radius:4px;margin-bottom:3px;}
-.sh-b2{background:linear-gradient(135deg,#1565C0,#42A5F5);color:#fff;text-align:center;padding:3px 6px;font-size:10px;font-weight:600;border-radius:4px;margin-bottom:3px;}
+.sh-r{background:linear-gradient(135deg,#C62828,#E53935);color:#fff;text-align:center;padding:6px 10px;font-size:13px;font-weight:600;border-radius:5px;margin-bottom:4px;}
+.sh-b2{background:linear-gradient(135deg,#1565C0,#42A5F5);color:#fff;text-align:center;padding:6px 10px;font-size:13px;font-weight:600;border-radius:5px;margin-bottom:4px;}
 table{width:100%;border-collapse:collapse;margin:2px 0;}
-td,th{border:1px solid #ccc;padding:2px 4px;text-align:left;vertical-align:top;font-size:10px;}
+td,th{border:1px solid #ccc;padding:4px 6px;text-align:left;vertical-align:top;font-size:12px;}
 th{background:#E3F2FD;font-weight:600;text-align:center;}
-.dh{color:#fff;text-align:center;padding:7px 10px;font-size:14px;font-weight:700;border-radius:6px;margin-bottom:5px;border:2px solid rgba(0,0,0,0.2);}
-.dh small{display:block;font-size:9px;font-weight:400;opacity:0.9;}
-.cg-box{background:#FFFDE7;border:2px solid #D32F2F;border-radius:6px;padding:5px 8px;margin:4px 0;}
-.cg-i{margin:2px 0;font-size:10px;display:flex;align-items:flex-start;gap:5px;}
+.dh{color:#fff;text-align:center;padding:10px 12px;font-size:16px;font-weight:700;border-radius:6px;margin-bottom:6px;border:2px solid rgba(0,0,0,0.2);}
+.dh small{display:block;font-size:11px;font-weight:400;opacity:0.9;}
+.cg-box{background:#FFFDE7;border:2px solid #D32F2F;border-radius:6px;padding:8px 12px;margin:6px 0;}
+.cg-i{margin:4px 0;font-size:13px;display:flex;align-items:flex-start;gap:6px;line-height:1.5;}
 .cg-i b{color:#E65100;white-space:nowrap;min-width:42px;}
-.cg-ck{width:15px;height:15px;border:2px solid #999;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:2px;font-size:11px;}
+.cg-ck{width:20px;height:20px;border:2px solid #999;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:3px;font-size:14px;}
 .cg-ck.on{border-color:#1565C0;background:#E3F2FD;color:#1565C0;font-weight:700;}
-.cb{background:#E8F5E9;border:1px solid #A5D6A7;border-radius:5px;padding:4px 7px;margin:3px 0;}
-.ci{margin:2px 0;font-size:9px;color:#1B5E20;display:flex;align-items:flex-start;gap:4px;}
-.cc{color:#D32F2F;font-weight:700;white-space:nowrap;min-width:33px;}
-.ab{border:1px solid #ddd;border-radius:4px;padding:2px 4px;margin:1px 0;min-height:18px;background:#FAFAFA;font-size:9px;line-height:1.3;}
+.cb{background:#E8F5E9;border:1px solid #A5D6A7;border-radius:5px;padding:6px 10px;margin:5px 0;}
+.ci{margin:4px 0;font-size:12px;color:#1B5E20;display:flex;align-items:flex-start;gap:6px;line-height:1.5;}
+.cc{color:#D32F2F;font-weight:700;white-space:nowrap;min-width:42px;font-size:13px;}
+.ab{border:1px solid #ddd;border-radius:6px;padding:6px 8px;margin:3px 0;min-height:28px;background:#FAFAFA;font-size:12px;line-height:1.6;}
 .rtbl{width:100%;border-collapse:collapse;margin:4px 0;}
-.rtbl td,.rtbl th{border:1px solid #aaa;padding:4px 5px;text-align:center;vertical-align:top;font-size:9px;}
-.rtbl th{background:#E8EAF6;font-weight:700;font-size:10px;}
-.rtbl .ac{background:#F3E5F5;font-weight:700;font-size:10px;width:85px;vertical-align:middle;}
+.rtbl td,.rtbl th{border:1px solid #aaa;padding:5px 6px;text-align:center;vertical-align:top;font-size:11px;}
+.rtbl th{background:#E8EAF6;font-weight:700;font-size:12px;}
+.rtbl .ac{background:#F3E5F5;font-weight:700;font-size:12px;width:90px;vertical-align:middle;}
 .rtbl .lh{font-size:8px;font-weight:700;}
 .rtbl .sel{background:#C8E6C9 !important;font-weight:700;border:2px solid #4CAF50;}
 .eo{display:inline-block;text-align:center;margin:0 4px;padding:3px 6px;border-radius:8px;border:2px solid transparent;position:relative;}
@@ -227,15 +227,15 @@ th{background:#E3F2FD;font-weight:600;text-align:center;}
 .ec::after{content:'\2713';position:absolute;top:-8px;right:-5px;background:#4CAF50;color:#fff;font-size:9px;font-weight:700;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
 .bx{border:1px solid #ccc;border-radius:4px;padding:4px;}
-.att th{background:#BBDEFB;font-size:8px;padding:2px 3px;}
-.att td{font-size:8px;text-align:center;padding:2px 3px;}
+.att th{background:#BBDEFB;font-size:11px;padding:4px 5px;}
+.att td{font-size:11px;text-align:center;padding:4px 5px;}
 .pf{position:absolute;bottom:5mm;left:10mm;right:10mm;text-align:center;font-size:7px;color:#999;border-top:1px solid #eee;padding-top:2px;}
 .np{text-align:center;margin:0 auto;padding:10px;background:#FFF3E0;max-width:210mm;}
 .sig{display:flex;justify-content:space-between;margin-top:12px;}
-.sigb{width:28%;text-align:center;border-top:2px solid #333;padding-top:5px;font-size:9px;font-weight:600;}
+.sigb{width:28%;text-align:center;border-top:2px solid #333;padding-top:5px;font-size:12px;font-weight:600;}
 .ffb{border:3px solid #1565C0;border-radius:12px;padding:12px 14px;margin:8px 4px;min-height:500px;background:#FAFAFA;font-size:12px;line-height:1.8;color:#1565C0;font-weight:500;}
 .mc{border:2px solid #1565C0;border-radius:8px;padding:5px;margin:4px 0;text-align:center;background:linear-gradient(180deg,#E3F2FD,#BBDEFB);}
-.lr{display:flex;align-items:center;margin:2px 4px;font-size:9px;}
+.lr{display:flex;align-items:center;margin:3px 5px;font-size:12px;}
 .lc{width:14px;height:14px;border:2px solid #666;margin-right:5px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;border-radius:2px;}
 .lc.ck{border-color:#D32F2F;background:#FFEBEE;color:#D32F2F;font-weight:700;}
 @media print{.np{display:none !important;}.page{margin:0;padding:8mm 10mm;box-shadow:none;border:none;}body{background:#fff;}}
@@ -539,7 +539,7 @@ foreach ($domain_info as $did => $dn):
     <small>(<?= $dn['name'] ?>)</small>
 </div>
 <div class="cg-box">
-<div style="font-weight:700;color:#333;margin-bottom:3px;font-size:11px;">अभ्यासक्रमाची ध्येये (CG) :</div>
+<div style="font-weight:700;color:#333;margin-bottom:5px;font-size:14px;">अभ्यासक्रमाची ध्येये (CG) :</div>
 <?php foreach ($dn['goals'] as $code => $goal):
     $cn = str_replace(['-','*',' '], '', $code);
     $sel = in_array($code, $saved_goals) || in_array($cn, $saved_goals);
@@ -554,38 +554,40 @@ foreach ($domain_info as $did => $dn):
 <!-- Term 1 -->
 <div class="sh-r">सत्र पहिले (Term 1)</div>
 <div class="cb">
-<div style="font-weight:700;font-size:10px;margin-bottom:2px;">क्षमता (Competencies) :</div>
+<div style="font-weight:700;font-size:13px;margin-bottom:4px;">क्षमता (Competencies) :</div>
 <?php foreach ($dn['competencies'] as $ccode => $cdesc):
     $comp_sel = in_array($ccode, $saved_comps);
+    if (!$comp_sel) continue; // Only show selected competencies
 ?>
 <div class="ci">
-    <span style="color:<?= $comp_sel ? '#D32F2F' : '#999' ?>;font-size:10px;"><?= $comp_sel ? '✅' : '⬜' ?></span>
-    <span class="cc" style="<?= $comp_sel ? '' : 'color:#999;' ?>"><?= $ccode ?></span>
-    <span style="<?= $comp_sel ? 'font-weight:600;' : 'color:#888;' ?>"><?= $cdesc ?></span>
+    <span style="color:#D32F2F;font-size:13px;">✅</span>
+    <span class="cc"><?= $ccode ?></span>
+    <span style="font-weight:600;font-size:12px;"><?= $cdesc ?></span>
 </div>
 <?php endforeach; ?>
 </div>
-<div class="sh-g" style="font-size:9px;padding:2px;">📝 शिक्षण अनुभव / कृती (Activity - Term 1)</div>
+<div class="sh-g" style="font-size:12px;padding:4px 8px;">📝 शिक्षण अनुभव / कृती (Activity - Term 1)</div>
 <div class="ab"><?= nl2br(sanitize($a['activity_mr'] ?? '-')) ?></div>
-<div class="sh-b" style="font-size:9px;padding:2px;">❓ मूल्यांकनासाठीचे प्रश्न (Questions - Term 1)</div>
+<div class="sh-b" style="font-size:12px;padding:4px 8px;">❓ मूल्यांकनासाठीचे प्रश्न (Questions - Term 1)</div>
 <div class="ab"><?= nl2br(sanitize($a['assessment_questions_mr'] ?? '-')) ?></div>
 <!-- Term 2 -->
-<div class="sh-b2" style="margin-top:3px;">सत्र दुसरे (Term 2)</div>
+<div class="sh-b2" style="margin-top:5px;">सत्र दुसरे (Term 2)</div>
 <div class="cb">
-<div style="font-weight:700;font-size:10px;margin-bottom:2px;">क्षमता (Competencies) :</div>
+<div style="font-weight:700;font-size:13px;margin-bottom:4px;">क्षमता (Competencies) :</div>
 <?php foreach ($dn['competencies'] as $ccode => $cdesc):
     $comp_sel2 = in_array($ccode, $saved_comps_t2);
+    if (!$comp_sel2) continue; // Only show selected competencies
 ?>
 <div class="ci">
-    <span style="color:<?= $comp_sel2 ? '#D32F2F' : '#999' ?>;font-size:10px;"><?= $comp_sel2 ? '✅' : '⬜' ?></span>
-    <span class="cc" style="<?= $comp_sel2 ? '' : 'color:#999;' ?>"><?= $ccode ?></span>
-    <span style="<?= $comp_sel2 ? 'font-weight:600;' : 'color:#888;' ?>"><?= $cdesc ?></span>
+    <span style="color:#D32F2F;font-size:13px;">✅</span>
+    <span class="cc"><?= $ccode ?></span>
+    <span style="font-weight:600;font-size:12px;"><?= $cdesc ?></span>
 </div>
 <?php endforeach; ?>
 </div>
-<div class="sh-g" style="font-size:9px;padding:2px;">📝 शिक्षण अनुभव / कृती (Activity - Term 2)</div>
+<div class="sh-g" style="font-size:12px;padding:4px 8px;">📝 शिक्षण अनुभव / कृती (Activity - Term 2)</div>
 <div class="ab"><?= nl2br(sanitize($a['activity_mr_term2'] ?? '-')) ?></div>
-<div class="sh-b" style="font-size:9px;padding:2px;">❓ मूल्यांकनासाठीचे प्रश्न (Questions - Term 2)</div>
+<div class="sh-b" style="font-size:12px;padding:4px 8px;">❓ मूल्यांकनासाठीचे प्रश्न (Questions - Term 2)</div>
 <div class="ab"><?= nl2br(sanitize($a['assessment_questions_mr_term2'] ?? '-')) ?></div>
 <div class="pf">समग्र प्रगती पत्रक (HPC) | क्षेत्र <?= $did ?>: <?= $dn['name_mr'] ?> | पान <?= $page_num ?></div>
 </div>
