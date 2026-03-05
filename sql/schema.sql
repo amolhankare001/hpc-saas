@@ -166,10 +166,10 @@ CREATE TABLE IF NOT EXISTS hpc_domain_assessments (
     activity_mr TEXT,
     assessment_questions TEXT,
     assessment_questions_mr TEXT,
-    -- Rubric assessments (Beginner/Proficient/Advanced)
-    awareness_level ENUM('प्रारंभिक','प्रवीण','प्रगत') DEFAULT NULL,
-    sensitivity_level ENUM('प्रारंभिक','प्रवीण','प्रगत') DEFAULT NULL,
-    creativity_level ENUM('प्रारंभिक','प्रवीण','प्रगत') DEFAULT NULL,
+    -- Rubric assessments (4-level: pailu/pravah/parvat/akash)
+    awareness_level VARCHAR(20) DEFAULT NULL,
+    sensitivity_level VARCHAR(20) DEFAULT NULL,
+    creativity_level VARCHAR(20) DEFAULT NULL,
     teacher_feedback TEXT,
     teacher_feedback_mr TEXT,
     -- Self & Peer Assessment
@@ -185,9 +185,9 @@ CREATE TABLE IF NOT EXISTS hpc_domain_assessments (
     competencies_term2 TEXT,
     activity_mr_term2 TEXT,
     assessment_questions_mr_term2 TEXT,
-    awareness_level_term2 ENUM('प्रारंभिक','प्रवीण','प्रगत') DEFAULT NULL,
-    sensitivity_level_term2 ENUM('प्रारंभिक','प्रवीण','प्रगत') DEFAULT NULL,
-    creativity_level_term2 ENUM('प्रारंभिक','प्रवीण','प्रगत') DEFAULT NULL,
+    awareness_level_term2 VARCHAR(20) DEFAULT NULL,
+    sensitivity_level_term2 VARCHAR(20) DEFAULT NULL,
+    creativity_level_term2 VARCHAR(20) DEFAULT NULL,
     teacher_feedback_mr_term2 TEXT,
     self_assessment_term2 TEXT,
     peer_assessment_term2 TEXT,

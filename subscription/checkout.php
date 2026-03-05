@@ -34,18 +34,26 @@ $final_amount = $original_amount;
 $coupon_applied = null;
 $coupon_error = '';
 
-// Handle coupon code validation via AJAX
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+// Handle AJAX API calls (accept both JSON body and form-urlencoded)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $raw = file_get_contents('php://input');
+    $json_input = json_decode($raw, true);
+    // Use JSON body if available, fall back to $_POST
+    $input = $json_input ?: $_POST;
+    $action = $input['action'] ?? '';
+    
+    if ($action) {
     // CSRF validation for all AJAX actions
-    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '')) {
+    $csrf = $input['csrf_token'] ?? '';
+    if (!hash_equals($_SESSION['csrf_token'], $csrf)) {
         header('Content-Type: application/json');
-        echo json_encode(['error' => 'Invalid CSRF token']);
+        echo json_encode(['error' => 'Invalid CSRF token. Please refresh the page.']);
         exit;
     }
     header('Content-Type: application/json');
     
-    if ($_POST['action'] === 'validate_coupon') {
-        $code = strtoupper(trim($_POST['coupon_code'] ?? ''));
+    if ($action === 'validate_coupon') {
+        $code = strtoupper(trim($input['coupon_code'] ?? ''));
         $coupon = validateCoupon($db, $code);
         if ($coupon) {
             $result = applyCouponDiscount($original_amount, $coupon);
@@ -62,8 +70,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         exit;
     }
     
-    if ($_POST['action'] === 'create_order') {
-        $coupon_code = strtoupper(trim($_POST['coupon_code'] ?? ''));
+    if ($action === 'create_order') {
+        $coupon_code = strtoupper(trim($input['coupon_code'] ?? ''));
         $amount = $original_amount;
         
         if ($coupon_code) {
@@ -94,21 +102,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         // Create Razorpay order
         $receipt = 'order_' . $school_id . '_' . time();
         $order = createRazorpayOrder($amount, $receipt, [
-            'school_id' => $school_id,
-            'plan_id' => $plan_id,
+            'school_id' => (string)$school_id,
+            'plan_id' => (string)$plan_id,
             'coupon_code' => $coupon_code,
         ]);
         
-        if ($order) {
+        if ($order && isset($order['id'])) {
             // Save pending payment
             $stmt = $db->prepare("INSERT INTO payments (school_id, plan_id, amount, original_amount, discount_amount, coupon_code, razorpay_order_id, payment_method, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'razorpay', 'pending')");
             $stmt->execute([$school_id, $plan_id, $amount, $original_amount, $discount_amount, $coupon_code ?: null, $order['id']]);
             
             echo json_encode([
                 'order_id' => $order['id'],
+                'razorpay_order_id' => $order['id'],
                 'amount' => $order['amount'],
                 'currency' => $order['currency'],
                 'key_id' => RAZORPAY_KEY_ID,
+                'plan_name' => $plan['name_mr'] ?: $plan['name'],
             ]);
         } else {
             echo json_encode(['error' => 'Razorpay ऑर्डर तयार करता आली नाही. कृपया नंतर प्रयत्न करा.']);
@@ -116,10 +126,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         exit;
     }
     
-    if ($_POST['action'] === 'verify_payment') {
-        $razorpay_order_id = $_POST['razorpay_order_id'] ?? '';
-        $razorpay_payment_id = $_POST['razorpay_payment_id'] ?? '';
-        $razorpay_signature = $_POST['razorpay_signature'] ?? '';
+    if ($action === 'verify_payment') {
+        $razorpay_order_id = $input['razorpay_order_id'] ?? '';
+        $razorpay_payment_id = $input['razorpay_payment_id'] ?? '';
+        $razorpay_signature = $input['razorpay_signature'] ?? '';
         
         if (verifyRazorpaySignature($razorpay_order_id, $razorpay_payment_id, $razorpay_signature)) {
             // Update payment record
@@ -148,13 +158,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             
             echo json_encode(['success' => true, 'redirect' => APP_URL . '/dashboard.php?upgraded=1']);
         } else {
-            echo json_encode(['success' => false, 'message' => 'पेमेंट सत्यापन अयशस्वी']);
+            echo json_encode(['success' => false, 'error' => 'पेमेंट सत्यापन अयशस्वी. कृपया admin शी संपर्क करा.']);
         }
         exit;
     }
+    } // end if ($action)
 }
 
 require_once __DIR__ . '/../includes/header.php';
+
+// Escape values for safe JavaScript embedding (not sanitize which outputs HTML entities)
+$js_school_name = addslashes($school['name_mr'] ?: $school['name']);
+$js_plan_name = addslashes($plan['name_mr'] ?: $plan['name']);
+$js_school_email = addslashes($school['email']);
+$js_school_phone = addslashes($school['phone'] ?? '');
 ?>
 
 <div class="container py-4">
@@ -165,6 +182,10 @@ require_once __DIR__ . '/../includes/header.php';
                     <h4 class="mb-0"><i class="bi bi-credit-card"></i> सदस्यता खरेदी करा</h4>
                 </div>
                 <div class="card-body">
+                    <!-- Error/Success Messages -->
+                    <div id="checkoutError" class="alert alert-danger d-none"></div>
+                    <div id="checkoutSuccess" class="alert alert-success d-none"></div>
+
                     <!-- Plan Summary -->
                     <div class="alert alert-info">
                         <div class="row align-items-center">
@@ -214,14 +235,19 @@ require_once __DIR__ . '/../includes/header.php';
 
                     <!-- Pay Button -->
                     <div class="d-grid">
-                        <button class="btn btn-success btn-lg" id="pay_btn" onclick="initiatePayment()">
+                        <button class="btn btn-success btn-lg" id="pay_btn" type="button">
                             <i class="bi bi-shield-lock"></i> &#8377;<span id="pay_amount"><?= number_format($plan['price'], 0) ?></span> भरा (Razorpay)
                         </button>
                     </div>
 
-                    <p class="text-center text-muted small mt-3">
-                        <i class="bi bi-lock"></i> सुरक्षित पेमेंट - Razorpay द्वारे | UPI, कार्ड, नेट बँकिंग
-                    </p>
+                    <!-- Payment Security Info -->
+                    <div class="card mt-3 border-0" style="border-left: 3px solid #22c55e !important; background: #f0fdf4;">
+                        <div class="card-body small text-muted py-2">
+                            <p class="mb-1"><i class="bi bi-lock me-1"></i> Razorpay सुरक्षित पेमेंट गेटवे</p>
+                            <p class="mb-1"><i class="bi bi-credit-card me-1"></i> UPI, Credit/Debit Card, Net Banking</p>
+                            <p class="mb-0"><i class="bi bi-check-circle me-1"></i> पेमेंट यशस्वी झाल्यावर सदस्यता activate होईल</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -230,22 +256,43 @@ require_once __DIR__ . '/../includes/header.php';
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+// Payment configuration
 var originalAmount = <?= $plan['price'] ?>;
 var finalAmount = originalAmount;
 var appliedCoupon = '';
+var csrfToken = '<?= $_SESSION['csrf_token'] ?>';
+var checkoutUrl = '<?= APP_URL ?>/subscription/checkout.php?plan_id=<?= $plan_id ?>';
+var btnLabel = '<i class="bi bi-shield-lock"></i> &#8377;' + originalAmount + ' भरा (Razorpay)';
 
+function showError(msg) {
+    var el = document.getElementById('checkoutError');
+    el.textContent = msg;
+    el.classList.remove('d-none');
+    document.getElementById('checkoutSuccess').classList.add('d-none');
+}
+function hideError() {
+    document.getElementById('checkoutError').classList.add('d-none');
+}
+
+// Coupon validation
 document.getElementById('apply_coupon').addEventListener('click', function() {
     var code = document.getElementById('coupon_code').value.trim();
     if (!code) return;
+    hideError();
     
-    fetch('<?= APP_URL ?>/subscription/checkout.php?plan_id=<?= $plan_id ?>', {
+    fetch(checkoutUrl, {
         method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'action=validate_coupon&coupon_code=' + encodeURIComponent(code) + '&csrf_token=' + encodeURIComponent('<?= $_SESSION['csrf_token'] ?>')
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            action: 'validate_coupon',
+            coupon_code: code,
+            csrf_token: csrfToken
+        })
     })
-    .then(r => r.json())
-    .then(data => {
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
         var msg = document.getElementById('coupon_message');
+        if (data.error) { showError(data.error); return; }
         if (data.valid) {
             msg.innerHTML = '<span class="text-success"><i class="bi bi-check-circle"></i> ' + data.message + '</span>';
             finalAmount = data.final_amount;
@@ -256,81 +303,124 @@ document.getElementById('apply_coupon').addEventListener('click', function() {
             document.getElementById('final_price').textContent = data.final_amount;
             document.getElementById('display_amount').innerHTML = '&#8377;' + data.final_amount + ' <small class="text-decoration-line-through text-muted">&#8377;' + originalAmount + '</small>';
             document.getElementById('pay_amount').textContent = data.final_amount;
+            btnLabel = '<i class="bi bi-shield-lock"></i> &#8377;' + data.final_amount + ' भरा (Razorpay)';
         } else {
             msg.innerHTML = '<span class="text-danger"><i class="bi bi-x-circle"></i> ' + data.message + '</span>';
             finalAmount = originalAmount;
             appliedCoupon = '';
             document.getElementById('price_breakdown').style.display = 'none';
+            btnLabel = '<i class="bi bi-shield-lock"></i> &#8377;' + originalAmount + ' भरा (Razorpay)';
         }
+    })
+    .catch(function(err) {
+        showError('कूपन तपासताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा.');
     });
 });
 
-function initiatePayment() {
+// Payment initiation (matching reference site pattern)
+document.getElementById('pay_btn').addEventListener('click', function() {
     var btn = document.getElementById('pay_btn');
+    hideError();
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> प्रक्रिया सुरू...';
-    
-    fetch('<?= APP_URL ?>/subscription/checkout.php?plan_id=<?= $plan_id ?>', {
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> कृपया प्रतीक्षा करा...';
+
+    // Step 1: Create Razorpay order on server
+    fetch(checkoutUrl, {
         method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'action=create_order&coupon_code=' + encodeURIComponent(appliedCoupon) + '&csrf_token=' + encodeURIComponent('<?= $_SESSION['csrf_token'] ?>')
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            action: 'create_order',
+            coupon_code: appliedCoupon,
+            csrf_token: csrfToken
+        })
     })
-    .then(r => r.json())
-    .then(data => {
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.error) {
+            showError(data.error);
+            btn.disabled = false;
+            btn.innerHTML = btnLabel;
+            return;
+        }
         if (data.free) {
             window.location.href = data.redirect;
             return;
         }
-        if (data.error) {
-            alert(data.error);
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-shield-lock"></i> पुन्हा प्रयत्न करा';
-            return;
-        }
-        
+
+        // Step 2: Open Razorpay checkout
         var options = {
             key: data.key_id,
             amount: data.amount,
-            currency: data.currency,
-            name: '<?= sanitize($school['name_mr'] ?: $school['name']) ?>',
-            description: '<?= sanitize($plan['name_mr']) ?> - HPC कार्ड SaaS',
-            order_id: data.order_id,
-            handler: function(response) {
-                // Verify payment
-                fetch('<?= APP_URL ?>/subscription/checkout.php?plan_id=<?= $plan_id ?>', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: 'action=verify_payment&razorpay_order_id=' + response.razorpay_order_id + '&razorpay_payment_id=' + response.razorpay_payment_id + '&razorpay_signature=' + response.razorpay_signature + '&csrf_token=' + encodeURIComponent('<?= $_SESSION['csrf_token'] ?>')
-                })
-                .then(r => r.json())
-                .then(result => {
-                    if (result.success) {
-                        window.location.href = result.redirect;
-                    } else {
-                        alert('पेमेंट सत्यापन अयशस्वी: ' + result.message);
-                    }
-                });
-            },
+            currency: data.currency || 'INR',
+            name: '<?= $js_school_name ?>',
+            description: (data.plan_name || '<?= $js_plan_name ?>') + ' - HPC कार्ड SaaS',
+            order_id: data.razorpay_order_id || data.order_id,
             prefill: {
-                email: '<?= sanitize($school['email']) ?>',
-                contact: '<?= sanitize($school['phone'] ?? '') ?>'
+                email: '<?= $js_school_email ?>',
+                contact: '<?= $js_school_phone ?>'
             },
             theme: { color: '#1a73e8' },
+            handler: function(response) {
+                verifyPayment(response);
+            },
             modal: {
                 ondismiss: function() {
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="bi bi-shield-lock"></i> &#8377;' + finalAmount + ' भरा (Razorpay)';
+                    btn.innerHTML = btnLabel;
+                    showError('पेमेंट रद्द केले. पुन्हा प्रयत्न करा.');
                 }
             }
         };
-        
+
         var rzp = new Razorpay(options);
+        rzp.on('payment.failed', function(response) {
+            btn.disabled = false;
+            btn.innerHTML = btnLabel;
+            showError('पेमेंट अयशस्वी: ' + (response.error.description || 'कृपया पुन्हा प्रयत्न करा'));
+        });
         rzp.open();
     })
-    .catch(function() {
+    .catch(function(err) {
+        console.error('Checkout error:', err);
+        showError('सर्व्हर त्रुटी. कृपया पृष्ठ रीफ्रेश करून पुन्हा प्रयत्न करा.');
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-shield-lock"></i> पुन्हा प्रयत्न करा';
-        alert('त्रुटी आली. कृपया पुन्हा प्रयत्न करा.');
+        btn.innerHTML = btnLabel;
+    });
+});
+
+// Step 3: Verify payment
+function verifyPayment(razorpayResponse) {
+    var btn = document.getElementById('pay_btn');
+    hideError();
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> पेमेंट verify होत आहे...';
+
+    fetch(checkoutUrl, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            action: 'verify_payment',
+            razorpay_order_id: razorpayResponse.razorpay_order_id,
+            razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+            razorpay_signature: razorpayResponse.razorpay_signature,
+            csrf_token: csrfToken
+        })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.success) {
+            document.getElementById('checkoutSuccess').textContent = 'पेमेंट यशस्वी! सदस्यता activate होत आहे...';
+            document.getElementById('checkoutSuccess').classList.remove('d-none');
+            window.location.href = data.redirect;
+        } else {
+            showError(data.error || 'पेमेंट verification अयशस्वी. कृपया admin शी संपर्क करा.');
+            btn.disabled = false;
+            btn.innerHTML = btnLabel;
+        }
+    })
+    .catch(function(err) {
+        showError('Verification त्रुटी. कृपया admin शी संपर्क करा.');
+        btn.disabled = false;
+        btn.innerHTML = btnLabel;
     });
 }
 </script>
