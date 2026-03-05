@@ -580,13 +580,19 @@ require_once __DIR__ . '/../includes/header.php';
                                                     $rubric_levels = ['pailu' => 'पैलू', 'pravah' => 'प्रवाह', 'parvat' => 'पर्वत', 'akash' => 'आकाश'];
                                                     $level_colors = ['pailu' => '#fff3cd', 'pravah' => '#d1ecf1', 'parvat' => '#d4edda', 'akash' => '#cce5ff'];
                                                     foreach ($rubric_levels as $level_key => $level_label):
-                                                        $desc = $demo_rubric_descriptions[$domain_id][$key][$level_key] ?? '';
+                                                        $desc_data = $demo_rubric_descriptions[$domain_id][$key][$level_key] ?? '';
                                                         $is_selected = ($existing[$key . '_level'] ?? '') === $level_key;
+                                                        $saved_desc = $existing[$key . '_desc'] ?? '';
+                                                        $desc_options = is_array($desc_data) ? $desc_data : [$desc_data];
                                                     ?>
                                                     <td style="background:<?= $level_colors[$level_key] ?>20;vertical-align:top;padding:6px;">
                                                         <label class="d-flex align-items-start gap-1" style="cursor:pointer;">
-                                                            <input type="radio" name="domain_<?= $domain_id ?>_<?= $key ?>" value="<?= $level_key ?>" class="mt-1 rubric-radio" <?= $is_selected ? 'checked' : '' ?>>
-                                                            <small style="font-size:11px;line-height:1.3;"><?= htmlspecialchars($desc) ?></small>
+                                                            <input type="radio" name="domain_<?= $domain_id ?>_<?= $key ?>" value="<?= $level_key ?>" class="mt-1 rubric-radio" <?= $is_selected ? 'checked' : '' ?> data-domain="<?= $domain_id ?>" data-dim="<?= $key ?>">
+                                                            <select class="form-select form-select-sm rubric-desc-select" name="domain_<?= $domain_id ?>_<?= $key ?>_desc_<?= $level_key ?>" style="font-size:11px;line-height:1.3;border:none;background:transparent;padding:2px;">
+                                                                <?php foreach ($desc_options as $i => $opt): ?>
+                                                                <option value="<?= htmlspecialchars($opt) ?>" <?= ($is_selected && $saved_desc === $opt) ? 'selected' : '' ?>><?= htmlspecialchars($opt) ?></option>
+                                                                <?php endforeach; ?>
+                                                            </select>
                                                         </label>
                                                     </td>
                                                     <?php endforeach; ?>
@@ -778,13 +784,19 @@ require_once __DIR__ . '/../includes/header.php';
                                                     $rubric_levels_t2 = ['pailu' => 'पैलू', 'pravah' => 'प्रवाह', 'parvat' => 'पर्वत', 'akash' => 'आकाश'];
                                                     $level_colors_t2 = ['pailu' => '#fff3cd', 'pravah' => '#d1ecf1', 'parvat' => '#d4edda', 'akash' => '#cce5ff'];
                                                     foreach ($rubric_levels_t2 as $level_key => $level_label):
-                                                        $desc_t2 = $demo_rubric_descriptions[$domain_id][$key][$level_key] ?? '';
+                                                        $desc_data_t2 = $demo_rubric_descriptions[$domain_id][$key][$level_key] ?? '';
                                                         $is_selected_t2 = ($existing[$key . '_level_term2'] ?? '') === $level_key;
+                                                        $saved_desc_t2 = $existing[$key . '_desc_term2'] ?? '';
+                                                        $desc_options_t2 = is_array($desc_data_t2) ? $desc_data_t2 : [$desc_data_t2];
                                                     ?>
                                                     <td style="background:<?= $level_colors_t2[$level_key] ?>20;vertical-align:top;padding:6px;">
                                                         <label class="d-flex align-items-start gap-1" style="cursor:pointer;">
-                                                            <input type="radio" name="domain_<?= $domain_id ?>_<?= $key ?>_term2" value="<?= $level_key ?>" class="mt-1 rubric-radio" <?= $is_selected_t2 ? 'checked' : '' ?>>
-                                                            <small style="font-size:11px;line-height:1.3;"><?= htmlspecialchars($desc_t2) ?></small>
+                                                            <input type="radio" name="domain_<?= $domain_id ?>_<?= $key ?>_term2" value="<?= $level_key ?>" class="mt-1 rubric-radio" <?= $is_selected_t2 ? 'checked' : '' ?> data-domain="<?= $domain_id ?>" data-dim="<?= $key ?>">
+                                                            <select class="form-select form-select-sm rubric-desc-select" name="domain_<?= $domain_id ?>_<?= $key ?>_desc_term2_<?= $level_key ?>" style="font-size:11px;line-height:1.3;border:none;background:transparent;padding:2px;">
+                                                                <?php foreach ($desc_options_t2 as $i => $opt): ?>
+                                                                <option value="<?= htmlspecialchars($opt) ?>" <?= ($is_selected_t2 && $saved_desc_t2 === $opt) ? 'selected' : '' ?>><?= htmlspecialchars($opt) ?></option>
+                                                                <?php endforeach; ?>
+                                                            </select>
                                                         </label>
                                                     </td>
                                                     <?php endforeach; ?>

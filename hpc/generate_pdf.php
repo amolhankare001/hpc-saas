@@ -516,7 +516,11 @@ $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
     <?php foreach ($rubric_levels as $lv):
         $is_sel = !empty($cur) && in_array($cur, $lv['db_values'] ?? []);
         $rdkey = $rubric_desc_keys[$lv['key']] ?? 'beginner';
-        $rdtext = $domain_rubric[$ak][$rdkey] ?? '';
+        $rdtext_raw = $domain_rubric[$ak][$rdkey] ?? '';
+        $rdtext = is_array($rdtext_raw) ? ($rdtext_raw[0] ?? '') : $rdtext_raw;
+        // Use saved description from form if available
+        $saved_rdtext = $a[$ak.'_desc'] ?? '';
+        if ($is_sel && !empty($saved_rdtext)) $rdtext = $saved_rdtext;
     ?>
     <td class="<?= $is_sel ? 'sel' : '' ?>" style="font-size:7px;line-height:1.2;">
         <?php if ($is_sel): ?><div style="font-size:13px;">✅</div><?php endif; ?>
@@ -544,7 +548,11 @@ $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
     <?php foreach ($rubric_levels as $lv):
         $is_sel2 = !empty($cur2) && in_array($cur2, $lv['db_values'] ?? []);
         $rdkey2 = $rubric_desc_keys[$lv['key']] ?? 'beginner';
-        $rdtext2 = $domain_rubric[$ak][$rdkey2] ?? '';
+        $rdtext2_raw = $domain_rubric[$ak][$rdkey2] ?? '';
+        $rdtext2 = is_array($rdtext2_raw) ? ($rdtext2_raw[0] ?? '') : $rdtext2_raw;
+        // Use saved description from form if available
+        $saved_rdtext2 = $a[$ak.'_desc_term2'] ?? '';
+        if ($is_sel2 && !empty($saved_rdtext2)) $rdtext2 = $saved_rdtext2;
     ?>
     <td class="<?= $is_sel2 ? 'sel' : '' ?>" style="font-size:7px;line-height:1.2;">
         <?php if ($is_sel2): ?><div style="font-size:13px;">✅</div><?php endif; ?>
