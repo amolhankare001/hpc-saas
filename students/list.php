@@ -35,7 +35,10 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-people"></i> विद्यार्थी यादी <span class="badge bg-primary"><?= $total ?></span></h2>
-    <a href="<?= APP_URL ?>/students/add.php" class="btn btn-primary"><i class="bi bi-person-plus"></i> नवीन विद्यार्थी</a>
+    <div class="d-flex gap-2">
+        <a href="<?= APP_URL ?>/students/csv_upload.php" class="btn btn-outline-success"><i class="bi bi-file-earmark-spreadsheet"></i> CSV अपलोड</a>
+        <a href="<?= APP_URL ?>/students/add.php" class="btn btn-primary"><i class="bi bi-person-plus"></i> नवीन विद्यार्थी</a>
+    </div>
 </div>
 
 <!-- Search -->

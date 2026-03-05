@@ -416,6 +416,25 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="card mb-4">
                 <div class="card-header"><i class="bi bi-clipboard-data"></i> भाग B - डोमेन मूल्यांकन (Domain Assessment)</div>
                 <div class="card-body">
+                    <!-- Domain Progress Overview -->
+                    <div class="mb-4" id="domainProgressOverview">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong>एकूण प्रगती (Overall Progress):</strong>
+                            <span id="overallProgressText" class="badge bg-primary">0%</span>
+                        </div>
+                        <div class="progress mb-3" style="height:8px;">
+                            <div class="progress-bar bg-success" id="overallProgressBar" role="progressbar" style="width:0%"></div>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            <?php foreach ($domains as $did => $dom): ?>
+                            <button type="button" class="btn btn-sm btn-outline-primary domain-progress-btn" data-domain="<?= $did ?>" onclick="document.getElementById('domain<?= $did ?>').classList.add('show');document.querySelector('[data-bs-target=\"#domain<?= $did ?>\"]').classList.remove('collapsed');">
+                                <span class="domain-icon"><?= ['1'=>'🏃','2'=>'💗','3'=>'🧠','4'=>'📖','5'=>'🎨','6'=>'📚'][$did] ?? '📋' ?></span>
+                                <?= mb_substr($dom['name_mr'], 0, 10) ?>...
+                                <span class="badge bg-secondary ms-1 domain-pct" id="domPct<?= $did ?>">0%</span>
+                            </button>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
                     <div class="accordion" id="domainAccordion">
                         <?php foreach ($domains as $domain_id => $domain):
                             $existing = $assessments[$domain_id] ?? [];
@@ -427,6 +446,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <button class="accordion-button <?= $domain_id > 1 ? 'collapsed' : '' ?>" type="button" data-bs-toggle="collapse" data-bs-target="#domain<?= $domain_id ?>">
                                     <strong>डोमेन <?= $domain_id ?>: <?= $domain['name_mr'] ?></strong>
                                     <small class="ms-2 text-muted">(<?= $domain['name'] ?>)</small>
+                                    <span class="badge bg-info ms-auto me-2 domain-header-pct" id="domHdrPct<?= $domain_id ?>">0%</span>
                                 </button>
                             </h2>
                             <div id="domain<?= $domain_id ?>" class="accordion-collapse collapse <?= $domain_id == 1 ? 'show' : '' ?>" data-bs-parent="#domainAccordion">
@@ -1001,22 +1021,179 @@ document.querySelectorAll('.demo-dropdown').forEach(function(dropdown) {
         var targetId = this.getAttribute('data-target');
         var textarea = document.getElementById(targetId);
         if (textarea && this.value) {
-            // If textarea already has content, append with newline
             if (textarea.value.trim()) {
                 textarea.value = textarea.value.trim() + '\n\n' + this.value;
             } else {
                 textarea.value = this.value;
             }
-            // Flash effect to show content was copied
             textarea.style.backgroundColor = '#d4edda';
-            setTimeout(function() {
-                textarea.style.backgroundColor = '';
-            }, 1000);
-            // Reset dropdown to placeholder
+            setTimeout(function() { textarea.style.backgroundColor = ''; }, 1000);
             this.selectedIndex = 0;
         }
     });
 });
+
+// ========== DOMAIN PROGRESS INDICATORS ==========
+function calcDomainProgress(domainId) {
+    var accordion = document.getElementById('domain' + domainId);
+    if (!accordion) return 0;
+    var filled = 0, total = 0;
+    // Check checkboxes (goals + competencies, both terms)
+    var cbs = accordion.querySelectorAll('input[type="checkbox"]');
+    if (cbs.length > 0) { total++; var anyChecked = false; cbs.forEach(function(c){if(c.checked)anyChecked=true;}); if(anyChecked) filled++; }
+    // Check textareas (activity, questions, feedback)
+    accordion.querySelectorAll('textarea').forEach(function(ta) {
+        total++;
+        if (ta.value.trim()) filled++;
+    });
+    // Check radio buttons (rubric levels + emoji selections)
+    var radioGroups = {};
+    accordion.querySelectorAll('input[type="radio"]').forEach(function(r) {
+        if (!radioGroups[r.name]) radioGroups[r.name] = false;
+        if (r.checked) radioGroups[r.name] = true;
+    });
+    var groupNames = Object.keys(radioGroups);
+    groupNames.forEach(function(g) { total++; if(radioGroups[g]) filled++; });
+    // Check selects (parent observation, assessment dropdowns)
+    accordion.querySelectorAll('select.assessment-dropdown').forEach(function(s) {
+        total++;
+        if (s.value) filled++;
+    });
+    return total > 0 ? Math.round((filled / total) * 100) : 0;
+}
+
+function updateAllProgress() {
+    var totalPct = 0;
+    for (var d = 1; d <= 6; d++) {
+        var pct = calcDomainProgress(d);
+        var badge = document.getElementById('domPct' + d);
+        var hdrBadge = document.getElementById('domHdrPct' + d);
+        var btn = document.querySelector('.domain-progress-btn[data-domain="' + d + '"]');
+        if (badge) badge.textContent = pct + '%';
+        if (hdrBadge) hdrBadge.textContent = pct + '%';
+        // Color coding
+        var cls = pct === 0 ? 'bg-secondary' : pct < 50 ? 'bg-danger' : pct < 80 ? 'bg-warning' : 'bg-success';
+        if (badge) { badge.className = 'badge ms-1 domain-pct ' + cls; }
+        if (hdrBadge) { hdrBadge.className = 'badge ms-auto me-2 domain-header-pct ' + cls; }
+        if (btn) {
+            btn.className = 'btn btn-sm domain-progress-btn ' + (pct === 100 ? 'btn-success' : pct > 0 ? 'btn-outline-primary' : 'btn-outline-secondary');
+        }
+        totalPct += pct;
+    }
+    var overall = Math.round(totalPct / 6);
+    var bar = document.getElementById('overallProgressBar');
+    var txt = document.getElementById('overallProgressText');
+    if (bar) bar.style.width = overall + '%';
+    if (txt) txt.textContent = overall + '%';
+}
+
+// Update progress on any form change
+var hpcForm = document.getElementById('hpcForm');
+if (hpcForm) {
+    hpcForm.addEventListener('change', function() { setTimeout(updateAllProgress, 100); });
+    hpcForm.addEventListener('input', function() { setTimeout(updateAllProgress, 200); });
+    // Initial calculation
+    setTimeout(updateAllProgress, 300);
+}
+
+// ========== AUTOSAVE DRAFT (localStorage) ==========
+var AUTOSAVE_KEY = 'hpc_draft_<?= $student_id ?>_<?= academic_year() ?>';
+var autosaveTimer = null;
+var autosaveIndicator = null;
+
+function createAutosaveIndicator() {
+    var div = document.createElement('div');
+    div.id = 'autosaveStatus';
+    div.style.cssText = 'position:fixed;bottom:20px;right:20px;padding:8px 16px;border-radius:20px;font-size:13px;z-index:9999;display:none;box-shadow:0 2px 8px rgba(0,0,0,0.15);';
+    document.body.appendChild(div);
+    return div;
+}
+
+function showAutosaveStatus(msg, type) {
+    if (!autosaveIndicator) autosaveIndicator = createAutosaveIndicator();
+    autosaveIndicator.textContent = msg;
+    autosaveIndicator.style.display = 'block';
+    autosaveIndicator.style.background = type === 'success' ? '#d4edda' : type === 'info' ? '#cce5ff' : '#fff3cd';
+    autosaveIndicator.style.color = type === 'success' ? '#155724' : type === 'info' ? '#004085' : '#856404';
+    clearTimeout(autosaveIndicator._hideTimer);
+    autosaveIndicator._hideTimer = setTimeout(function() { autosaveIndicator.style.display = 'none'; }, 3000);
+}
+
+function autosaveDraft() {
+    if (!hpcForm) return;
+    var data = {};
+    // Save all form inputs
+    hpcForm.querySelectorAll('input, textarea, select').forEach(function(el) {
+        if (!el.name || el.disabled) return;
+        if (el.type === 'checkbox') {
+            if (!data[el.name]) data[el.name] = [];
+            if (el.checked) data[el.name].push(el.value);
+        } else if (el.type === 'radio') {
+            if (el.checked) data[el.name] = el.value;
+        } else {
+            data[el.name] = el.value;
+        }
+    });
+    try {
+        localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(data));
+        showAutosaveStatus('मसुदा स्वयं-जतन झाला (Auto-saved)', 'success');
+    } catch(e) {}
+}
+
+function restoreAutosave() {
+    if (!hpcForm) return;
+    try {
+        var saved = localStorage.getItem(AUTOSAVE_KEY);
+        if (!saved) return;
+        var data = JSON.parse(saved);
+        // Only restore if form is mostly empty (not already loaded from DB)
+        var hasDbData = false;
+        hpcForm.querySelectorAll('textarea').forEach(function(ta) { if(ta.value.trim()) hasDbData = true; });
+        if (hasDbData) return; // DB data takes priority
+        
+        Object.keys(data).forEach(function(name) {
+            var val = data[name];
+            if (Array.isArray(val)) {
+                // Checkboxes
+                val.forEach(function(v) {
+                    var cb = hpcForm.querySelector('input[type="checkbox"][name="' + name + '"][value="' + v + '"]');
+                    if (cb) { cb.checked = true; cb.dispatchEvent(new Event('change')); }
+                });
+            } else {
+                var el = hpcForm.querySelector('[name="' + name + '"]');
+                if (!el || el.disabled) return;
+                if (el.type === 'radio') {
+                    var radio = hpcForm.querySelector('input[type="radio"][name="' + name + '"][value="' + val + '"]');
+                    if (radio) radio.checked = true;
+                } else {
+                    el.value = val;
+                }
+            }
+        });
+        showAutosaveStatus('पूर्वीचा मसुदा पुनर्स्थापित (Draft restored)', 'info');
+        setTimeout(updateAllProgress, 500);
+    } catch(e) {}
+}
+
+if (hpcForm) {
+    // Restore saved draft on load
+    restoreAutosave();
+    // Auto-save every 30 seconds
+    setInterval(autosaveDraft, 30000);
+    // Auto-save on any change
+    hpcForm.addEventListener('change', function() {
+        clearTimeout(autosaveTimer);
+        autosaveTimer = setTimeout(autosaveDraft, 2000);
+    });
+    hpcForm.addEventListener('input', function() {
+        clearTimeout(autosaveTimer);
+        autosaveTimer = setTimeout(autosaveDraft, 3000);
+    });
+    // Clear autosave on successful submit
+    hpcForm.addEventListener('submit', function() {
+        try { localStorage.removeItem(AUTOSAVE_KEY); } catch(e) {}
+    });
+}
 </script>
 
 <?php endif; ?>
