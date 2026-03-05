@@ -9,6 +9,11 @@ $school_id = $_SESSION['school_id'];
 $school = getSchool();
 $student_id = intval($_GET['student_id'] ?? 0);
 
+// CSRF token generation
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Get students for dropdown
 $stmt = $db->prepare("SELECT id, name, name_mr, roll_no, grade FROM students WHERE school_id = ? AND is_active = 1 ORDER BY roll_no ASC, name_mr ASC");
 $stmt->execute([$school_id]);
@@ -114,6 +119,11 @@ $domains = [
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
+    // CSRF validation
+    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '')) {
+        flash('error', 'Invalid CSRF token');
+        redirect(APP_URL . '/hpc/create.php?student_id=' . $student_id);
+    }
     $teacher_code = trim($_POST['teacher_code'] ?? '');
     $status = ($_POST['save_type'] ?? 'draft') === 'complete' ? 'completed' : 'draft';
 
@@ -297,6 +307,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <!-- HPC Card Form -->
 <form method="POST" id="hpcForm">
+    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
     <!-- Student Info Banner -->
     <div class="card mb-4 border-primary">
         <div class="card-body bg-light">
