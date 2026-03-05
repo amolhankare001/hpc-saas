@@ -4,6 +4,11 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/razorpay_config.php';
 requireLogin();
 
+// CSRF token generation
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $db = getDB();
 $school_id = $_SESSION['school_id'];
 $school = getSchool();
@@ -31,6 +36,12 @@ $coupon_error = '';
 
 // Handle coupon code validation via AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    // CSRF validation for all AJAX actions
+    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '')) {
+        header('Content-Type: application/json');
+        echo json_encode(['error' => 'Invalid CSRF token']);
+        exit;
+    }
     header('Content-Type: application/json');
     
     if ($_POST['action'] === 'validate_coupon') {
@@ -230,7 +241,7 @@ document.getElementById('apply_coupon').addEventListener('click', function() {
     fetch('<?= APP_URL ?>/subscription/checkout.php?plan_id=<?= $plan_id ?>', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'action=validate_coupon&coupon_code=' + encodeURIComponent(code)
+        body: 'action=validate_coupon&coupon_code=' + encodeURIComponent(code) + '&csrf_token=' + encodeURIComponent('<?= $_SESSION['csrf_token'] ?>')
     })
     .then(r => r.json())
     .then(data => {
@@ -262,7 +273,7 @@ function initiatePayment() {
     fetch('<?= APP_URL ?>/subscription/checkout.php?plan_id=<?= $plan_id ?>', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'action=create_order&coupon_code=' + encodeURIComponent(appliedCoupon)
+        body: 'action=create_order&coupon_code=' + encodeURIComponent(appliedCoupon) + '&csrf_token=' + encodeURIComponent('<?= $_SESSION['csrf_token'] ?>')
     })
     .then(r => r.json())
     .then(data => {
@@ -289,7 +300,7 @@ function initiatePayment() {
                 fetch('<?= APP_URL ?>/subscription/checkout.php?plan_id=<?= $plan_id ?>', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: 'action=verify_payment&razorpay_order_id=' + response.razorpay_order_id + '&razorpay_payment_id=' + response.razorpay_payment_id + '&razorpay_signature=' + response.razorpay_signature
+                    body: 'action=verify_payment&razorpay_order_id=' + response.razorpay_order_id + '&razorpay_payment_id=' + response.razorpay_payment_id + '&razorpay_signature=' + response.razorpay_signature + '&csrf_token=' + encodeURIComponent('<?= $_SESSION['csrf_token'] ?>')
                 })
                 .then(r => r.json())
                 .then(result => {

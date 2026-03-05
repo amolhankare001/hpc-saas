@@ -29,8 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Handle logo upload
     if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $actual_type = $finfo->file($_FILES['logo']['tmp_name']);
         $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        if (in_array($_FILES['logo']['type'], $allowed)) {
+        if (in_array($actual_type, $allowed)) {
             $ext = pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION);
             $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
             if (in_array(strtolower($ext), $allowed_ext)) {

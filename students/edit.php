@@ -70,8 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $photo = $student['photo'];
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $actual_type = $finfo->file($_FILES['photo']['tmp_name']);
         $allowed = ['image/jpeg', 'image/png', 'image/gif'];
-        if (in_array($_FILES['photo']['type'], $allowed)) {
+        if (in_array($actual_type, $allowed)) {
             $ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
             $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
             if (in_array($ext, $allowed_ext)) {
