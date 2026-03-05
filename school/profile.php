@@ -7,14 +7,15 @@ $db = getDB();
 $school = getSchool();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $stmt = $db->prepare("UPDATE schools SET name=?, name_mr=?, address_line1=?, address_line2=?, village=?, taluka=?, district=?, state=?, pin_code=?, udise_code=?, phone=? WHERE id=?");
+    $working_days = intval($_POST['working_days'] ?? 0);
+    $stmt = $db->prepare("UPDATE schools SET name=?, name_mr=?, address_line1=?, address_line2=?, village=?, taluka=?, district=?, state=?, pin_code=?, udise_code=?, phone=?, working_days=? WHERE id=?");
     $stmt->execute([
         trim($_POST['name']), trim($_POST['name_mr']),
         trim($_POST['address_line1']), trim($_POST['address_line2']),
         trim($_POST['village']), trim($_POST['taluka']),
         trim($_POST['district']), trim($_POST['state'] ?? 'महाराष्ट्र'),
         trim($_POST['pin_code']), trim($_POST['udise_code']),
-        trim($_POST['phone']), $_SESSION['school_id']
+        trim($_POST['phone']), $working_days, $_SESSION['school_id']
     ]);
 
     // Handle logo upload
@@ -60,6 +61,11 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="col-md-3"><label class="form-label">UDISE कोड</label><input type="text" class="form-control" name="udise_code" maxlength="11" value="<?= sanitize($school['udise_code']) ?>"></div>
                 <div class="col-md-3"><label class="form-label">फोन</label><input type="tel" class="form-control" name="phone" value="<?= sanitize($school['phone']) ?>"></div>
                 <div class="col-md-3"><label class="form-label">ईमेल</label><input type="email" class="form-control" value="<?= sanitize($school['email']) ?>" disabled></div>
+                <div class="col-md-3">
+                    <label class="form-label">कामकाजाचे दिवस (प्रति महिना) <i class="bi bi-info-circle" title="सर्व विद्यार्थ्यांसाठी समान"></i></label>
+                    <input type="number" class="form-control" name="working_days" min="0" max="31" value="<?= intval($school['working_days'] ?? 0) ?>">
+                    <small class="text-muted">हे सर्व विद्यार्थ्यांसाठी लागू होईल</small>
+                </div>
                 <div class="col-md-4">
                     <label class="form-label">शाळेचा लोगो</label>
                     <?php if ($school['logo']): ?>

@@ -2,9 +2,20 @@
 // Razorpay Configuration
 // Keys are loaded from environment variables for security
 
-// Check for environment variables first, then fall back to constants
-$razorpay_key_id = getenv('RAZORPAY_KEY_ID') ?: '';
-$razorpay_key_secret = getenv('RAZORPAY_KEY_SECRET') ?: '';
+// Check for local keys file first (for shared hosting), then environment variables
+$razorpay_key_id = '';
+$razorpay_key_secret = '';
+
+$local_keys_file = __DIR__ . '/../config/razorpay_keys.local.php';
+if (file_exists($local_keys_file)) {
+    $rz_keys = require $local_keys_file;
+    $razorpay_key_id = $rz_keys['key_id'] ?? '';
+    $razorpay_key_secret = $rz_keys['key_secret'] ?? '';
+}
+
+// Fall back to environment variables
+if (empty($razorpay_key_id)) $razorpay_key_id = getenv('RAZORPAY_KEY_ID') ?: '';
+if (empty($razorpay_key_secret)) $razorpay_key_secret = getenv('RAZORPAY_KEY_SECRET') ?: '';
 
 define('RAZORPAY_KEY_ID', $razorpay_key_id);
 define('RAZORPAY_KEY_SECRET', $razorpay_key_secret);
