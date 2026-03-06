@@ -125,71 +125,48 @@ require_once 'includes/header.php';
     </div>
 </section>
 
-<!-- Pricing Preview -->
+<!-- Pricing Preview (Dynamic from DB) -->
 <section class="py-5">
     <div class="container">
         <h2 class="text-center mb-5" style="color: var(--primary);">सदस्यता योजना</h2>
         <div class="row g-4 justify-content-center">
+            <?php
+            $db = getDB();
+            $active_plans = $db->query("SELECT * FROM plans WHERE is_active = 1 ORDER BY price ASC")->fetchAll();
+            foreach ($active_plans as $ap):
+                $is_popular = ($ap['price'] == 249);
+            ?>
             <div class="col-md-3">
-                <div class="card pricing-card h-100 p-4">
+                <div class="card pricing-card <?= $is_popular ? 'popular' : '' ?> h-100 p-4" style="position:relative;">
+                    <?php if ($is_popular): ?>
+                        <span class="badge bg-primary position-absolute top-0 start-50 translate-middle">⭐ लोकप्रिय</span>
+                    <?php endif; ?>
                     <div class="card-body">
-                        <h5 class="text-muted">मोफत (Free)</h5>
-                        <div class="price my-3">&#8377;0<small>/वर्ष</small></div>
+                        <h5 class="text-muted"><?= sanitize($ap['name_mr'] ?: $ap['name']) ?> (<?= sanitize($ap['name']) ?>)</h5>
+                        <div class="price my-3">&#8377;<?= number_format($ap['price']) ?><small>/वर्ष</small></div>
                         <ul class="list-unstyled text-start">
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> 10 विद्यार्थी</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> <?= $ap['max_students'] >= 9999 ? 'अमर्यादित' : $ap['max_students'] ?> विद्यार्थी</li>
                             <li class="mb-2"><i class="bi bi-check-circle text-success"></i> HPC कार्ड तयार करा</li>
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> PDF डाउनलोड</li>
+                            <?php if ($ap['price'] > 0): ?>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success"></i> PDF डाउनलोड</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success"></i> प्राधान्य सहाय्य</li>
+                            <?php endif; ?>
+                            <?php if ($ap['price'] >= 499): ?>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success"></i> बल्क PDF निर्यात</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success"></i> कस्टम ब्रँडिंग</li>
+                            <?php endif; ?>
                         </ul>
-                        <a href="<?= APP_URL ?>/auth/register.php" class="btn btn-outline-primary w-100">मोफत सुरू करा</a>
+                        <?php if ($ap['price'] == 0): ?>
+                            <a href="<?= APP_URL ?>/auth/register.php" class="btn btn-outline-primary w-100">मोफत सुरू करा</a>
+                        <?php elseif ($is_popular): ?>
+                            <a href="<?= APP_URL ?>/auth/register.php" class="btn btn-primary w-100">नोंदणी करा</a>
+                        <?php else: ?>
+                            <a href="<?= APP_URL ?>/auth/register.php" class="btn btn-outline-primary w-100">नोंदणी करा</a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card pricing-card h-100 p-4">
-                    <div class="card-body">
-                        <h5 class="text-muted">बेसिक (Basic)</h5>
-                        <div class="price my-3">&#8377;149<small>/वर्ष</small></div>
-                        <ul class="list-unstyled text-start">
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> 10 विद्यार्थी</li>
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> HPC कार्ड तयार करा</li>
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> PDF डाउनलोड</li>
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> प्राधान्य सहाय्य</li>
-                        </ul>
-                        <a href="<?= APP_URL ?>/auth/register.php" class="btn btn-outline-primary w-100">नोंदणी करा</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card pricing-card popular h-100 p-4">
-                    <span class="badge bg-primary position-absolute top-0 start-50 translate-middle">⭐ लोकप्रिय</span>
-                    <div class="card-body">
-                        <h5 class="text-muted">स्टँडर्ड (Standard)</h5>
-                        <div class="price my-3">&#8377;249<small>/वर्ष</small></div>
-                        <ul class="list-unstyled text-start">
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> 20 विद्यार्थी</li>
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> HPC कार्ड तयार करा</li>
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> PDF डाउनलोड</li>
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> प्राधान्य सहाय्य</li>
-                        </ul>
-                        <a href="<?= APP_URL ?>/auth/register.php" class="btn btn-primary w-100">नोंदणी करा</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card pricing-card h-100 p-4">
-                    <div class="card-body">
-                        <h5 class="text-muted">प्रो (Pro)</h5>
-                        <div class="price my-3">&#8377;499<small>/वर्ष</small></div>
-                        <ul class="list-unstyled text-start">
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> अमर्यादित विद्यार्थी</li>
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> सर्व सुविधा</li>
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> बल्क PDF निर्यात</li>
-                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> कस्टम ब्रँडिंग</li>
-                        </ul>
-                        <a href="<?= APP_URL ?>/auth/register.php" class="btn btn-outline-primary w-100">नोंदणी करा</a>
-                    </div>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>

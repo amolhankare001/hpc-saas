@@ -5,6 +5,12 @@ requireLogin();
 
 $db = getDB();
 $school_id = $_SESSION['school_id'];
+$school = getSchool();
+$plan_price_stmt = $db->prepare("SELECT p.price FROM plans p WHERE p.id = ?");
+$plan_price_stmt->execute([$school['plan_id'] ?? 0]);
+$is_free_plan = true;
+$plan_row = $plan_price_stmt->fetch();
+if ($plan_row && floatval($plan_row['price']) > 0) $is_free_plan = false;
 
 $search = trim($_GET['search'] ?? '');
 $status_filter = trim($_GET['status'] ?? '');
@@ -111,7 +117,11 @@ require_once __DIR__ . '/../includes/header.php';
                             <td>
                                 <a href="<?= APP_URL ?>/hpc/view.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-primary" title="पहा"><i class="bi bi-eye"></i></a>
                                 <a href="<?= APP_URL ?>/hpc/create.php?student_id=<?= $c['student_id'] ?>" class="btn btn-sm btn-outline-warning" title="संपादन"><i class="bi bi-pencil"></i></a>
-                                <a href="<?= APP_URL ?>/hpc/generate_pdf.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-success" title="PDF"><i class="bi bi-file-pdf"></i></a>
+                                <?php if ($is_free_plan): ?>
+                                    <a href="<?= APP_URL ?>/subscription/plans.php" class="btn btn-sm btn-outline-warning" title="PDF साठी अपग्रेड करा"><i class="bi bi-lock"></i></a>
+                                <?php else: ?>
+                                    <a href="<?= APP_URL ?>/hpc/generate_pdf.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-success" title="PDF"><i class="bi bi-file-pdf"></i></a>
+                                <?php endif; ?>
                             </td>
                         </tr>
                         <?php endforeach; ?>

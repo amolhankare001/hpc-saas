@@ -20,6 +20,15 @@ if (!$data) {
 
 $school = getSchool();
 
+// Block PDF generation for free plan users (price = 0)
+$plan_stmt = $db->prepare("SELECT p.price FROM plans p WHERE p.id = ?");
+$plan_stmt->execute([$school['plan_id'] ?? 0]);
+$current_plan = $plan_stmt->fetch();
+if (!$current_plan || floatval($current_plan['price']) <= 0) {
+    flash('error', 'PDF तयार करण्यासाठी सशुल्क योजना आवश्यक आहे. कृपया अपग्रेड करा.');
+    redirect(APP_URL . '/subscription/plans.php');
+}
+
 $stmt = $db->prepare("SELECT * FROM hpc_domain_assessments WHERE hpc_card_id = ? ORDER BY domain_id ASC");
 $stmt->execute([$id]);
 $assessments = [];

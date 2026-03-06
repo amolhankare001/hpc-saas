@@ -51,7 +51,11 @@ require_once __DIR__ . '/../includes/header.php';
                 <ul class="list-unstyled text-start">
                     <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> <?= $plan['max_students'] >= 9999 ? 'अमर्यादित' : $plan['max_students'] ?> विद्यार्थी</li>
                     <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> HPC कार्ड तयार करा</li>
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> PDF डाउनलोड</li>
+                    <?php if ($plan['price'] > 0): ?>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> PDF डाउनलोड</li>
+                    <?php else: ?>
+                        <li class="mb-2 text-muted"><i class="bi bi-x-circle text-danger"></i> PDF डाउनलोड (अपग्रेड आवश्यक)</li>
+                    <?php endif; ?>
                     <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> ड्रॉपडाउन मेनू</li>
                     <?php if ($plan['price'] > 0): ?>
                         <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> प्राधान्य सहाय्य</li>

@@ -6,6 +6,12 @@ requireLogin();
 $db = getDB();
 $school_id = $_SESSION['school_id'];
 $id = intval($_GET['id'] ?? 0);
+$school = getSchool();
+$plan_price_stmt = $db->prepare("SELECT p.price FROM plans p WHERE p.id = ?");
+$plan_price_stmt->execute([$school['plan_id'] ?? 0]);
+$is_free_plan = true;
+$plan_row = $plan_price_stmt->fetch();
+if ($plan_row && floatval($plan_row['price']) > 0) $is_free_plan = false;
 
 // Get HPC card
 $stmt = $db->prepare("SELECT h.*, s.*, s.id as student_id, h.id as hpc_id, h.status as hpc_status, h.created_at as hpc_created_at
@@ -95,7 +101,11 @@ require_once __DIR__ . '/../includes/header.php';
     <h2><i class="bi bi-card-checklist"></i> HPC कार्ड</h2>
     <div>
         <a href="<?= APP_URL ?>/hpc/create.php?student_id=<?= $data['student_id'] ?>" class="btn btn-warning"><i class="bi bi-pencil"></i> संपादन</a>
-        <a href="<?= APP_URL ?>/hpc/generate_pdf.php?id=<?= $id ?>" class="btn btn-success"><i class="bi bi-file-pdf"></i> PDF तयार करा</a>
+        <?php if ($is_free_plan): ?>
+            <a href="<?= APP_URL ?>/subscription/plans.php" class="btn btn-warning" title="PDF साठी अपग्रेड करा"><i class="bi bi-lock"></i> PDF (अपग्रेड करा)</a>
+        <?php else: ?>
+            <a href="<?= APP_URL ?>/hpc/generate_pdf.php?id=<?= $id ?>" class="btn btn-success"><i class="bi bi-file-pdf"></i> PDF तयार करा</a>
+        <?php endif; ?>
         <button class="btn btn-secondary" onclick="printHPC()"><i class="bi bi-printer"></i> प्रिंट</button>
         <a href="<?= APP_URL ?>/hpc/list.php" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> मागे</a>
     </div>
