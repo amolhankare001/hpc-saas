@@ -41,15 +41,24 @@ if (!$data) {
     redirect(APP_URL . '/hpc/list.php');
 }
 
-$school = getSchool();
+// Fetch school data - admin uses school_id from HPC card, regular user uses session
+if ($is_admin) {
+    $stmt_school = $db->prepare("SELECT s.*, p.name as plan_name, p.max_students FROM schools s LEFT JOIN plans p ON s.plan_id = p.id WHERE s.id = ?");
+    $stmt_school->execute([$school_id]);
+    $school = $stmt_school->fetch();
+} else {
+    $school = getSchool();
+}
 
-// Block PDF generation for free plan users (price = 0)
-$plan_stmt = $db->prepare("SELECT p.price FROM plans p WHERE p.id = ?");
-$plan_stmt->execute([$school['plan_id'] ?? 0]);
-$current_plan = $plan_stmt->fetch();
-if (!$current_plan || floatval($current_plan['price']) <= 0) {
-    flash('error', 'PDF तयार करण्यासाठी सशुल्क योजना आवश्यक आहे. कृपया अपग्रेड करा.');
-    redirect(APP_URL . '/subscription/plans.php');
+// Block PDF generation for free plan users (admin can always generate)
+if (!$is_admin) {
+    $plan_stmt = $db->prepare("SELECT p.price FROM plans p WHERE p.id = ?");
+    $plan_stmt->execute([$school['plan_id'] ?? 0]);
+    $current_plan = $plan_stmt->fetch();
+    if (!$current_plan || floatval($current_plan['price']) <= 0) {
+        flash('error', 'PDF तयार करण्यासाठी सशुल्क योजना आवश्यक आहे. कृपया अपग्रेड करा.');
+        redirect(APP_URL . '/subscription/plans.php');
+    }
 }
 
 $stmt = $db->prepare("SELECT * FROM hpc_domain_assessments WHERE hpc_card_id = ? ORDER BY domain_id ASC");
