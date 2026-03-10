@@ -1,5 +1,7 @@
 <?php
-// v2.1 - Responsive rubric layout: separate pages for rubric tables and feedback
+// v3.0 - Force OPcache revalidation on every request
+if (function_exists('opcache_invalidate')) { opcache_invalidate(__FILE__, true); }
+// Responsive rubric layout: separate pages for rubric tables and feedback
 header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Pragma: no-cache');
 header('Expires: 0');
