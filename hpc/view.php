@@ -104,7 +104,7 @@ require_once __DIR__ . '/../includes/header.php';
         <?php if ($is_free_plan): ?>
             <a href="<?= APP_URL ?>/subscription/plans.php" class="btn btn-warning" title="PDF साठी अपग्रेड करा"><i class="bi bi-lock"></i> PDF (अपग्रेड करा)</a>
         <?php else: ?>
-            <a href="<?= APP_URL ?>/hpc/generate_pdf.php?id=<?= $id ?>" class="btn btn-success"><i class="bi bi-file-pdf"></i> PDF तयार करा</a>
+            <a href="<?= APP_URL ?>/generate_pdf.php?id=<?= $id ?>" class="btn btn-success"><i class="bi bi-file-pdf"></i> PDF तयार करा</a>
         <?php endif; ?>
         <button class="btn btn-secondary" onclick="printHPC()"><i class="bi bi-printer"></i> प्रिंट</button>
         <a href="<?= APP_URL ?>/hpc/list.php" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> मागे</a>

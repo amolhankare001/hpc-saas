@@ -263,7 +263,7 @@ th{background:#E3F2FD;font-weight:600;text-align:center;}
 
 <div class="np">
 <button onclick="generatePDF()" style="padding:10px 30px;font-size:15px;background:#E65100;color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:inherit;">🖨️ प्रिंट करा / PDF सेव करा</button>
-<p style="margin-top:5px;font-size:11px;color:#666;">प्रिंट करताना "Save as PDF" निवडा | A4 साइज | एकूण 17 पेज</p>
+<p style="margin-top:5px;font-size:11px;color:#666;">प्रिंट करताना "Save as PDF" निवडा | A4 साइज | एकूण 23 पेज</p>
 </div>
 <script>
 function generatePDF(){
@@ -777,7 +777,7 @@ $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
 </div>
 <?php $page_num += 3; endforeach; ?>
 
-<!-- PAGE 16: भाग क - Summary -->
+<!-- PAGE 22: भाग क - Summary -->
 <div class="page" style="padding:5mm 7mm;">
 <div style="background:linear-gradient(135deg,#1A237E,#283593);color:#fff;text-align:center;padding:6px;font-size:16px;font-weight:700;border-radius:6px;margin-bottom:2px;">भाग क</div>
 <div style="text-align:center;font-size:13px;font-weight:600;color:#1A237E;margin-bottom:1px;">शैक्षणिक वर्षाचा सारांश</div>
@@ -829,10 +829,10 @@ foreach ($dsn as $dc => $dn2):
     <div class="sigb"><div style="min-height:30px;"></div>मुख्याध्यापक स्वाक्षरी</div>
     <div class="sigb"><div style="min-height:30px;"></div>पालक स्वाक्षरी</div>
 </div>
-<div class="pf">समग्र प्रगती पत्रक (HPC) | <?= sanitize($school['name_mr'] ?: $school['name']) ?> | पान १६</div>
+<div class="pf">समग्र प्रगती पत्रक (HPC) | <?= sanitize($school['name_mr'] ?: $school['name']) ?> | पान २२</div>
 </div>
 
-<!-- PAGE 17: Final Annual Feedback -->
+<!-- PAGE 23: Final Annual Feedback -->
 <div class="page" style="padding:5mm 7mm;">
 <div style="background:linear-gradient(135deg,#1565C0,#1976D2);color:#fff;text-align:center;padding:8px 12px;font-size:18px;font-weight:700;border-radius:8px;margin-bottom:5px;">✍️ शिक्षकांचा अंतिम सर्वकष वार्षिक अभिप्राय</div>
 <div style="border-bottom:3px solid #1565C0;margin:0 15px 6px;"></div>
@@ -870,7 +870,7 @@ endif; ?>
     <div style="font-size:8px;color:#666;margin-top:2px;">बाल संरक्षण हक्क | मुलांच्या सुरक्षिततेबद्दल माहिती असल्यास संपर्क करा</div>
 </div>
 <div style="text-align:center;margin-top:5px;font-size:9px;color:#999;">दिनांक: _________________ | 🏫 <?= sanitize($school['name_mr'] ?: $school['name']) ?></div>
-<div class="pf">समग्र प्रगती पत्रक (HPC) | <?= sanitize($school['name_mr'] ?: $school['name']) ?> | पान १७</div>
+<div class="pf">समग्र प्रगती पत्रक (HPC) | <?= sanitize($school['name_mr'] ?: $school['name']) ?> | पान २३</div>
 </div>
 
 </body>
