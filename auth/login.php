@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $school = $stmt->fetch();
 
         if ($school && password_verify($password, $school['password'])) {
+            session_regenerate_id(true);
             $_SESSION['school_id'] = $school['id'];
             flash('success', 'लॉगिन यशस्वी! स्वागत आहे.');
             redirect(APP_URL . '/dashboard.php');

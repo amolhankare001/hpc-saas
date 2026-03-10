@@ -34,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $db->prepare("INSERT INTO schools (name, name_mr, email, phone, password, udise_code, district, taluka, village, pin_code, plan_id, subscription_start, subscription_end) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 12 MONTH))");
             $stmt->execute([$name, $name_mr, $email, $phone, $hashed, $udise_code, $district, $taluka, $village, $pin_code]);
             
+            session_regenerate_id(true);
             $_SESSION['school_id'] = $db->lastInsertId();
             flash('success', 'नोंदणी यशस्वी! आपले स्वागत आहे.');
             redirect(APP_URL . '/dashboard.php');
