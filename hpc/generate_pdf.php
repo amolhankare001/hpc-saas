@@ -228,6 +228,8 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:#333;background:#f0f0f0;}
 .page{width:210mm;height:297mm;margin:0 auto;padding:6mm 8mm;page-break-after:always;page-break-inside:avoid;position:relative;background:#fff;overflow:hidden;}
+.page-flow{width:210mm;min-height:297mm;height:auto;margin:0 auto;padding:6mm 8mm;page-break-before:always;position:relative;background:#fff;overflow:visible;}
+.section-avoid{page-break-inside:avoid;}
 .page:last-child{page-break-after:auto;}
 .cover{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,#FFF8E1 0%,#FFE0B2 100%);}
 .sh-o{background:linear-gradient(135deg,#E65100,#FF8F00);color:#fff;text-align:center;padding:5px 10px;font-size:13px;font-weight:700;border-radius:6px;margin-bottom:5px;}
@@ -271,16 +273,16 @@ th{background:#E3F2FD;font-weight:600;text-align:center;}
 .lr{display:flex;align-items:center;margin:3px 5px;font-size:12px;}
 .lc{width:14px;height:14px;border:2px solid #666;margin-right:5px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;border-radius:2px;}
 .lc.ck{border-color:#D32F2F;background:#FFEBEE;color:#D32F2F;font-weight:700;}
-@media print{.np{display:none !important;}.page{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:297mm;overflow:hidden;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}body{background:#fff;margin:0;padding:0;}.cover{background:linear-gradient(180deg,#FFF8E1 0%,#FFE0B2 100%) !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.dh,.sh-o,.sh-b,.sh-g,.sh-r,.sh-b2,.rtbl th,.rtbl .ac,.rtbl .sel,.cg-box,.cb,.att th,.ffb,.mc{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
-@media screen{.page{border:1px solid #ddd;margin:6px auto;box-shadow:0 2px 8px rgba(0,0,0,0.12);}}
-@media screen and (max-width:768px){.page{width:210mm;min-height:297mm;padding:6mm 8mm;overflow:hidden;}.g2{grid-template-columns:1fr 1fr;}body{overflow-x:auto;min-width:210mm;}.np{position:sticky;top:0;z-index:999;padding:8px;}.np button{width:100%;font-size:16px;padding:12px;}}
+@media print{.np{display:none !important;}.page{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:297mm;overflow:hidden;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page-flow{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:auto;min-height:auto;overflow:visible;page-break-before:always;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.section-avoid{page-break-inside:avoid;}body{background:#fff;margin:0;padding:0;}.cover{background:linear-gradient(180deg,#FFF8E1 0%,#FFE0B2 100%) !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.dh,.sh-o,.sh-b,.sh-g,.sh-r,.sh-b2,.rtbl th,.rtbl .ac,.rtbl .sel,.cg-box,.cb,.att th,.ffb,.mc{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+@media screen{.page{border:1px solid #ddd;margin:6px auto;box-shadow:0 2px 8px rgba(0,0,0,0.12);}.page-flow{border:1px solid #ddd;margin:6px auto;box-shadow:0 2px 8px rgba(0,0,0,0.12);}}
+@media screen and (max-width:768px){.page,.page-flow{width:210mm;min-height:297mm;padding:6mm 8mm;}.page{overflow:hidden;}.page-flow{overflow:visible;height:auto;}.g2{grid-template-columns:1fr 1fr;}body{overflow-x:auto;min-width:210mm;}.np{position:sticky;top:0;z-index:999;padding:8px;}.np button{width:100%;font-size:16px;padding:12px;}}
 </style>
 </head>
 <body>
 
 <div class="np">
 <button onclick="generatePDF()" style="padding:10px 30px;font-size:15px;background:#E65100;color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:inherit;">🖨️ प्रिंट करा / PDF सेव करा</button>
-<p style="margin-top:5px;font-size:11px;color:#666;">प्रिंट करताना "Save as PDF" निवडा | A4 साइज | एकूण 23 पेज</p>
+<p style="margin-top:5px;font-size:11px;color:#666;">प्रिंट करताना "Save as PDF" निवडा | A4 साइज | डायनॅमिक पेज</p>
 </div>
 <script>
 function generatePDF(){
@@ -552,9 +554,8 @@ foreach ($interest_list as $il):
 <div class="pf">समग्र प्रगती पत्रक (HPC) | <?= sanitize($school['name_mr'] ?: $school['name']) ?> | पान ३</div>
 </div>
 
-<!-- DOMAIN PAGES: 2 pages per domain = Pages 4-15 -->
+<!-- DOMAIN PAGES: Dynamic layout - content flows naturally, pages break automatically -->
 <?php
-$page_num = 4;
 $dcolors = [
     1=>['bg'=>'linear-gradient(135deg,#E65100,#FF8F00)'],
     2=>['bg'=>'linear-gradient(135deg,#1565C0,#42A5F5)'],
@@ -573,8 +574,11 @@ foreach ($domain_info as $did => $dn):
     if (!is_array($saved_comps_t2)) $saved_comps_t2 = [];
     $dc = $dcolors[$did] ?? $dcolors[1];
 ?>
-<!-- Domain <?= $did ?> Page 1 -->
-<div class="page">
+<!-- Domain <?= $did ?>: Dynamic Flow -->
+<div class="page-flow">
+
+<!-- Domain Header & CG Goals -->
+<div class="section-avoid">
 <div class="dh" style="background:<?= $dc['bg'] ?>;">
     क्षेत्र क्र. <?= $did ?> : विकास क्षेत्र / विषय – <?= $dn['name_mr'] ?>
     <small>(<?= $dn['name'] ?>)</small>
@@ -592,13 +596,16 @@ foreach ($domain_info as $did => $dn):
 </div>
 <?php endforeach; ?>
 </div>
-<!-- Term 1 -->
+</div>
+
+<!-- Term 1: Competencies & Activities -->
+<div class="section-avoid">
 <div class="sh-r">सत्र पहिले (Term 1)</div>
 <div class="cb">
 <div style="font-weight:700;font-size:13px;margin-bottom:4px;">क्षमता (Competencies) :</div>
 <?php foreach ($dn['competencies'] as $ccode => $cdesc):
     $comp_sel = in_array($ccode, $saved_comps);
-    if (!$comp_sel) continue; // Only show selected competencies
+    if (!$comp_sel) continue;
 ?>
 <div class="ci">
     <span style="color:#D32F2F;font-size:13px;">✅</span>
@@ -611,13 +618,16 @@ foreach ($domain_info as $did => $dn):
 <div class="ab"><?= nl2br(sanitize($a['activity_mr'] ?? '-')) ?></div>
 <div class="sh-b" style="font-size:12px;padding:4px 8px;">❓ मूल्यांकनासाठीचे प्रश्न (Questions - Term 1)</div>
 <div class="ab"><?= nl2br(sanitize($a['assessment_questions_mr'] ?? '-')) ?></div>
-<!-- Term 2 -->
+</div>
+
+<!-- Term 2: Competencies & Activities -->
+<div class="section-avoid">
 <div class="sh-b2" style="margin-top:5px;">सत्र दुसरे (Term 2)</div>
 <div class="cb">
 <div style="font-weight:700;font-size:13px;margin-bottom:4px;">क्षमता (Competencies) :</div>
 <?php foreach ($dn['competencies'] as $ccode => $cdesc):
     $comp_sel2 = in_array($ccode, $saved_comps_t2);
-    if (!$comp_sel2) continue; // Only show selected competencies
+    if (!$comp_sel2) continue;
 ?>
 <div class="ci">
     <span style="color:#D32F2F;font-size:13px;">✅</span>
@@ -630,16 +640,10 @@ foreach ($domain_info as $did => $dn):
 <div class="ab"><?= nl2br(sanitize($a['activity_mr_term2'] ?? '-')) ?></div>
 <div class="sh-b" style="font-size:12px;padding:4px 8px;">❓ मूल्यांकनासाठीचे प्रश्न (Questions - Term 2)</div>
 <div class="ab"><?= nl2br(sanitize($a['assessment_questions_mr_term2'] ?? '-')) ?></div>
-<div class="pf">समग्र प्रगती पत्रक (HPC) | क्षेत्र <?= $did ?>: <?= $dn['name_mr'] ?> | पान <?= $page_num ?></div>
 </div>
 
-<!-- Domain <?= $did ?> Page 2: Rubric Tables -->
-<div class="page">
-<div class="dh" style="background:<?= $dc['bg'] ?>;">
-    मूल्यांकन रुब्रिक (निकषसंच) – क्षेत्र <?= $did ?>: <?= $dn['name_mr'] ?>
-    <small>Assessment Rubric - Term 1 & Term 2</small>
-</div>
 <!-- Rubric Term 1 -->
+<div class="section-avoid">
 <?php
 $rubric_desc_keys = ['pailu'=>'pailu','pravah'=>'pravah','parvat'=>'parvat','akash'=>'akash'];
 $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
@@ -674,7 +678,10 @@ $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
 </tr>
 <?php endforeach; ?>
 </table>
+</div>
+
 <!-- Rubric Term 2 -->
+<div class="section-avoid">
 <div style="font-weight:700;font-size:13px;margin:8px 0 4px;color:#1A237E;">📊 रुब्रिक (निकषसंच) – सत्र दुसरे</div>
 <table class="rtbl">
 <tr>
@@ -705,22 +712,19 @@ $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
 </tr>
 <?php endforeach; ?>
 </table>
-<div class="pf">समग्र प्रगती पत्रक (HPC) | क्षेत्र <?= $did ?>: <?= $dn['name_mr'] ?> | पान <?= $page_num + 1 ?></div>
 </div>
 
-<!-- Domain <?= $did ?> Page 3: Feedback & Observations -->
-<div class="page">
-<div class="dh" style="background:<?= $dc['bg'] ?>;padding:5px 8px;font-size:13px;margin-bottom:3px;">
-    अभिप्राय व निरीक्षणे – क्षेत्र <?= $did ?>: <?= $dn['name_mr'] ?>
-    <small>Teacher Feedback, Self Assessment, Peer Assessment & Parent Observation</small>
-</div>
 <!-- Teacher Feedback -->
+<div class="section-avoid">
 <div class="sh-b" style="font-size:10px;padding:3px 8px;margin:2px 0;">👩‍🏫 शिक्षक अभिप्राय (Teacher Feedback)</div>
 <div class="g2" style="gap:4px;">
     <div class="bx" style="padding:3px;"><div class="sh-r" style="padding:2px 5px;font-size:9px;margin-bottom:2px;">सत्र पहिले</div><div class="ab" style="min-height:20px;padding:3px 5px;font-size:10px;line-height:1.4;"><?= nl2br(sanitize($a['teacher_feedback_mr'] ?? '-')) ?></div></div>
     <div class="bx" style="padding:3px;"><div class="sh-b2" style="padding:2px 5px;font-size:9px;margin-bottom:2px;">सत्र दुसरे</div><div class="ab" style="min-height:20px;padding:3px 5px;font-size:10px;line-height:1.4;"><?= nl2br(sanitize($a['teacher_feedback_mr_term2'] ?? '-')) ?></div></div>
 </div>
+</div>
+
 <!-- Self Assessment -->
+<div class="section-avoid">
 <div class="sh-g" style="font-size:10px;padding:3px 8px;margin:3px 0 2px;">😊 स्व-मूल्यांकन (Self Assessment)</div>
 <div class="g2" style="gap:4px;">
 <div class="bx" style="padding:3px;">
@@ -752,7 +756,10 @@ $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
     <?php if (!empty($a['self_assessment_term2'])): ?><div style="font-size:8px;padding:2px 4px;background:#F5F5F5;border-radius:3px;line-height:1.2;"><?= sanitize(mb_substr($a['self_assessment_term2'], 0, 100)) ?></div><?php endif; ?>
 </div>
 </div>
+</div>
+
 <!-- Peer Assessment -->
+<div class="section-avoid">
 <div class="sh-b" style="font-size:10px;padding:3px 8px;margin:3px 0 2px;">👫 सहकारी मूल्यांकन (Peer Assessment)</div>
 <div class="g2" style="gap:4px;">
 <div class="bx" style="padding:3px;">
@@ -784,15 +791,19 @@ $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
     <?php if (!empty($a['peer_assessment_term2'])): ?><div style="font-size:8px;padding:2px 4px;background:#F5F5F5;border-radius:3px;line-height:1.2;"><?= sanitize(mb_substr($a['peer_assessment_term2'], 0, 100)) ?></div><?php endif; ?>
 </div>
 </div>
+</div>
+
 <!-- Parent Observation -->
+<div class="section-avoid">
 <div class="sh-g" style="font-size:10px;padding:3px 8px;margin:3px 0 2px;">👨‍👩‍👧 पालक निरीक्षण (Parent Observation)</div>
 <div class="g2" style="gap:4px;">
     <div class="bx" style="padding:3px;"><div class="sh-r" style="padding:2px 5px;font-size:9px;margin-bottom:2px;">सत्र पहिले</div><div class="ab" style="min-height:20px;padding:3px 5px;font-size:10px;line-height:1.4;"><?= nl2br(sanitize($a['parent_observation_mr'] ?? '-')) ?></div></div>
     <div class="bx" style="padding:3px;"><div class="sh-b2" style="padding:2px 5px;font-size:9px;margin-bottom:2px;">सत्र दुसरे</div><div class="ab" style="min-height:20px;padding:3px 5px;font-size:10px;line-height:1.4;"><?= nl2br(sanitize($a['parent_observation_mr_term2'] ?? '-')) ?></div></div>
 </div>
-<div class="pf">समग्र प्रगती पत्रक (HPC) | क्षेत्र <?= $did ?>: <?= $dn['name_mr'] ?> | पान <?= $page_num + 2 ?></div>
 </div>
-<?php $page_num += 3; endforeach; ?>
+
+</div>
+<?php endforeach; ?>
 
 <!-- PAGE 22: भाग क - Summary -->
 <div class="page" style="padding:5mm 7mm;">
