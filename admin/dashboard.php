@@ -329,11 +329,20 @@ $all_plans = $db->query("SELECT * FROM plans WHERE is_active = 1 ORDER BY price 
 
     <!-- Recent Schools -->
     <div class="card mb-4">
-        <div class="card-header"><i class="bi bi-clock-history"></i> अलीकडील शाळा नोंदणी</div>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-clock-history"></i> अलीकडील शाळा नोंदणी</span>
+            <div>
+                <a href="<?= APP_URL ?>/admin/schools.php" class="btn btn-sm btn-outline-secondary">सर्व</a>
+                <a href="<?= APP_URL ?>/admin/schools.php?filter=paid" class="btn btn-sm btn-outline-success">सशुल्क</a>
+                <a href="<?= APP_URL ?>/admin/schools.php?filter=free" class="btn btn-sm btn-outline-warning">मोफत</a>
+                <a href="<?= APP_URL ?>/admin/schools.php?filter=active" class="btn btn-sm btn-outline-primary">सक्रिय</a>
+                <a href="<?= APP_URL ?>/admin/schools.php?filter=inactive" class="btn btn-sm btn-outline-danger">निष्क्रिय</a>
+            </div>
+        </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
-                    <thead><tr><th>शाळा</th><th>ईमेल</th><th>योजना</th><th>विद्यार्थी</th><th>सदस्यता</th><th>तारीख</th></tr></thead>
+                    <thead><tr><th>शाळा</th><th>ईमेल</th><th>योजना</th><th>विद्यार्थी</th><th>सदस्यता</th><th>तारीख</th><th>क्रिया</th></tr></thead>
                     <tbody>
                         <?php foreach ($recent_schools as $s): ?>
                         <tr>
@@ -349,6 +358,9 @@ $all_plans = $db->query("SELECT * FROM plans WHERE is_active = 1 ORDER BY price 
                                 <?php endif; ?>
                             </td>
                             <td><?= date('d/m/Y', strtotime($s['created_at'])) ?></td>
+                            <td>
+                                <a href="<?= APP_URL ?>/admin/school_hpc.php?school_id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-info" title="HPC कार्ड पहा"><i class="bi bi-card-checklist"></i></a>
+                            </td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>

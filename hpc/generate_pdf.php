@@ -7,17 +7,34 @@ header('Pragma: no-cache');
 header('Expires: 0');
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/demo_data.php';
-requireLogin();
+
+// Allow admin access or school login
+$is_admin = isset($_SESSION['admin_id']);
+if (!$is_admin) {
+    requireLogin();
+}
 
 $db = getDB();
-$school_id = $_SESSION['school_id'];
 $id = intval($_GET['id'] ?? 0);
 
-$stmt = $db->prepare("SELECT h.*, s.*, s.id as student_id, h.id as hpc_id
-    FROM hpc_cards h JOIN students s ON h.student_id = s.id 
-    WHERE h.id = ? AND h.school_id = ?");
-$stmt->execute([$id, $school_id]);
-$data = $stmt->fetch();
+if ($is_admin) {
+    // Admin can view any school's HPC card
+    $stmt = $db->prepare("SELECT h.*, s.*, s.id as student_id, h.id as hpc_id
+        FROM hpc_cards h JOIN students s ON h.student_id = s.id 
+        WHERE h.id = ?");
+    $stmt->execute([$id]);
+    $data = $stmt->fetch();
+    if ($data) {
+        $school_id = $data['school_id'];
+    }
+} else {
+    $school_id = $_SESSION['school_id'];
+    $stmt = $db->prepare("SELECT h.*, s.*, s.id as student_id, h.id as hpc_id
+        FROM hpc_cards h JOIN students s ON h.student_id = s.id 
+        WHERE h.id = ? AND h.school_id = ?");
+    $stmt->execute([$id, $school_id]);
+    $data = $stmt->fetch();
+}
 
 if (!$data) {
     flash('error', 'HPC card not found.');

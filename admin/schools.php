@@ -218,6 +218,7 @@ $total_inactive = $db->query("SELECT COUNT(*) FROM schools WHERE is_active = 0")
                             </td>
                             <td><small><?= date('d/m/Y', strtotime($s['created_at'])) ?></small></td>
                             <td>
+                                <a href="<?= APP_URL ?>/admin/school_hpc.php?school_id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-info" title="HPC कार्ड पहा"><i class="bi bi-card-checklist"></i></a>
                                 <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal<?= $s['id'] ?>" title="पहा / संपादित करा"><i class="bi bi-pencil-square"></i></button>
                                 <form method="POST" class="d-inline">
                                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
