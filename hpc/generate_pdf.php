@@ -227,9 +227,9 @@ th{background:#E3F2FD;font-weight:600;text-align:center;}
 .cc{color:#D32F2F;font-weight:700;white-space:nowrap;min-width:42px;font-size:13px;}
 .ab{border:1px solid #ddd;border-radius:6px;padding:6px 8px;margin:3px 0;min-height:28px;background:#FAFAFA;font-size:12px;line-height:1.6;}
 .rtbl{width:100%;border-collapse:collapse;margin:6px 0;}
-.rtbl td,.rtbl th{border:1px solid #aaa;padding:8px 7px;text-align:center;vertical-align:top;font-size:12px;line-height:1.5;}
-.rtbl th{background:#E8EAF6;font-weight:700;font-size:13px;padding:10px 8px;}
-.rtbl .ac{background:#F3E5F5;font-weight:700;font-size:13px;width:100px;vertical-align:middle;padding:10px 6px;}
+.rtbl td,.rtbl th{border:1px solid #aaa;padding:6px 5px;text-align:center;vertical-align:top;font-size:11px;line-height:1.4;}
+.rtbl th{background:#E8EAF6;font-weight:700;font-size:12px;padding:7px 6px;}
+.rtbl .ac{background:#F3E5F5;font-weight:700;font-size:12px;width:90px;vertical-align:middle;padding:6px 4px;}
 .rtbl .lh{font-size:10px;font-weight:700;}
 .rtbl .sel{background:#C8E6C9 !important;font-weight:700;border:2px solid #4CAF50;}
 .eo{display:inline-block;text-align:center;margin:0 4px;padding:3px 6px;border-radius:8px;border:2px solid transparent;position:relative;}
@@ -250,15 +250,23 @@ th{background:#E3F2FD;font-weight:600;text-align:center;}
 .lc.ck{border-color:#D32F2F;background:#FFEBEE;color:#D32F2F;font-weight:700;}
 @media print{.np{display:none !important;}.page{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:297mm;overflow:hidden;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}body{background:#fff;margin:0;padding:0;}.cover{background:linear-gradient(180deg,#FFF8E1 0%,#FFE0B2 100%) !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.dh,.sh-o,.sh-b,.sh-g,.sh-r,.sh-b2,.rtbl th,.rtbl .ac,.rtbl .sel,.cg-box,.cb,.att th,.ffb,.mc{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
 @media screen{.page{border:1px solid #ddd;margin:6px auto;box-shadow:0 2px 8px rgba(0,0,0,0.12);}}
-@media screen and (max-width:768px){.page{width:210mm;min-height:297mm;padding:6mm 8mm;overflow:hidden;}.g2{grid-template-columns:1fr 1fr;}body{overflow-x:auto;min-width:210mm;}}
+@media screen and (max-width:768px){.page{width:210mm;min-height:297mm;padding:6mm 8mm;overflow:hidden;}.g2{grid-template-columns:1fr 1fr;}body{overflow-x:auto;min-width:210mm;}.np{position:sticky;top:0;z-index:999;padding:8px;}.np button{width:100%;font-size:16px;padding:12px;}}
 </style>
 </head>
 <body>
 
 <div class="np">
-<button onclick="window.print()" style="padding:10px 30px;font-size:15px;background:#E65100;color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:inherit;">🖨️ प्रिंट करा / PDF सेव करा</button>
-<p style="margin-top:5px;font-size:11px;color:#666;">प्रिंट करताना "Save as PDF" निवडा | एकूण 17 पेज</p>
+<button onclick="generatePDF()" style="padding:10px 30px;font-size:15px;background:#E65100;color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:inherit;">🖨️ प्रिंट करा / PDF सेव करा</button>
+<p style="margin-top:5px;font-size:11px;color:#666;">प्रिंट करताना "Save as PDF" निवडा | A4 साइज | एकूण 17 पेज</p>
 </div>
+<script>
+function generatePDF(){
+    try{window.print();}catch(e){
+        // Fallback for mobile browsers that block window.print
+        alert('कृपया ब्राउझर मेनू मधून "Share" > "Print" वापरा किंवा Desktop mode मध्ये PDF तयार करा.');
+    }
+}
+</script>
 
 <!-- PAGE 1: COVER -->
 <div class="page cover">
@@ -677,80 +685,80 @@ $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
 <?php endforeach; ?>
 </table>
 <!-- Teacher Feedback -->
-<div class="sh-b" style="font-size:13px;padding:6px 10px;margin-top:6px;">👩‍🏫 शिक्षक अभिप्राय (Teacher Feedback)</div>
+<div class="sh-b" style="font-size:11px;padding:3px 8px;margin-top:3px;">👩‍🏫 शिक्षक अभिप्राय (Teacher Feedback)</div>
 <div class="g2">
-    <div class="bx"><div class="sh-r">सत्र पहिले</div><div class="ab" style="min-height:28px;"><?= nl2br(sanitize($a['teacher_feedback_mr'] ?? '-')) ?></div></div>
-    <div class="bx"><div class="sh-b2">सत्र दुसरे</div><div class="ab" style="min-height:28px;"><?= nl2br(sanitize($a['teacher_feedback_mr_term2'] ?? '-')) ?></div></div>
+    <div class="bx" style="padding:2px;"><div class="sh-r" style="padding:2px 6px;font-size:10px;margin-bottom:2px;">सत्र पहिले</div><div class="ab" style="min-height:20px;padding:3px 5px;font-size:10px;line-height:1.3;"><?= nl2br(sanitize(mb_substr($a['teacher_feedback_mr'] ?? '-', 0, 150))) ?></div></div>
+    <div class="bx" style="padding:2px;"><div class="sh-b2" style="padding:2px 6px;font-size:10px;margin-bottom:2px;">सत्र दुसरे</div><div class="ab" style="min-height:20px;padding:3px 5px;font-size:10px;line-height:1.3;"><?= nl2br(sanitize(mb_substr($a['teacher_feedback_mr_term2'] ?? '-', 0, 150))) ?></div></div>
 </div>
 <!-- Self Assessment -->
-<div class="sh-g" style="font-size:10px;padding:3px;">😊 स्व-मूल्यांकन (Self Assessment)</div>
+<div class="sh-g" style="font-size:9px;padding:2px 3px;margin:2px 0 1px;">😊 स्व-मूल्यांकन (Self Assessment)</div>
 <div class="g2">
-<div class="bx">
-    <div class="sh-r">सत्र पहिले</div>
-    <div style="display:flex;justify-content:center;gap:4px;margin:3px 0;">
+<div class="bx" style="padding:2px;">
+    <div class="sh-r" style="padding:2px 6px;font-size:10px;margin-bottom:2px;">सत्र पहिले</div>
+    <div style="display:flex;justify-content:center;gap:2px;margin:1px 0;">
     <?php
     $sev = $a['self_emoji'] ?? '';
     if (empty($sev) && !empty($a['self_assessment'])) {
         foreach ($self_emoji_options as $slb => $sem) { if (mb_strpos($a['self_assessment'], $slb) !== false) { $sev = $slb; break; } }
     }
     foreach ($self_emoji_options as $lb => $em): $is = ($sev === $lb); ?>
-    <div class="eo <?= $is ? 'ec' : '' ?>"><div style="font-size:17px;"><?= $em ?></div><div style="font-size:7px;"><?= $lb ?></div></div>
+    <div class="eo <?= $is ? 'ec' : '' ?>" style="padding:1px 3px;margin:0 2px;"><div style="font-size:14px;"><?= $em ?></div><div style="font-size:6px;"><?= $lb ?></div></div>
     <?php endforeach; ?>
     </div>
-    <?php if (!empty($a['self_assessment'])): ?><div style="font-size:8px;padding:2px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['self_assessment']) ?></div><?php endif; ?>
+    <?php if (!empty($a['self_assessment'])): ?><div style="font-size:7px;padding:1px 2px;background:#F5F5F5;border-radius:2px;line-height:1.2;"><?= sanitize(mb_substr($a['self_assessment'], 0, 80)) ?></div><?php endif; ?>
 </div>
-<div class="bx">
-    <div class="sh-b2">सत्र दुसरे</div>
-    <div style="display:flex;justify-content:center;gap:4px;margin:3px 0;">
+<div class="bx" style="padding:2px;">
+    <div class="sh-b2" style="padding:2px 6px;font-size:10px;margin-bottom:2px;">सत्र दुसरे</div>
+    <div style="display:flex;justify-content:center;gap:2px;margin:1px 0;">
     <?php
     $sev2 = $a['self_emoji_term2'] ?? '';
     if (empty($sev2) && !empty($a['self_assessment_term2'])) {
         foreach ($self_emoji_options as $slb => $sem) { if (mb_strpos($a['self_assessment_term2'], $slb) !== false) { $sev2 = $slb; break; } }
     }
     foreach ($self_emoji_options as $lb => $em): $is2 = ($sev2 === $lb); ?>
-    <div class="eo <?= $is2 ? 'ec' : '' ?>"><div style="font-size:17px;"><?= $em ?></div><div style="font-size:7px;"><?= $lb ?></div></div>
+    <div class="eo <?= $is2 ? 'ec' : '' ?>" style="padding:1px 3px;margin:0 2px;"><div style="font-size:14px;"><?= $em ?></div><div style="font-size:6px;"><?= $lb ?></div></div>
     <?php endforeach; ?>
     </div>
-    <?php if (!empty($a['self_assessment_term2'])): ?><div style="font-size:8px;padding:2px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['self_assessment_term2']) ?></div><?php endif; ?>
+    <?php if (!empty($a['self_assessment_term2'])): ?><div style="font-size:7px;padding:1px 2px;background:#F5F5F5;border-radius:2px;line-height:1.2;"><?= sanitize(mb_substr($a['self_assessment_term2'], 0, 80)) ?></div><?php endif; ?>
 </div>
 </div>
 <!-- Peer Assessment -->
-<div class="sh-b" style="font-size:10px;padding:3px;">👫 सहकारी मूल्यांकन (Peer Assessment)</div>
+<div class="sh-b" style="font-size:9px;padding:2px 3px;margin:2px 0 1px;">👫 सहकारी मूल्यांकन (Peer Assessment)</div>
 <div class="g2">
-<div class="bx">
-    <div class="sh-r">सत्र पहिले</div>
-    <div style="display:flex;justify-content:center;gap:4px;margin:3px 0;">
+<div class="bx" style="padding:2px;">
+    <div class="sh-r" style="padding:2px 6px;font-size:10px;margin-bottom:2px;">सत्र पहिले</div>
+    <div style="display:flex;justify-content:center;gap:2px;margin:1px 0;">
     <?php
     $pev = $a['peer_emoji'] ?? '';
     if (empty($pev) && !empty($a['peer_assessment'])) {
         foreach ($peer_emoji_options as $plb => $pem) { if (mb_strpos($a['peer_assessment'], $plb) !== false) { $pev = $plb; break; } }
     }
     foreach ($peer_emoji_options as $lb => $em): $ip = ($pev === $lb); ?>
-    <div class="eo <?= $ip ? 'ec' : '' ?>"><div style="font-size:17px;"><?= $em ?></div><div style="font-size:7px;"><?= $lb ?></div></div>
+    <div class="eo <?= $ip ? 'ec' : '' ?>" style="padding:1px 3px;margin:0 2px;"><div style="font-size:14px;"><?= $em ?></div><div style="font-size:6px;"><?= $lb ?></div></div>
     <?php endforeach; ?>
     </div>
-    <?php if (!empty($a['peer_assessment'])): ?><div style="font-size:8px;padding:2px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['peer_assessment']) ?></div><?php endif; ?>
+    <?php if (!empty($a['peer_assessment'])): ?><div style="font-size:7px;padding:1px 2px;background:#F5F5F5;border-radius:2px;line-height:1.2;"><?= sanitize(mb_substr($a['peer_assessment'], 0, 80)) ?></div><?php endif; ?>
 </div>
-<div class="bx">
-    <div class="sh-b2">सत्र दुसरे</div>
-    <div style="display:flex;justify-content:center;gap:4px;margin:3px 0;">
+<div class="bx" style="padding:2px;">
+    <div class="sh-b2" style="padding:2px 6px;font-size:10px;margin-bottom:2px;">सत्र दुसरे</div>
+    <div style="display:flex;justify-content:center;gap:2px;margin:1px 0;">
     <?php
     $pev2 = $a['peer_emoji_term2'] ?? '';
     if (empty($pev2) && !empty($a['peer_assessment_term2'])) {
         foreach ($peer_emoji_options as $plb => $pem) { if (mb_strpos($a['peer_assessment_term2'], $plb) !== false) { $pev2 = $plb; break; } }
     }
     foreach ($peer_emoji_options as $lb => $em): $ip2 = ($pev2 === $lb); ?>
-    <div class="eo <?= $ip2 ? 'ec' : '' ?>"><div style="font-size:17px;"><?= $em ?></div><div style="font-size:7px;"><?= $lb ?></div></div>
+    <div class="eo <?= $ip2 ? 'ec' : '' ?>" style="padding:1px 3px;margin:0 2px;"><div style="font-size:14px;"><?= $em ?></div><div style="font-size:6px;"><?= $lb ?></div></div>
     <?php endforeach; ?>
     </div>
-    <?php if (!empty($a['peer_assessment_term2'])): ?><div style="font-size:8px;padding:2px;background:#F5F5F5;border-radius:3px;"><?= sanitize($a['peer_assessment_term2']) ?></div><?php endif; ?>
+    <?php if (!empty($a['peer_assessment_term2'])): ?><div style="font-size:7px;padding:1px 2px;background:#F5F5F5;border-radius:2px;line-height:1.2;"><?= sanitize(mb_substr($a['peer_assessment_term2'], 0, 80)) ?></div><?php endif; ?>
 </div>
 </div>
 <!-- Parent Observation -->
-<div class="sh-g" style="font-size:10px;padding:3px;">👨‍👩‍👧 पालक निरीक्षण (Parent Observation)</div>
+<div class="sh-g" style="font-size:9px;padding:2px 3px;margin:2px 0 1px;">👨‍👩‍👧 पालक निरीक्षण (Parent Observation)</div>
 <div class="g2">
-    <div class="bx"><div class="sh-r">सत्र पहिले</div><div class="ab" style="min-height:25px;"><?= nl2br(sanitize($a['parent_observation_mr'] ?? '-')) ?></div></div>
-    <div class="bx"><div class="sh-b2">सत्र दुसरे</div><div class="ab" style="min-height:25px;"><?= nl2br(sanitize($a['parent_observation_mr_term2'] ?? '-')) ?></div></div>
+    <div class="bx" style="padding:2px;"><div class="sh-r" style="padding:2px 6px;font-size:10px;margin-bottom:2px;">सत्र पहिले</div><div class="ab" style="min-height:18px;padding:3px 5px;font-size:10px;line-height:1.3;"><?= nl2br(sanitize(mb_substr($a['parent_observation_mr'] ?? '-', 0, 120))) ?></div></div>
+    <div class="bx" style="padding:2px;"><div class="sh-b2" style="padding:2px 6px;font-size:10px;margin-bottom:2px;">सत्र दुसरे</div><div class="ab" style="min-height:18px;padding:3px 5px;font-size:10px;line-height:1.3;"><?= nl2br(sanitize(mb_substr($a['parent_observation_mr_term2'] ?? '-', 0, 120))) ?></div></div>
 </div>
 <div class="pf">समग्र प्रगती पत्रक (HPC) | क्षेत्र <?= $did ?>: <?= $dn['name_mr'] ?> | पान <?= $page_num + 1 ?></div>
 </div>

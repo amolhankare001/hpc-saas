@@ -120,3 +120,74 @@ function academic_year() {
     }
     return ($year - 1) . '-' . $year;
 }
+
+function getFlash($key) {
+    return flash($key);
+}
+
+/**
+ * Compress uploaded image to target size in KB.
+ * Converts to JPEG, resizes if needed, and reduces quality to fit target.
+ * @param string $source_path Path to uploaded temp file
+ * @param string $dest_path Full destination path for saved file
+ * @param int $max_kb Maximum file size in KB (default 150KB)
+ * @param int $max_width Maximum width in pixels (default 600)
+ * @param int $max_height Maximum height in pixels (default 600)
+ * @return bool Success or failure
+ */
+function compressImage($source_path, $dest_path, $max_kb = 150, $max_width = 600, $max_height = 600) {
+    $info = @getimagesize($source_path);
+    if (!$info) return false;
+
+    $mime = $info['mime'];
+    switch ($mime) {
+        case 'image/jpeg': $img = @imagecreatefromjpeg($source_path); break;
+        case 'image/png':  $img = @imagecreatefrompng($source_path); break;
+        case 'image/gif':  $img = @imagecreatefromgif($source_path); break;
+        default: return false;
+    }
+    if (!$img) return false;
+
+    $orig_w = imagesx($img);
+    $orig_h = imagesy($img);
+
+    // Resize if larger than max dimensions
+    $ratio = min($max_width / $orig_w, $max_height / $orig_h, 1.0);
+    $new_w = intval($orig_w * $ratio);
+    $new_h = intval($orig_h * $ratio);
+
+    if ($ratio < 1.0) {
+        $resized = imagecreatetruecolor($new_w, $new_h);
+        imagecopyresampled($resized, $img, 0, 0, 0, 0, $new_w, $new_h, $orig_w, $orig_h);
+        imagedestroy($img);
+        $img = $resized;
+    }
+
+    // Save as JPEG with decreasing quality until under target size
+    $quality = 85;
+    $max_bytes = $max_kb * 1024;
+
+    // Ensure destination directory exists
+    $dir = dirname($dest_path);
+    if (!is_dir($dir)) mkdir($dir, 0755, true);
+
+    // Try progressively lower quality
+    while ($quality >= 20) {
+        imagejpeg($img, $dest_path, $quality);
+        if (filesize($dest_path) <= $max_bytes) {
+            imagedestroy($img);
+            return true;
+        }
+        $quality -= 10;
+    }
+
+    // If still too large, resize further
+    $new_w = intval($new_w * 0.7);
+    $new_h = intval($new_h * 0.7);
+    $smaller = imagecreatetruecolor($new_w, $new_h);
+    imagecopyresampled($smaller, $img, 0, 0, 0, 0, $new_w, $new_h, imagesx($img), imagesy($img));
+    imagejpeg($smaller, $dest_path, 60);
+    imagedestroy($img);
+    imagedestroy($smaller);
+    return true;
+}
