@@ -1,4 +1,8 @@
 <?php
+// v2.1 - Responsive rubric layout: separate pages for rubric tables and feedback
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/demo_data.php';
 requireLogin();
