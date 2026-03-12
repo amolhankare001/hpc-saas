@@ -40,12 +40,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $district = trim($_POST['district'] ?? '');
         $taluka = trim($_POST['taluka'] ?? '');
         $udise_code = trim($_POST['udise_code'] ?? '');
-        $address = trim($_POST['address'] ?? '');
+        $address_line1 = trim($_POST['address_line1'] ?? '');
         $plan_id = intval($_POST['plan_id'] ?? 0);
         $is_active = isset($_POST['is_active']) ? 1 : 0;
 
-        $stmt = $db->prepare("UPDATE schools SET name=?, name_mr=?, email=?, phone=?, district=?, taluka=?, udise_code=?, address=?, plan_id=?, is_active=? WHERE id=?");
-        $stmt->execute([$name, $name_mr, $email, $phone, $district, $taluka, $udise_code, $address, $plan_id, $is_active, $school_id]);
+        $stmt = $db->prepare("UPDATE schools SET name=?, name_mr=?, email=?, phone=?, district=?, taluka=?, udise_code=?, address_line1=?, plan_id=?, is_active=? WHERE id=?");
+        $stmt->execute([$name, $name_mr, $email, $phone, $district, $taluka, $udise_code, $address_line1, $plan_id, $is_active, $school_id]);
         flash('success', 'शाळेची माहिती अपडेट झाली.');
     }
     $redir = APP_URL . '/admin/schools.php';
@@ -279,7 +279,7 @@ $total_inactive = $db->query("SELECT COUNT(*) FROM schools WHERE is_active = 0")
                                                 </div>
                                                 <div class="col-12">
                                                     <label class="form-label">पत्ता</label>
-                                                    <textarea class="form-control" name="address" rows="2"><?= sanitize($s['address'] ?? '') ?></textarea>
+                                                    <textarea class="form-control" name="address_line1" rows="2"><?= sanitize($s['address_line1'] ?? '') ?></textarea>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class="form-label">योजना</label>
