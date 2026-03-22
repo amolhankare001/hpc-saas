@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.bak
+*_old.py
+.env
+*.egg-info/
+dist/
+build/
+node_modules/
+.venv/

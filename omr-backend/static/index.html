@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yoctel OMR - Professional Optical Mark Recognition</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- Top Menu Bar -->
+<div class="menubar">
+  <div class="menubar-left">
+    <div class="app-logo">
+      <i class="fas fa-qrcode"></i>
+      <span class="app-title">Yoctel OMR</span>
+      <span class="app-version">v2.0</span>
+    </div>
+    <div class="menu-items">
+      <div class="menu-item" onclick="showTab('dashboard')"><i class="fas fa-home"></i> Home</div>
+      <div class="menu-item" onclick="showTab('layout')"><i class="fas fa-th"></i> Layout</div>
+      <div class="menu-item" onclick="showTab('reader')"><i class="fas fa-book-reader"></i> Reader</div>
+      <div class="menu-item" onclick="showTab('answer-key')"><i class="fas fa-key"></i> Answer Key</div>
+      <div class="menu-item" onclick="showTab('results')"><i class="fas fa-poll"></i> Results</div>
+      <div class="menu-item" onclick="showTab('reports')"><i class="fas fa-chart-bar"></i> Reports</div>
+      <div class="menu-item" onclick="showTab('students')"><i class="fas fa-users"></i> Students</div>
+      <div class="menu-item" onclick="showTab('settings')"><i class="fas fa-cog"></i> Settings</div>
+    </div>
+  </div>
+  <div class="menubar-right">
+    <span class="status-indicator" id="connectionStatus"><i class="fas fa-circle"></i> Connected</span>
+  </div>
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar" id="toolbar">
+  <div class="toolbar-group" id="toolbarLayout" style="display:none;">
+    <button class="tool-btn" title="New Template" onclick="newTemplate()"><i class="fas fa-file-plus"></i> New Page</button>
+    <button class="tool-btn btn-primary" title="Load OMR Sheet Image" onclick="document.getElementById('tplImageInput').click()"><i class="fas fa-image"></i> Load Image</button>
+    <div class="tool-sep"></div>
+    <button class="tool-btn" title="Place Pivot Markers" onclick="startPlacePivot()"><i class="fas fa-crosshairs"></i> Pivot</button>
+    <button class="tool-btn" title="Draw OMR Region" onclick="startDrawOMR()"><i class="fas fa-th-large"></i> OMR</button>
+    <button class="tool-btn" title="Draw Barcode Region" onclick="startDrawBarcode()"><i class="fas fa-barcode"></i> BarCode</button>
+    <button class="tool-btn" title="Set Master Pivot" onclick="startSetMasterPivot()"><i class="fas fa-star"></i> Master Pivot</button>
+    <div class="tool-sep"></div>
+    <button class="tool-btn" title="Marking Scheme" onclick="openMarkingScheme()"><i class="fas fa-check-double"></i> Marking Scheme</button>
+    <button class="tool-btn" title="Grading Scheme"><i class="fas fa-graduation-cap"></i> Grading Scheme</button>
+    <button class="tool-btn" title="Label"><i class="fas fa-tag"></i> Label</button>
+    <button class="tool-btn" title="Formula"><i class="fas fa-calculator"></i> Formula</button>
+  </div>
+  <div class="toolbar-group" id="toolbarReader" style="display:none;">
+    <button class="tool-btn" onclick="document.getElementById('omrFileInput').click()"><i class="fas fa-folder-open"></i> Browse Files</button>
+    <button class="tool-btn" onclick="document.getElementById('omrDirInput').click()"><i class="fas fa-folder"></i> Browse Folder</button>
+    <div class="tool-sep"></div>
+    <button class="tool-btn btn-primary" onclick="startProcessing()"><i class="fas fa-play"></i> Start Reading</button>
+    <button class="tool-btn btn-danger" onclick="stopProcessing()"><i class="fas fa-stop"></i> Stop</button>
+    <div class="tool-sep"></div>
+    <button class="tool-btn" onclick="exportResults('excel')"><i class="fas fa-file-excel"></i> Export Excel</button>
+    <button class="tool-btn" onclick="exportResults('csv')"><i class="fas fa-file-csv"></i> Export CSV</button>
+    <button class="tool-btn" onclick="downloadProcessedImages(currentProcessingSession)" title="Download processed images saved with enrollment names"><i class="fas fa-download"></i> Download Images</button>
+    <div class="tool-sep"></div>
+    <label class="tool-label">Bubble Threshold:</label>
+    <input type="range" id="bubbleThreshold" min="10" max="90" value="56" class="tool-slider" onchange="updateThresholdDisplay()">
+    <span id="thresholdVal" class="tool-value">56%</span>
+    <div class="tool-sep"></div>
+    <label class="tool-label">Fuzziness:</label>
+    <input type="range" id="fuzzinessLevel" min="10" max="100" value="67" class="tool-slider">
+    <span id="fuzzinessVal" class="tool-value">67</span>
+  </div>
+  <div class="toolbar-group" id="toolbarDashboard">
+    <button class="tool-btn btn-primary" onclick="showTab('reader')"><i class="fas fa-play-circle"></i> Quick Scan</button>
+    <button class="tool-btn" onclick="showTab('layout')"><i class="fas fa-plus-circle"></i> New Template</button>
+    <button class="tool-btn" onclick="refreshDashboard()"><i class="fas fa-sync-alt"></i> Refresh</button>
+  </div>
+</div>
+
+<!-- Hidden file inputs -->
+<input type="file" id="omrFileInput" multiple accept="image/*" style="display:none" onchange="handleFileSelect(event)">
+<input type="file" id="omrDirInput" webkitdirectory directory multiple style="display:none" onchange="handleFolderSelect(event)">
+<input type="file" id="tplImageInput" accept="image/*" style="display:none" onchange="handleTemplateImageLoad(event)">
+
+<!-- Main Content Area -->
+<div class="main-content">
+
+  <!-- DASHBOARD TAB -->
+  <div class="tab-content active" id="tab-dashboard">
+    <div class="dashboard">
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-card stat-blue">
+          <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+          <div class="stat-info">
+            <div class="stat-value" id="statSessions">0</div>
+            <div class="stat-label">Total Sessions</div>
+          </div>
+        </div>
+        <div class="stat-card stat-green">
+          <div class="stat-icon"><i class="fas fa-file-image"></i></div>
+          <div class="stat-info">
+            <div class="stat-value" id="statScanned">0</div>
+            <div class="stat-label">Sheets Scanned</div>
+          </div>
+        </div>
+        <div class="stat-card stat-purple">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-info">
+            <div class="stat-value" id="statStudents">0</div>
+            <div class="stat-label">Students</div>
+          </div>
+        </div>
+        <div class="stat-card stat-orange">
+          <div class="stat-icon"><i class="fas fa-clipboard-list"></i></div>
+          <div class="stat-info">
+            <div class="stat-value" id="statKeys">0</div>
+            <div class="stat-label">Answer Keys</div>
+          </div>
+        </div>
+        <div class="stat-card stat-teal">
+          <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
+          <div class="stat-info">
+            <div class="stat-value" id="statTemplates">0</div>
+            <div class="stat-label">Templates</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- Recent Sessions -->
+        <div class="dash-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-clock"></i> Recent Sessions</h3>
+            <button class="btn-sm" onclick="showTab('reader')">View All</button>
+          </div>
+          <div class="panel-body" id="recentSessions">
+            <div class="empty-state"><i class="fas fa-inbox"></i><p>No sessions yet</p></div>
+          </div>
+        </div>
+
+        <!-- Score Distribution Chart -->
+        <div class="dash-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-chart-bar"></i> Score Distribution</h3>
+          </div>
+          <div class="panel-body" id="scoreDistChart">
+            <div class="chart-bars" id="chartBars"></div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="dash-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+          </div>
+          <div class="panel-body quick-actions">
+            <button class="action-card" onclick="showTab('reader')">
+              <i class="fas fa-scanner"></i>
+              <span>Scan Sheets</span>
+            </button>
+            <button class="action-card" onclick="showTab('answer-key')">
+              <i class="fas fa-key"></i>
+              <span>Answer Keys</span>
+            </button>
+            <button class="action-card" onclick="showTab('students')">
+              <i class="fas fa-user-plus"></i>
+              <span>Add Students</span>
+            </button>
+            <button class="action-card" onclick="showTab('reports')">
+              <i class="fas fa-chart-pie"></i>
+              <span>View Reports</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Results -->
+        <div class="dash-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-list-ol"></i> Recent Results</h3>
+          </div>
+          <div class="panel-body" id="recentResults">
+            <div class="empty-state"><i class="fas fa-inbox"></i><p>No results yet</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAYOUT / TEMPLATE TAB -->
+  <div class="tab-content" id="tab-layout">
+    <div class="layout-editor">
+      <div class="layout-main">
+        <!-- Template List -->
+        <div class="template-list-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-layer-group"></i> Templates</h3>
+            <button class="btn-sm btn-primary" onclick="showCreateTemplate()"><i class="fas fa-plus"></i> New</button>
+          </div>
+          <div class="template-list" id="templateList"></div>
+          <!-- Region List -->
+          <div class="panel-header" style="margin-top:8px;border-top:1px solid #e0e0e0;padding-top:8px;">
+            <h3><i class="fas fa-layer-group"></i> Regions</h3>
+          </div>
+          <div class="region-list" id="regionList">
+            <div class="empty-state" style="padding:20px"><i class="fas fa-layer-group" style="font-size:24px"></i><p style="font-size:11px">No regions yet</p></div>
+          </div>
+        </div>
+
+        <!-- Template Preview / Canvas Editor -->
+        <div class="template-editor-panel">
+          <div class="panel-header">
+            <h3 id="templateEditorTitle"><i class="fas fa-edit"></i> Template Editor</h3>
+            <div class="canvas-tools" id="canvasTools" style="display:none;">
+              <button class="btn-sm" onclick="canvasZoom(1.1)" title="Zoom In"><i class="fas fa-search-plus"></i></button>
+              <button class="btn-sm" onclick="canvasZoom(0.9)" title="Zoom Out"><i class="fas fa-search-minus"></i></button>
+              <button class="btn-sm" onclick="canvasZoom(1)" title="Reset Zoom"><i class="fas fa-expand"></i></button>
+              <span class="tool-sep" style="display:inline-block;width:1px;height:16px;background:#ccc;margin:0 6px;vertical-align:middle;"></span>
+              <button class="btn-sm" onclick="startSelectMode()" title="Select Mode"><i class="fas fa-mouse-pointer"></i></button>
+              <button class="btn-sm" onclick="saveEditorTemplate()" title="Save Template" style="background:#4CAF50;color:#fff;"><i class="fas fa-save"></i> Save</button>
+            </div>
+          </div>
+          <div class="template-editor-body" id="templateEditorBody">
+            <div class="empty-state"><i class="fas fa-image"></i><p>Click "New Page" or "Load Image" to load an OMR sheet image</p></div>
+          </div>
+        </div>
+
+        <!-- Properties Panel -->
+        <div class="properties-panel" id="propertiesPanel">
+          <div class="panel-header">
+            <h3><i class="fas fa-sliders-h"></i> Properties</h3>
+          </div>
+          <div class="properties-body" id="propertiesBody">
+            <div class="prop-section">
+              <div class="prop-section-title">Template Info</div>
+              <div class="prop-row"><label>Image:</label><span>None</span></div>
+              <div class="prop-row"><label>Regions:</label><span>0</span></div>
+              <div class="prop-row"><label>Pivots:</label><span>0/4</span></div>
+            </div>
+            <div class="prop-section">
+              <div class="prop-section-title">Instructions</div>
+              <div class="prop-hint">1. Load an OMR sheet image</div>
+              <div class="prop-hint">2. Click Pivot to place corner markers</div>
+              <div class="prop-hint">3. Click OMR to draw answer regions</div>
+              <div class="prop-hint">4. Click BarCode to draw barcode region</div>
+              <div class="prop-hint">5. Set Master Pivot for alignment</div>
+              <div class="prop-hint">6. Configure properties for each region</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- READER TAB -->
+  <div class="tab-content" id="tab-reader">
+    <div class="reader-layout">
+      <!-- Reader Config Bar -->
+      <div class="reader-config">
+        <div class="config-group">
+          <label>Template:</label>
+          <select id="readerTemplate" onchange="onReaderTemplateChange()"></select>
+        </div>
+        <div class="config-group">
+          <label>Session:</label>
+          <select id="readerSession">
+            <option value="">-- No Session --</option>
+          </select>
+          <button class="btn-sm btn-primary" onclick="showCreateSession()"><i class="fas fa-plus"></i></button>
+        </div>
+        <div class="config-group">
+          <label>Answer Key:</label>
+          <select id="readerAnswerKey">
+            <option value="">-- No Key --</option>
+          </select>
+        </div>
+        <div class="config-group">
+          <label>OMR Files:</label>
+          <span class="file-count" id="fileCount">0 files selected</span>
+        </div>
+      </div>
+
+      <!-- Reader Sub-tabs -->
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="showReaderSubTab('response')">Response</button>
+        <button class="sub-tab" onclick="showReaderSubTab('answer')">Answer Key</button>
+        <button class="sub-tab" onclick="showReaderSubTab('result')">Results</button>
+      </div>
+
+      <div class="reader-main">
+        <!-- Data Grid -->
+        <div class="reader-grid-panel">
+          <!-- Response Sub-tab -->
+          <div class="reader-subtab active" id="subtab-response">
+            <div class="grid-toolbar">
+              <button class="btn-sm" onclick="findStudent()"><i class="fas fa-search"></i> Find Student</button>
+              <button class="btn-sm" onclick="clearResults()"><i class="fas fa-trash"></i> Clear</button>
+              <span class="grid-info" id="gridInfo">0 rows</span>
+            </div>
+            <div class="data-grid-container">
+              <table class="data-grid" id="responseGrid">
+                <thead>
+                  <tr>
+                    <th class="col-num">#</th>
+                    <th class="col-file">File Name</th>
+                    <th class="col-name">Student Name</th>
+                    <th class="col-roll">Roll Number</th>
+                    <th class="col-class">Class</th>
+                    <th class="col-medium">Medium</th>
+                    <th class="col-mobile">Mobile Number</th>
+                    <th class="col-ans">1</th>
+                    <th class="col-ans">2</th>
+                    <th class="col-ans">3</th>
+                    <th class="col-ans">4</th>
+                    <th class="col-ans">5</th>
+                  </tr>
+                </thead>
+                <tbody id="responseBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Answer Key Sub-tab -->
+          <div class="reader-subtab" id="subtab-answer">
+            <div class="answer-key-editor" id="answerKeyEditor">
+              <div class="empty-state"><i class="fas fa-key"></i><p>Select or create an answer key from the Answer Key tab</p></div>
+            </div>
+          </div>
+
+          <!-- Results Sub-tab -->
+          <div class="reader-subtab" id="subtab-result">
+            <div class="data-grid-container">
+              <table class="data-grid" id="resultsGrid">
+                <thead>
+                  <tr>
+                    <th class="col-num">#</th>
+                    <th class="col-file">File Name</th>
+                    <th class="col-name">Student Name</th>
+                    <th class="col-roll">Roll Number</th>
+                    <th class="col-score">Score</th>
+                    <th class="col-pct">%</th>
+                    <th class="col-correct">Correct</th>
+                    <th class="col-wrong">Wrong</th>
+                    <th class="col-unanswered">Unanswered</th>
+                    <th class="col-rank">Rank</th>
+                  </tr>
+                </thead>
+                <tbody id="resultsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image Preview Panel -->
+        <div class="reader-image-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-image"></i> Sheet Preview</h3>
+            <label class="toggle-label"><input type="checkbox" id="showImageToggle" checked onchange="toggleImagePreview()"> Show Image</label>
+          </div>
+          <div class="image-preview" id="imagePreview">
+            <div class="empty-state"><i class="fas fa-image"></i><p>Select a row to preview</p></div>
+          </div>
+          <div class="image-controls">
+            <button class="btn-sm" onclick="saveImage()"><i class="fas fa-save"></i> Save Image</button>
+            <button class="btn-sm" onclick="reloadInfo()"><i class="fas fa-sync"></i> Reload Info</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Bar -->
+      <div class="reader-statusbar">
+        <span id="readerStatus">Ready</span>
+        <div class="progress-bar" id="progressBar" style="display:none;">
+          <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+        <span id="confidenceInfo"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANSWER KEY TAB -->
+  <div class="tab-content" id="tab-answer-key">
+    <div class="answer-key-layout">
+      <div class="ak-left">
+        <div class="panel-header">
+          <h3><i class="fas fa-key"></i> Answer Keys</h3>
+          <button class="btn-sm btn-primary" onclick="showCreateAnswerKey()"><i class="fas fa-plus"></i> New Key</button>
+        </div>
+        <div class="ak-list" id="answerKeyList"></div>
+      </div>
+      <div class="ak-right">
+        <div class="panel-header">
+          <h3 id="akEditorTitle"><i class="fas fa-edit"></i> Answer Key Editor</h3>
+          <div class="ak-controls">
+            <label>Bubble Threshold: <span id="akThresholdVal">56%</span></label>
+            <input type="range" id="akThreshold" min="10" max="90" value="56" class="tool-slider">
+          </div>
+        </div>
+        <div class="ak-editor-body" id="akEditorBody">
+          <div class="empty-state"><i class="fas fa-key"></i><p>Select or create an answer key</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS TAB -->
+  <div class="tab-content" id="tab-results">
+    <div class="results-layout">
+      <div class="panel-header">
+        <h3><i class="fas fa-poll"></i> All Results</h3>
+        <div class="header-actions">
+          <button class="btn-sm" onclick="exportResults('excel')"><i class="fas fa-file-excel"></i> Export Excel</button>
+          <button class="btn-sm" onclick="exportResults('csv')"><i class="fas fa-file-csv"></i> Export CSV</button>
+        </div>
+      </div>
+      <div class="data-grid-container">
+        <table class="data-grid" id="allResultsGrid">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>File Name</th>
+              <th>Enrollment</th>
+              <th>Student Name</th>
+              <th>Answered</th>
+              <th>Unanswered</th>
+              <th>Multi-Marked</th>
+              <th>Score</th>
+              <th>Max Score</th>
+              <th>%</th>
+              <th>Correct</th>
+              <th>Wrong</th>
+              <th>Confidence</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="allResultsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORTS / ANALYTICS TAB -->
+  <div class="tab-content" id="tab-reports">
+    <div class="reports-layout">
+      <div class="report-config">
+        <div class="config-group">
+          <label>Session:</label>
+          <select id="reportSession" onchange="loadSessionAnalytics()"></select>
+        </div>
+        <button class="btn-sm btn-primary" onclick="loadSessionAnalytics()"><i class="fas fa-chart-bar"></i> Analyze</button>
+      </div>
+
+      <div id="reportContent" style="display:none;">
+        <!-- Report Stats -->
+        <div class="stats-row report-stats">
+          <div class="stat-card stat-blue"><div class="stat-info"><div class="stat-value" id="rptScanned">0</div><div class="stat-label">Scanned</div></div></div>
+          <div class="stat-card stat-green"><div class="stat-info"><div class="stat-value" id="rptAvgScore">0%</div><div class="stat-label">Avg Score</div></div></div>
+          <div class="stat-card stat-purple"><div class="stat-info"><div class="stat-value" id="rptHighest">0</div><div class="stat-label">Highest</div></div></div>
+          <div class="stat-card stat-orange"><div class="stat-info"><div class="stat-value" id="rptLowest">0</div><div class="stat-label">Lowest</div></div></div>
+          <div class="stat-card stat-teal"><div class="stat-info"><div class="stat-value" id="rptPassed">0</div><div class="stat-label">Passed</div></div></div>
+          <div class="stat-card stat-red"><div class="stat-info"><div class="stat-value" id="rptFailed">0</div><div class="stat-label">Failed</div></div></div>
+        </div>
+
+        <div class="report-grid">
+          <!-- Toppers -->
+          <div class="dash-panel">
+            <div class="panel-header"><h3><i class="fas fa-trophy"></i> Top Performers</h3></div>
+            <div class="panel-body toppers-list" id="toppersList"></div>
+          </div>
+
+          <!-- Score Distribution -->
+          <div class="dash-panel">
+            <div class="panel-header"><h3><i class="fas fa-chart-bar"></i> Score Distribution</h3></div>
+            <div class="panel-body">
+              <div class="dist-chart" id="reportDistChart"></div>
+              <div class="pass-fail-circles">
+                <div class="pf-circle pf-pass"><span id="pfPassed">0</span><label>Passed</label></div>
+                <div class="pf-circle pf-fail"><span id="pfFailed">0</span><label>Failed</label></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question Analysis -->
+        <div class="dash-panel full-width">
+          <div class="panel-header"><h3><i class="fas fa-tasks"></i> Question-wise Difficulty Analysis</h3></div>
+          <div class="panel-body">
+            <div class="data-grid-container">
+              <table class="data-grid" id="questionAnalysisGrid">
+                <thead>
+                  <tr>
+                    <th>Q#</th>
+                    <th>Correct</th>
+                    <th>Wrong</th>
+                    <th>Unanswered</th>
+                    <th>Difficulty Index</th>
+                    <th>Level</th>
+                  </tr>
+                </thead>
+                <tbody id="questionAnalysisBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reporting Format (like Yomark) -->
+        <div class="dash-panel full-width">
+          <div class="panel-header">
+            <h3><i class="fas fa-table"></i> Reporting Format</h3>
+            <div class="header-actions">
+              <label>Ranking: </label>
+              <select id="rankingMethod" class="sm-select">
+                <option value="discrete">DISCRETE: Standard competition ("1224")</option>
+                <option value="dense">DENSE: Dense ranking ("1223")</option>
+              </select>
+              <button class="btn-sm" onclick="exportResults('excel')"><i class="fas fa-download"></i> Export</button>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="data-grid-container">
+              <table class="data-grid reporting-table" id="reportingGrid">
+                <thead>
+                  <tr>
+                    <th rowspan="2">#</th>
+                    <th rowspan="2">Student Name</th>
+                    <th rowspan="2">Roll Number</th>
+                    <th rowspan="2">Class</th>
+                    <th colspan="5" class="section-header">Section-wise Score</th>
+                    <th colspan="6" class="section-header overall-header">OVERALL</th>
+                  </tr>
+                  <tr>
+                    <th>1-15</th><th>16-30</th><th>31-45</th><th>46-60</th><th>61-75</th>
+                    <th>Score</th><th>Rank</th><th>%</th><th>Correct</th><th>Wrong</th><th>Unanswered</th>
+                  </tr>
+                </thead>
+                <tbody id="reportingBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="reportEmpty">
+        <div class="empty-state"><i class="fas fa-chart-pie"></i><p>Select a session and click Analyze to view reports</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STUDENTS TAB -->
+  <div class="tab-content" id="tab-students">
+    <div class="students-layout">
+      <div class="panel-header">
+        <h3><i class="fas fa-users"></i> Student Database</h3>
+        <div class="header-actions">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="studentSearch" placeholder="Search students..." oninput="filterStudents()">
+          </div>
+          <button class="btn-sm btn-primary" onclick="showAddStudent()"><i class="fas fa-user-plus"></i> Add Student</button>
+          <button class="btn-sm" onclick="showBulkImport()"><i class="fas fa-file-import"></i> Bulk Import</button>
+        </div>
+      </div>
+      <div class="data-grid-container">
+        <table class="data-grid" id="studentsGrid">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Enrollment No</th>
+              <th>Class</th>
+              <th>Section</th>
+              <th>Roll No</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="studentsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div class="tab-content" id="tab-settings">
+    <div class="settings-layout">
+      <div class="settings-panel">
+        <h3><i class="fas fa-cog"></i> Detection Settings</h3>
+        <div class="setting-row">
+          <label>Default Fill Threshold:</label>
+          <input type="range" id="settingThreshold" min="0.1" max="0.9" step="0.05" value="0.3" onchange="document.getElementById('settingThresholdVal').textContent = this.value">
+          <span id="settingThresholdVal">0.3</span>
+        </div>
+        <div class="setting-row">
+          <label>Default Questions:</label>
+          <select id="settingQuestions">
+            <option value="30">30</option>
+            <option value="50">50</option>
+            <option value="75" selected>75</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <label>Default Options per Question:</label>
+          <select id="settingOptions">
+            <option value="4" selected>4 (A, B, C, D)</option>
+            <option value="5">5 (A, B, C, D, E)</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> Save Settings</button>
+      </div>
+
+      <div class="settings-panel">
+        <h3><i class="fas fa-server"></i> Server Configuration</h3>
+        <div class="setting-row">
+          <label>API URL:</label>
+          <input type="text" id="settingApiUrl" value="http://localhost:8000" class="setting-input">
+        </div>
+        <button class="btn-primary" onclick="updateApiUrl()"><i class="fas fa-link"></i> Update Connection</button>
+      </div>
+
+      <div class="settings-panel">
+        <h3><i class="fas fa-info-circle"></i> About</h3>
+        <div class="about-info">
+          <p><strong>Yoctel OMR Scanner</strong> v2.0</p>
+          <p>Professional Optical Mark Recognition System</p>
+          <p>Features: Template Management, Barcode Detection, Student Database, Exam Sessions, Custom Marking Schemes, Detailed Analytics, Batch Processing, CSV/Excel Export, Question-wise Analysis, Reporting Format</p>
+          <p class="about-tech">Powered by OpenCV, FastAPI, Python</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<!-- Create Session Modal -->
+<div class="modal" id="modalCreateSession">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-calendar-plus"></i> Create Exam Session</h3>
+      <button class="modal-close" onclick="closeModal('modalCreateSession')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Session Name *</label><input type="text" id="sessionName" placeholder="e.g. Mid-Term Math Exam"></div>
+        <div class="form-group"><label>Subject</label><input type="text" id="sessionSubject" placeholder="e.g. Mathematics"></div>
+        <div class="form-group"><label>Date</label><input type="date" id="sessionDate"></div>
+        <div class="form-group"><label>Template</label><select id="sessionTemplate"></select></div>
+        <div class="form-group"><label>Answer Key</label><select id="sessionAnswerKey"><option value="">-- Select --</option></select></div>
+        <div class="form-group"><label>Total Questions</label><input type="number" id="sessionQuestions" value="75"></div>
+        <div class="form-group"><label>Correct Marks</label><input type="number" id="sessionCorrectMarks" value="1" step="0.25"></div>
+        <div class="form-group"><label>Wrong Marks (negative)</label><input type="number" id="sessionWrongMarks" value="0" step="0.25"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="createSession()"><i class="fas fa-save"></i> Create Session</button>
+      <button class="btn-default" onclick="closeModal('modalCreateSession')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Template Modal -->
+<div class="modal" id="modalCreateTemplate">
+  <div class="modal-content modal-lg">
+    <div class="modal-header">
+      <h3><i class="fas fa-th-large"></i> Create Template</h3>
+      <button class="modal-close" onclick="closeModal('modalCreateTemplate')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid form-grid-4">
+        <div class="form-group span-2"><label>Template Name *</label><input type="text" id="tplName" placeholder="e.g. 100 Questions - 5 Options"></div>
+        <div class="form-group"><label>Total Questions</label><input type="number" id="tplQuestions" value="75"></div>
+        <div class="form-group"><label>Options/Question</label><input type="number" id="tplOptions" value="4"></div>
+        <div class="form-group"><label>Columns</label><input type="number" id="tplColumns" value="3"></div>
+        <div class="form-group"><label>Questions/Column</label><input type="number" id="tplQPerCol" value="25"></div>
+        <div class="form-group"><label>Fill Threshold</label><input type="number" id="tplThreshold" value="0.3" step="0.05"></div>
+        <div class="form-group"><label>Correct Marks</label><input type="number" id="tplCorrect" value="1" step="0.25"></div>
+        <div class="form-group"><label>Wrong Marks</label><input type="number" id="tplWrong" value="0" step="0.25"></div>
+        <div class="form-group"><label>Unanswered Marks</label><input type="number" id="tplUnanswered" value="0" step="0.25"></div>
+        <div class="form-group"><label><input type="checkbox" id="tplBarcode" checked> Has Barcode</label></div>
+        <div class="form-group"><label><input type="checkbox" id="tplPivots" checked> Use Pivots</label></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="createTemplate()"><i class="fas fa-save"></i> Create Template</button>
+      <button class="btn-default" onclick="closeModal('modalCreateTemplate')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Answer Key Modal -->
+<div class="modal" id="modalCreateAnswerKey">
+  <div class="modal-content modal-xl">
+    <div class="modal-header">
+      <h3><i class="fas fa-key"></i> Create Answer Key</h3>
+      <button class="modal-close" onclick="closeModal('modalCreateAnswerKey')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid form-grid-5">
+        <div class="form-group"><label>Key Name *</label><input type="text" id="akName" placeholder="Key name"></div>
+        <div class="form-group"><label>Total Questions</label><input type="number" id="akQuestions" value="75" onchange="renderAnswerBubbles()"></div>
+        <div class="form-group"><label>+Correct Marks</label><input type="number" id="akCorrect" value="1" step="0.25"></div>
+        <div class="form-group"><label>-Wrong Marks</label><input type="number" id="akWrong" value="0" step="0.25"></div>
+        <div class="form-group"><label>Unanswered</label><input type="number" id="akUnanswered" value="0" step="0.25"></div>
+      </div>
+      <div class="ak-bubble-grid" id="akBubbleGrid"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="createAnswerKey()"><i class="fas fa-save"></i> Save Answer Key</button>
+      <button class="btn-default" onclick="closeModal('modalCreateAnswerKey')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Student Modal -->
+<div class="modal" id="modalAddStudent">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-user-plus"></i> Add Student</h3>
+      <button class="modal-close" onclick="closeModal('modalAddStudent')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Name *</label><input type="text" id="stuName"></div>
+        <div class="form-group"><label>Enrollment No *</label><input type="text" id="stuEnrollment"></div>
+        <div class="form-group"><label>Class</label><input type="text" id="stuClass"></div>
+        <div class="form-group"><label>Section</label><input type="text" id="stuSection"></div>
+        <div class="form-group"><label>Roll No</label><input type="text" id="stuRollNo"></div>
+        <div class="form-group"><label>Email</label><input type="text" id="stuEmail"></div>
+        <div class="form-group"><label>Phone</label><input type="text" id="stuPhone"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="addStudent()"><i class="fas fa-save"></i> Add Student</button>
+      <button class="btn-default" onclick="closeModal('modalAddStudent')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Result Detail Modal -->
+<div class="modal" id="modalResultDetail">
+  <div class="modal-content modal-xl">
+    <div class="modal-header">
+      <h3><i class="fas fa-poll-h"></i> Result Detail</h3>
+      <button class="modal-close" onclick="closeModal('modalResultDetail')">&times;</button>
+    </div>
+    <div class="modal-body" id="resultDetailBody"></div>
+  </div>
+</div>
+
+<!-- Marking Pattern Modal -->
+<div class="modal" id="modalMarkingPattern">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-check-double"></i> Marking Pattern</h3>
+      <button class="modal-close" onclick="closeModal('modalMarkingPattern')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Region</label><span id="mpRegion">1-15</span></div>
+        <div class="form-group"><label>No Of Questions</label><span id="mpCount">15</span></div>
+        <div class="form-group"><label>Maximum Attempt Allowed</label><input type="number" id="mpMaxAttempt" value="15"></div>
+        <div class="form-group"><label>Question Type</label>
+          <select id="mpQuestionType">
+            <option value="SingleCorrectMCQ">SingleCorrectMCQ</option>
+            <option value="MultipleCorrectMCQ">MultipleCorrectMCQ</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Marks</label><input type="number" id="mpMarks" value="2" step="0.25"></div>
+        <div class="form-group"><label>Negative Marks</label><input type="number" id="mpNegMarks" value="0" step="0.25"></div>
+        <div class="form-group"><label>Partial marking type</label>
+          <select id="mpPartialType"><option value="None">None</option></select>
+        </div>
+        <div class="form-group"><label><input type="checkbox" id="mpEnablePartial"> Enable partial marking</label></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="closeModal('modalMarkingPattern')"><i class="fas fa-check"></i> Ok</button>
+      <button class="btn-default" onclick="closeModal('modalMarkingPattern')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Marking Scheme Modal (Yomark-style) -->
+<div class="modal" id="modalMarkingScheme">
+  <div class="modal-content" style="max-width:1000px;">
+    <div class="modal-header">
+      <h3><i class="fas fa-check-double"></i> Marking Scheme</h3>
+      <button class="modal-close" onclick="closeModal('modalMarkingScheme')">&times;</button>
+    </div>
+    <div class="modal-body" style="max-height:500px;overflow:auto;">
+      <table class="data-grid" style="width:100%;font-size:11px;">
+        <thead>
+          <tr>
+            <th>Region Name</th>
+            <th>Question Text</th>
+            <th>Evaluate Ques</th>
+            <th>Answer Type</th>
+            <th>Partial Marking</th>
+            <th>Partial Type</th>
+            <th>Marks</th>
+            <th>Negative Mark</th>
+            <th>UnAttempt Mark</th>
+            <th>Question Link</th>
+            <th>Evaluation Criteria</th>
+            <th>Answer</th>
+          </tr>
+        </thead>
+        <tbody id="markingSchemeBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="closeModal('modalMarkingScheme')"><i class="fas fa-check"></i> Ok</button>
+      <button class="btn-default" onclick="closeModal('modalMarkingScheme')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+<script src="template-editor.js"></script>
+</body>
+</html>
