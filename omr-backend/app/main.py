@@ -1088,7 +1088,10 @@ def _save_processed_image(
 
 def _safe_filename(name: str) -> str:
     """Make a string safe for use as a filename."""
-    return "".join(c if c.isalnum() or c in "-_." else "_" for c in name).strip("_")[:100]
+    safe = "".join(c if c.isalnum() or c in "-_." else "_" for c in name).strip("_.")[:100]
+    if safe in ("", ".", ".."):
+        safe = "_unnamed"
+    return safe
 
 
 @app.post("/api/process-single-save")
