@@ -6,6 +6,7 @@ custom marking schemes, analytics, batch processing, export.
 
 import io
 import os
+import csv
 import uuid
 import json
 import base64
@@ -286,7 +287,11 @@ async def upload_template_image(
 @app.get("/api/template-images/{filename}")
 async def get_template_image(filename: str):
     """Serve a template image."""
-    filepath = TEMPLATE_IMAGES_DIR / filename
+    # Sanitize filename to prevent path traversal
+    safe_name = Path(filename).name
+    if safe_name != filename or '..' in filename:
+        raise HTTPException(status_code=400, detail="Invalid filename")
+    filepath = TEMPLATE_IMAGES_DIR / safe_name
     if not filepath.exists():
         raise HTTPException(status_code=404, detail="Image not found")
     return FileResponse(str(filepath), media_type="image/jpeg")
@@ -866,7 +871,8 @@ async def export_results_csv(
     max_q = max(r.get("total_questions", 75) for r in results_to_export)
     has_grading = any("grading" in r for r in results_to_export)
 
-    lines = []
+    output = io.StringIO()
+    writer = csv.writer(output)
     header = [
         "S.No", "Filename", "Enrollment No", "Student Name",
         "Answered", "Unanswered", "Multiple Marked"
@@ -875,7 +881,7 @@ async def export_results_csv(
         header.append("Q" + str(q))
     if has_grading:
         header.extend(["Correct", "Wrong", "Score", "Max Score", "Percentage"])
-    lines.append(",".join(header))
+    writer.writerow(header)
 
     for idx, r in enumerate(results_to_export, 1):
         row = [
@@ -906,9 +912,9 @@ async def export_results_csv(
                 str(g.get("max_score", 0)),
                 str(g.get("percentage", 0)),
             ])
-        lines.append(",".join(row))
+        writer.writerow(row)
 
-    csv_content = "\n".join(lines)
+    csv_content = output.getvalue()
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     return StreamingResponse(
         io.BytesIO(csv_content.encode()),
