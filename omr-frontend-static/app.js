@@ -1,18 +1,6 @@
 // === YOCTEL OMR - Professional Application ===
 
 let API_URL = localStorage.getItem('omr_api_url') || '';
-const API_AUTH = 'Basic ' + btoa('user:4a30dc0528abcf536899beaa6b8b9c6b');
-
-// Wrapper for fetch with auth headers
-function apiFetch(url, options = {}) {
-  if (!options.headers) options.headers = {};
-  if (typeof options.headers === 'object' && !(options.headers instanceof Headers)) {
-    options.headers = Object.assign({}, options.headers, { 'Authorization': API_AUTH });
-  } else if (options.headers instanceof Headers) {
-    options.headers.set('Authorization', API_AUTH);
-  }
-  return fetch(url, options);
-}
 let templates = [];
 let answerKeys = [];
 let students = [];
@@ -32,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function checkConnection() {
   const el = document.getElementById('connectionStatus');
   try {
-    const res = await apiFetch(`${API_URL}/api/settings`);
+    const res = await fetch(`${API_URL}/api/settings`);
     if (res.ok) {
       el.innerHTML = '<i class="fas fa-circle" style="color:#4CAF50;font-size:8px"></i> Connected';
     } else throw new Error();
@@ -91,7 +79,7 @@ function closeModal(id) { document.getElementById(id).classList.remove('active')
 // === DASHBOARD ===
 async function loadDashboard() {
   try {
-    const res = await apiFetch(`${API_URL}/api/dashboard`);
+    const res = await fetch(`${API_URL}/api/dashboard`);
     if (!res.ok) return;
     const data = await res.json();
     
@@ -149,7 +137,7 @@ function refreshDashboard() { loadAll(); showToast('Data refreshed', 'success');
 // === TEMPLATES ===
 async function loadTemplates() {
   try {
-    const res = await apiFetch(`${API_URL}/api/templates`);
+    const res = await fetch(`${API_URL}/api/templates`);
     if (!res.ok) return;
     templates = await res.json();
     renderTemplateList();
@@ -196,7 +184,7 @@ async function createTemplate() {
       has_barcode: document.getElementById('tplBarcode').checked,
       use_pivots: document.getElementById('tplPivots').checked,
     };
-    const res = await apiFetch(`${API_URL}/api/templates`, {
+    const res = await fetch(`${API_URL}/api/templates`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
     });
     if (!res.ok) throw new Error(await res.text());
@@ -209,7 +197,7 @@ async function createTemplate() {
 async function deleteTemplate(id) {
   if (!confirm('Delete this template?')) return;
   try {
-    const res = await apiFetch(`${API_URL}/api/templates/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API_URL}/api/templates/${id}`, { method: 'DELETE' });
     if (!res.ok) { const d = await res.json(); showToast(d.detail || 'Failed', 'error'); return; }
     showToast('Template deleted', 'info');
     loadTemplates();
@@ -230,7 +218,7 @@ function populateTemplateSelects() {
 // === ANSWER KEYS ===
 async function loadAnswerKeys() {
   try {
-    const res = await apiFetch(`${API_URL}/api/answer-keys`);
+    const res = await fetch(`${API_URL}/api/answer-keys`);
     if (!res.ok) return;
     answerKeys = await res.json();
     renderAnswerKeyList();
@@ -380,7 +368,7 @@ async function createAnswerKey() {
   formData.append('unanswered_marks', document.getElementById('akUnanswered').value);
 
   try {
-    const res = await apiFetch(`${API_URL}/api/answer-keys`, { method: 'POST', body: formData });
+    const res = await fetch(`${API_URL}/api/answer-keys`, { method: 'POST', body: formData });
     if (!res.ok) throw new Error(await res.text());
     showToast('Answer key created', 'success');
     closeModal('modalCreateAnswerKey');
@@ -391,7 +379,7 @@ async function createAnswerKey() {
 async function deleteAnswerKey(id) {
   if (!confirm('Delete this answer key?')) return;
   try {
-    await apiFetch(`${API_URL}/api/answer-keys/${id}`, { method: 'DELETE' });
+    await fetch(`${API_URL}/api/answer-keys/${id}`, { method: 'DELETE' });
     showToast('Deleted', 'info');
     loadAnswerKeys();
   } catch { showToast('Failed', 'error'); }
@@ -412,7 +400,7 @@ function populateAnswerKeySelects() {
 // === SESSIONS ===
 async function loadSessions() {
   try {
-    const res = await apiFetch(`${API_URL}/api/sessions`);
+    const res = await fetch(`${API_URL}/api/sessions`);
     if (!res.ok) return;
     sessions = await res.json();
     populateSessionSelects();
@@ -452,7 +440,7 @@ async function createSession() {
       wrong_marks: parseFloat(document.getElementById('sessionWrongMarks').value) || 0,
       total_questions: parseInt(document.getElementById('sessionQuestions').value) || 75,
     };
-    const res = await apiFetch(`${API_URL}/api/sessions`, {
+    const res = await fetch(`${API_URL}/api/sessions`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
     });
     if (!res.ok) throw new Error(await res.text());
@@ -466,7 +454,7 @@ async function createSession() {
 // === STUDENTS ===
 async function loadStudents() {
   try {
-    const res = await apiFetch(`${API_URL}/api/students`);
+    const res = await fetch(`${API_URL}/api/students`);
     if (!res.ok) return;
     students = await res.json();
     renderStudentsGrid();
@@ -535,7 +523,7 @@ async function addStudent() {
       email: document.getElementById('stuEmail').value,
       phone: document.getElementById('stuPhone').value,
     };
-    const res = await apiFetch(`${API_URL}/api/students`, {
+    const res = await fetch(`${API_URL}/api/students`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
     });
     if (!res.ok) throw new Error(await res.text());
@@ -550,7 +538,7 @@ async function addStudent() {
 async function deleteStudent(id) {
   if (!confirm('Delete this student?')) return;
   try {
-    await apiFetch(`${API_URL}/api/students/${id}`, { method: 'DELETE' });
+    await fetch(`${API_URL}/api/students/${id}`, { method: 'DELETE' });
     showToast('Student removed', 'info');
     loadStudents();
   } catch { showToast('Failed', 'error'); }
@@ -660,7 +648,7 @@ async function startProcessing() {
       if (answerKeyId) formData.append('answer_key_id', answerKeyId);
       if (sessionId) formData.append('session_id', sessionId);
 
-      const res = await apiFetch(`${API_URL}/api/process-single-save`, { method: 'POST', body: formData });
+      const res = await fetch(`${API_URL}/api/process-single-save`, { method: 'POST', body: formData });
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
 
@@ -719,7 +707,7 @@ function showDownloadButton(sessionName) {
 async function downloadProcessedImages(sessionName) {
   showToast('Preparing ZIP download...', 'info');
   try {
-    const res = await apiFetch(`${API_URL}/api/download-processed/${encodeURIComponent(sessionName)}`);
+    const res = await fetch(`${API_URL}/api/download-processed/${encodeURIComponent(sessionName)}`);
     if (!res.ok) throw new Error('No processed images found');
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
@@ -930,7 +918,7 @@ async function exportResults(format) {
   }
   try {
     const endpoint = format === 'csv' ? '/api/export/csv' : '/api/export/excel';
-    const res = await apiFetch(`${API_URL}${endpoint}`, { method: 'POST', body: formData });
+    const res = await fetch(`${API_URL}${endpoint}`, { method: 'POST', body: formData });
     if (!res.ok) throw new Error('Export failed');
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
@@ -958,7 +946,7 @@ async function loadSessionAnalytics() {
   if (!sessionId) { showToast('Select a session first', 'error'); return; }
 
   try {
-    const res = await apiFetch(`${API_URL}/api/analytics/session/${sessionId}`);
+    const res = await fetch(`${API_URL}/api/analytics/session/${sessionId}`);
     if (!res.ok) throw new Error('Analytics failed');
     const data = await res.json();
     
@@ -1076,7 +1064,7 @@ async function saveSettings() {
     const threshold = document.getElementById('settingThreshold').value;
     const formData = new FormData();
     formData.append('fill_threshold', threshold);
-    const res = await apiFetch(`${API_URL}/api/settings/threshold`, { method: 'POST', body: formData });
+    const res = await fetch(`${API_URL}/api/settings/threshold`, { method: 'POST', body: formData });
     if (res.ok) showToast('Settings saved', 'success');
     else showToast('Save failed', 'error');
   } catch { showToast('Save failed', 'error'); }

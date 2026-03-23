@@ -281,7 +281,15 @@ function drawPivotMarker(ctx, r, idx, isSelected, W, H) {
   
   // Selection glow
   if (isSelected) {
+    ctx.save();
+    ctx.shadowColor = '#FFEB3B';
+    ctx.shadowBlur = 16;
     ctx.strokeStyle = '#FFEB3B';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(px - size/2 - 6, py - size/2 - 6, size + 12, size + 12);
+    ctx.restore();
+    // Animated-like dashed ring
+    ctx.strokeStyle = '#FF9800';
     ctx.lineWidth = 2;
     ctx.setLineDash([4, 2]);
     ctx.strokeRect(px - size/2 - 4, py - size/2 - 4, size + 8, size + 8);
@@ -295,14 +303,31 @@ function drawOMRRegion(ctx, r, idx, isSelected, W, H) {
   const rw = r.w * W;
   const rh = r.h * H;
   
-  // Fill
-  ctx.fillStyle = 'rgba(255, 182, 193, 0.25)';
-  ctx.fillRect(rx, ry, rw, rh);
-  
-  // Border
-  ctx.strokeStyle = isSelected ? '#FFEB3B' : '#E91E63';
-  ctx.lineWidth = isSelected ? 3 : 2;
-  ctx.strokeRect(rx, ry, rw, rh);
+  // Fill - brighter when selected
+  if (isSelected) {
+    ctx.fillStyle = 'rgba(255, 235, 59, 0.30)';
+    ctx.fillRect(rx, ry, rw, rh);
+    // Outer glow
+    ctx.save();
+    ctx.shadowColor = '#FFEB3B';
+    ctx.shadowBlur = 18;
+    ctx.strokeStyle = '#FFEB3B';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(rx, ry, rw, rh);
+    ctx.restore();
+    // Inner border
+    ctx.strokeStyle = '#FF9800';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 3]);
+    ctx.strokeRect(rx + 3, ry + 3, rw - 6, rh - 6);
+    ctx.setLineDash([]);
+  } else {
+    ctx.fillStyle = 'rgba(255, 182, 193, 0.18)';
+    ctx.fillRect(rx, ry, rw, rh);
+    ctx.strokeStyle = '#E91E63';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(rx, ry, rw, rh);
+  }
   
   // Draw bubble grid inside region
   if (r.row > 0 && r.column > 0) {
@@ -388,16 +413,33 @@ function drawBarcodeRegion(ctx, r, idx, isSelected, W, H) {
   const rw = r.w * W;
   const rh = r.h * H;
   
-  // Fill
-  ctx.fillStyle = 'rgba(33, 150, 243, 0.15)';
-  ctx.fillRect(rx, ry, rw, rh);
-  
-  // Border
-  ctx.strokeStyle = isSelected ? '#FFEB3B' : '#2196F3';
-  ctx.lineWidth = isSelected ? 3 : 2;
-  ctx.setLineDash([6, 3]);
-  ctx.strokeRect(rx, ry, rw, rh);
-  ctx.setLineDash([]);
+  if (isSelected) {
+    // Bright highlight fill
+    ctx.fillStyle = 'rgba(255, 235, 59, 0.25)';
+    ctx.fillRect(rx, ry, rw, rh);
+    // Outer glow
+    ctx.save();
+    ctx.shadowColor = '#FFEB3B';
+    ctx.shadowBlur = 18;
+    ctx.strokeStyle = '#FFEB3B';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(rx, ry, rw, rh);
+    ctx.restore();
+    // Inner dashed border
+    ctx.strokeStyle = '#FF9800';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 3]);
+    ctx.strokeRect(rx + 3, ry + 3, rw - 6, rh - 6);
+    ctx.setLineDash([]);
+  } else {
+    ctx.fillStyle = 'rgba(33, 150, 243, 0.12)';
+    ctx.fillRect(rx, ry, rw, rh);
+    ctx.strokeStyle = '#2196F3';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 3]);
+    ctx.strokeRect(rx, ry, rw, rh);
+    ctx.setLineDash([]);
+  }
   
   // Barcode icon lines
   const barX = rx + rw/2 - 30;
@@ -1149,7 +1191,7 @@ async function saveEditorTemplate() {
   
   try {
     // Save template via API
-    const res = await apiFetch(`${API_URL}/api/templates`, {
+    const res = await fetch(`${API_URL}/api/templates`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(templateData)
@@ -1171,7 +1213,7 @@ async function saveEditorTemplate() {
       formData.append('template_id', tplData.id || '');
       formData.append('regions', JSON.stringify(editorRegions));
       
-      await apiFetch(`${API_URL}/api/template-image`, {
+      await fetch(`${API_URL}/api/template-image`, {
         method: 'POST',
         body: formData
       });
