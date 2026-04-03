@@ -52,14 +52,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="<?= APP_URL ?>/assets/js/app.js?v=2"></script>
     <script>
-    // Fix PDF links: ensure they point to the working inner path /hpc/generate_pdf.php
-    // This handles cases where server-side OPcache serves old code with outdated URLs
-    document.querySelectorAll('a[href*="generate_pdf.php"]').forEach(function(a) {
-        var href = a.getAttribute('href');
-        if (href && href.indexOf('/hpc/generate_pdf.php') === -1) {
-            a.setAttribute('href', href.replace('generate_pdf.php', 'hpc/generate_pdf.php'));
-        }
-    });
+        // Fix PDF links: ensure they point to the working inner path /cards/generate_pdf.php
+        // This handles cases where server-side OPcache serves old code with outdated URLs
+        document.querySelectorAll('a[href*="generate_pdf.php"]').forEach(function(a) {
+            var href = a.getAttribute('href');
+            if (href && href.indexOf('/cards/generate_pdf.php') === -1) {
+                a.setAttribute('href', href.replace('generate_pdf.php', 'cards/generate_pdf.php'));
+            }
+        });
     </script>
 </body>
 </html>

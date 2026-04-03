@@ -122,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
     // CSRF validation
     if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '')) {
         flash('error', 'Invalid CSRF token');
-        redirect(APP_URL . '/hpc/create.php?student_id=' . $student_id);
+        redirect(APP_URL . '/cards/create.php?student_id=' . $student_id);
     }
     $teacher_code = trim($_POST['teacher_code'] ?? '');
     $status = ($_POST['save_type'] ?? 'draft') === 'complete' ? 'completed' : 'draft';
@@ -262,7 +262,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
     }
 
     flash('success', $status === 'completed' ? 'HPC कार्ड पूर्ण झाले!' : 'HPC कार्ड मसुदा जतन झाला!');
-    redirect(APP_URL . '/hpc/view.php?id=' . $hpc_card_id);
+    redirect(APP_URL . '/cards/view.php?id=' . $hpc_card_id);
 }
 
 require_once __DIR__ . '/../includes/header.php';
@@ -270,7 +270,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-card-checklist"></i> HPC कार्ड तयार करा</h2>
-    <a href="<?= APP_URL ?>/hpc/list.php" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> मागे</a>
+    <a href="<?= APP_URL ?>/cards/list.php" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> मागे</a>
 </div>
 
 <!-- Student Selection -->

@@ -57,7 +57,7 @@ if ($is_admin) {
 
 if (!$data) {
     flash('error', 'HPC card not found.');
-    redirect(APP_URL . '/hpc/list.php');
+    redirect(APP_URL . '/cards/list.php');
 }
 
 // Fetch school data - admin uses school_id from HPC card, regular user uses session

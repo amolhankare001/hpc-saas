@@ -47,7 +47,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-card-checklist"></i> HPC कार्ड <span class="badge bg-primary"><?= count($cards) ?></span></h2>
-    <a href="<?= APP_URL ?>/hpc/create.php" class="btn btn-primary"><i class="bi bi-plus-circle"></i> नवीन HPC कार्ड</a>
+    <a href="<?= APP_URL ?>/cards/create.php" class="btn btn-primary"><i class="bi bi-plus-circle"></i> नवीन HPC कार्ड</a>
 </div>
 
 <!-- Filters -->
@@ -78,7 +78,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="text-center py-5 text-muted">
                 <i class="bi bi-card-checklist fs-1"></i>
                 <p class="mt-2">अद्याप कोणतेही HPC कार्ड तयार केलेले नाही.</p>
-                <a href="<?= APP_URL ?>/hpc/create.php" class="btn btn-primary"><i class="bi bi-plus-circle"></i> पहिले HPC कार्ड तयार करा</a>
+                <a href="<?= APP_URL ?>/cards/create.php" class="btn btn-primary"><i class="bi bi-plus-circle"></i> पहिले HPC कार्ड तयार करा</a>
             </div>
         <?php else: ?>
             <div class="table-responsive">
@@ -120,14 +120,14 @@ require_once __DIR__ . '/../includes/header.php';
                             </td>
                             <td><?= date('d/m/Y', strtotime($c['created_at'])) ?></td>
                             <td>
-                                <a href="<?= APP_URL ?>/hpc/view.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-primary" title="पहा"><i class="bi bi-eye"></i></a>
-                                <a href="<?= APP_URL ?>/hpc/create.php?student_id=<?= $c['student_id'] ?>" class="btn btn-sm btn-outline-warning" title="संपादन"><i class="bi bi-pencil"></i></a>
+                                <a href="<?= APP_URL ?>/cards/view.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-primary" title="पहा"><i class="bi bi-eye"></i></a>
+                                <a href="<?= APP_URL ?>/cards/create.php?student_id=<?= $c['student_id'] ?>" class="btn btn-sm btn-outline-warning" title="संपादन"><i class="bi bi-pencil"></i></a>
                                 <?php if ($is_free_plan): ?>
                                     <a href="<?= APP_URL ?>/subscription/plans.php" class="btn btn-sm btn-outline-warning" title="PDF साठी अपग्रेड करा"><i class="bi bi-lock"></i></a>
                                 <?php else: ?>
-                                    <a href="<?= APP_URL ?>/hpc/generate_pdf.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-success" title="PDF"><i class="bi bi-file-pdf"></i></a>
+                                    <a href="<?= APP_URL ?>/cards/generate_pdf.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-success" title="PDF"><i class="bi bi-file-pdf"></i></a>
                                 <?php endif; ?>
-                                <form method="POST" action="<?= APP_URL ?>/hpc/delete.php" class="d-inline" onsubmit="return confirm('हे HPC कार्ड हटवायचे आहे का?')">
+                                <form method="POST" action="<?= APP_URL ?>/cards/delete.php" class="d-inline" onsubmit="return confirm('हे HPC कार्ड हटवायचे आहे का?')">
                                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                     <input type="hidden" name="id" value="<?= $c['id'] ?>">
                                     <button type="submit" class="btn btn-sm btn-outline-danger" title="HPC हटवा"><i class="bi bi-trash"></i></button>
