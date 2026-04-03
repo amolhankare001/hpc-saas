@@ -253,7 +253,7 @@ body{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:#333;bac
 .page-flow{width:210mm;min-height:297mm;height:auto;margin:0 auto;padding:6mm 8mm;page-break-before:always;position:relative;background:#fff;overflow:visible;}
 .section-avoid{page-break-inside:avoid;}
 .page:last-child{page-break-after:auto;}
-.cover{padding:0 !important;background:none !important;position:relative;overflow:hidden;background-image:url('<?= APP_URL ?>/hpc/assets/hpc-samagra-sample.pdf.jpg');background-size:100% 100%;background-position:center;background-repeat:no-repeat;}
+.cover{padding:0 !important;background-color:transparent !important;position:relative;overflow:hidden;background-image:url('<?= APP_URL ?>/hpc/assets/hpc-samagra-sample.pdf.jpg');background-size:100% 100%;background-position:center;background-repeat:no-repeat;}
 .cover .cv-school{position:absolute;top:6.5%;left:56%;transform:translateX(-50%);width:76%;height:3.7%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;color:#333;line-height:1.2;}
 .cover .cv-stage{position:absolute;top:39.3%;left:54.6%;transform:translateX(-50%);width:44.5%;height:3.3%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Poppins',sans-serif;font-size:16px;font-weight:800;color:#BF360C;letter-spacing:1px;}
 .cover .cv-info{position:absolute;top:72%;left:50%;transform:translateX(-50%);width:88%;height:7.5%;padding:4px 20px;display:flex;justify-content:space-between;align-items:center;font-family:'Poppins',sans-serif;font-size:11px;color:#333;}
