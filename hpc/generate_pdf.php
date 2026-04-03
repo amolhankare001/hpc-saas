@@ -178,13 +178,15 @@ $domain_info = [
 
 
 
-// School-level working days (same for all students)
+// School-level working days (same for all students) - use per-month values from school profile
 $school_working_days = 0;
+$school_working_days_monthly = [];
 try {
-    $sw = $db->prepare("SELECT working_days FROM schools WHERE id = ?");
+    $sw = $db->prepare("SELECT working_days, working_days_monthly FROM schools WHERE id = ?");
     $sw->execute([$school_id]);
     $sr = $sw->fetch();
     if ($sr && isset($sr['working_days'])) $school_working_days = intval($sr['working_days']);
+    if ($sr && !empty($sr['working_days_monthly'])) $school_working_days_monthly = json_decode($sr['working_days_monthly'], true) ?: [];
 } catch (Exception $e) {}
 
 // Rubric levels (4 levels matching reference)
@@ -201,20 +203,31 @@ $abilities = [
     'creativity' => ['label'=>'सर्जनशीलता','emoji'=>'🎨'],
 ];
 
-generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $interests, $domain_info, $rubric_levels, $abilities, $school_working_days);
+generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $interests, $domain_info, $rubric_levels, $abilities, $school_working_days, $school_working_days_monthly);
 exit;
 
-function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $interests, $domain_info, $rubric_levels, $abilities, $school_working_days) {
+function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $interests, $domain_info, $rubric_levels, $abilities, $school_working_days, $school_working_days_monthly) {
+    // Map month numbers to month keys for looking up per-month working days
+    $month_num_to_key = [4=>'apr',5=>'may',6=>'jun',7=>'jul',8=>'aug',9=>'sep',10=>'oct',11=>'nov',12=>'dec',1=>'jan',2=>'feb',3=>'mar'];
     $month_names_t1 = [6=>'जून',7=>'जुलै',8=>'ऑगस्ट',9=>'सप्टें.',10=>'ऑक्टो.',11=>'नोव्हें.'];
     $month_names_t2 = [12=>'डिसें.',1=>'जाने.',2=>'फेब्रु.',3=>'मार्च',4=>'एप्रिल',5=>'मे'];
 
+    // Helper: resolve working days for a given month number
+    // Priority: per-month school value > saved attendance > legacy school average
+    $getWorkingDays = function($num) use ($month_num_to_key, $school_working_days_monthly, $attendance, $school_working_days) {
+        $key = $month_num_to_key[$num] ?? '';
+        if (!empty($school_working_days_monthly[$key])) return intval($school_working_days_monthly[$key]);
+        if (!empty($attendance[$num]['working_days'])) return intval($attendance[$num]['working_days']);
+        return $school_working_days;
+    };
+
     $tw1=0;$tp1=0;$tw2=0;$tp2=0;
     foreach ($month_names_t1 as $num=>$name) {
-        $wd = $school_working_days > 0 ? $school_working_days : ($attendance[$num]['working_days'] ?? 0);
+        $wd = $getWorkingDays($num);
         $tw1 += $wd; $tp1 += $attendance[$num]['days_present'] ?? 0;
     }
     foreach ($month_names_t2 as $num=>$name) {
-        $wd = $school_working_days > 0 ? $school_working_days : ($attendance[$num]['working_days'] ?? 0);
+        $wd = $getWorkingDays($num);
         $tw2 += $wd; $tp2 += $attendance[$num]['days_present'] ?? 0;
     }
     $tw=$tw1+$tw2; $tp=$tp1+$tp2;
@@ -413,7 +426,7 @@ foreach ($cover_domains as $cd): ?>
 <tr><th style="width:75px;background:#C8E6C9;color:#1B5E20;">महिने</th><?php foreach ($month_names_t1 as $name): ?><th style="background:#E8F5E9;color:#2E7D32;"><?= $name ?></th><?php endforeach; ?><th style="background:#FFE0B2;color:#E65100;">एकूण</th></tr>
 <tr><td style="text-align:left;font-size:7px;background:#F1F8E9;"><strong>कामकाजाचे दिवस</strong></td>
 <?php foreach ($month_names_t1 as $num => $name):
-    $wd = $school_working_days > 0 ? $school_working_days : ($attendance[$num]['working_days'] ?? 0);
+    $wd = $getWorkingDays($num);
 ?><td style="background:#FAFAFA;"><strong><?= $wd ?: '-' ?></strong></td><?php endforeach; ?>
 <td style="background:#FFF3E0;"><strong><?= $tw1 ?: '-' ?></strong></td></tr>
 <tr><td style="text-align:left;font-size:7px;background:#F1F8E9;"><strong>उपस्थित दिवस</strong></td>
@@ -428,7 +441,7 @@ foreach ($cover_domains as $cd): ?>
 <tr><th style="width:75px;background:#C8E6C9;color:#1B5E20;">महिने</th><?php foreach ($month_names_t2 as $name): ?><th style="background:#E8F5E9;color:#2E7D32;"><?= $name ?></th><?php endforeach; ?><th style="background:#FFE0B2;color:#E65100;">एकूण</th></tr>
 <tr><td style="text-align:left;font-size:7px;background:#F1F8E9;"><strong>कामकाजाचे दिवस</strong></td>
 <?php foreach ($month_names_t2 as $num => $name):
-    $wd = $school_working_days > 0 ? $school_working_days : ($attendance[$num]['working_days'] ?? 0);
+    $wd = $getWorkingDays($num);
 ?><td style="background:#FAFAFA;"><strong><?= $wd ?: '-' ?></strong></td><?php endforeach; ?>
 <td style="background:#FFF3E0;"><strong><?= $tw2 ?: '-' ?></strong></td></tr>
 <tr><td style="text-align:left;font-size:7px;background:#F1F8E9;"><strong>उपस्थित दिवस</strong></td>

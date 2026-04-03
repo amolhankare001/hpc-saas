@@ -407,8 +407,8 @@ require_once __DIR__ . '/../includes/header.php';
                                     $monthly_wd = !empty($school['working_days_monthly']) ? json_decode($school['working_days_monthly'], true) : [];
                                     $sw_days_fallback = intval($school['working_days'] ?? 0);
                                     foreach ($month_keys as $num => $key): 
-                                        // Use per-month value if available, fallback to single value, but allow saved attendance to override
-                                        $wd_val = $attendance_data[$num]['working_days'] ?? ($monthly_wd[$key] ?? $sw_days_fallback);
+                                            // Always use school's current monthly working days (source of truth), fallback to saved attendance, then legacy average
+                                        $wd_val = (!empty($monthly_wd[$key]) ? $monthly_wd[$key] : null) ?? ($attendance_data[$num]['working_days'] ?? $sw_days_fallback);
                                     ?>
                                         <td>
                                             <input type="number" class="form-control form-control-sm attendance-working" name="working_<?= $key ?>" value="<?= intval($wd_val) ?>" readonly style="background:#f0f0f0;">
