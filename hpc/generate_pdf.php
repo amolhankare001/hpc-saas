@@ -244,7 +244,7 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HPC - <?= sanitize($data['name_mr'] ?: $data['name']) ?></title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&family=Poppins:wght@400;600;700;800&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
 @page{size:A4 portrait;margin:0;}
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -261,6 +261,21 @@ body{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:#333;bac
 .cover .cv-info .cv-col.right{text-align:right;}
 .cover .cv-info .cv-lbl{color:#555;font-weight:600;font-size:11px;}
 .cover .cv-info .cv-val{font-weight:800;font-size:13px;color:#111;}
+/* Page 3: मी व माझा परिसर - background image design */
+.mw-page{padding:0 !important;background-color:transparent !important;position:relative;overflow:hidden;background-image:url('<?= APP_URL ?>/hpc/assets/hpc-samagra-page3.jpg');background-size:100% 100%;background-position:center;background-repeat:no-repeat;font-family:'Kalam',cursive;}
+.mw-page *{font-family:'Kalam',cursive;}
+.mw-title{position:absolute;top:2.8%;left:51%;transform:translateX(-50%);font-size:11px;font-weight:700;color:#333;text-align:center;white-space:nowrap;}
+.mw-photo{position:absolute;top:6.8%;left:6.4%;width:21.1%;height:14.8%;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.mw-photo img{width:70px;height:85px;object-fit:cover;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.15);}
+.mw-photo .ph-placeholder{width:70px;height:85px;border:2px dashed #90CAF9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(255,255,255,0.5);}
+.mw-age{position:absolute;top:12.5%;left:48%;transform:translateX(-50%);text-align:center;font-weight:700;color:#333;}
+.mw-bday{position:absolute;top:9%;left:85%;transform:translateX(-50%);text-align:center;font-weight:700;color:#C2185B;font-size:10px;}
+.mw-family{position:absolute;top:24%;left:2%;width:35%;height:34%;padding:8px 12px;font-size:10px;color:#333;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
+.mw-address{position:absolute;top:30%;left:52%;width:38%;height:11%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;color:#333;padding:4px;}
+.mw-aspire{position:absolute;top:45%;left:33%;width:28%;height:22%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:10px;color:#333;padding:4px;}
+.mw-fav{position:absolute;top:44%;left:65%;width:31%;height:27%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:9px;color:#333;padding:4px 6px;}
+.mw-friends{position:absolute;top:60%;left:4%;width:34%;height:13%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:10px;color:#333;padding:4px;}
+.mw-interests{position:absolute;top:78.5%;left:50%;transform:translateX(-50%);width:91%;height:15%;font-size:9px;color:#333;padding:6px 10px;display:flex;flex-direction:column;justify-content:center;}
 .sh-o{background:linear-gradient(135deg,#E65100,#FF8F00);color:#fff;text-align:center;padding:5px 10px;font-size:13px;font-weight:700;border-radius:6px;margin-bottom:5px;}
 .sh-b{background:linear-gradient(135deg,#1565C0,#42A5F5);color:#fff;text-align:center;padding:5px 10px;font-size:12px;font-weight:600;border-radius:5px;margin:5px 0 4px;}
 .sh-g{background:linear-gradient(135deg,#2E7D32,#66BB6A);color:#fff;text-align:center;padding:5px 10px;font-size:12px;font-weight:600;border-radius:5px;margin:5px 0 4px;}
@@ -302,7 +317,7 @@ th{background:#E3F2FD;font-weight:600;text-align:center;}
 .lr{display:flex;align-items:center;margin:3px 5px;font-size:12px;}
 .lc{width:14px;height:14px;border:2px solid #666;margin-right:5px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;border-radius:2px;}
 .lc.ck{border-color:#D32F2F;background:#FFEBEE;color:#D32F2F;font-weight:700;}
-@media print{.np{display:none !important;}.page{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:297mm;overflow:hidden;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page-flow{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:auto;min-height:auto;overflow:visible;page-break-before:always;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.section-avoid{page-break-inside:avoid;}body{background:#fff;margin:0;padding:0;}.cover{padding:0 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;background-size:100% 100% !important;background-position:center !important;background-repeat:no-repeat !important;}.dh,.sh-o,.sh-b,.sh-g,.sh-r,.sh-b2,.rtbl th,.rtbl .ac,.rtbl .sel,.cg-box,.cb,.att th,.ffb,.mc{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+@media print{.np{display:none !important;}.page{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:297mm;overflow:hidden;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page-flow{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:auto;min-height:auto;overflow:visible;page-break-before:always;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.section-avoid{page-break-inside:avoid;}body{background:#fff;margin:0;padding:0;}.cover,.mw-page{padding:0 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;background-size:100% 100% !important;background-position:center !important;background-repeat:no-repeat !important;}.dh,.sh-o,.sh-b,.sh-g,.sh-r,.sh-b2,.rtbl th,.rtbl .ac,.rtbl .sel,.cg-box,.cb,.att th,.ffb,.mc{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
 @media screen{.page{border:1px solid #ddd;margin:6px auto;box-shadow:0 2px 8px rgba(0,0,0,0.12);}.page-flow{border:1px solid #ddd;margin:6px auto;box-shadow:0 2px 8px rgba(0,0,0,0.12);}}
 @media screen and (max-width:768px){.page,.page-flow{width:210mm;min-height:297mm;padding:6mm 8mm;}.page{overflow:hidden;}.page-flow{overflow:visible;height:auto;}.g2{grid-template-columns:1fr 1fr;}body{overflow-x:auto;min-width:210mm;}.np{position:sticky;top:0;z-index:999;padding:8px;}.np button{width:100%;font-size:16px;padding:12px;}}
 </style>
@@ -440,119 +455,109 @@ function generatePDF(){
 <div class="pf">समग्र प्रगती पत्रक (HPC) | <?= sanitize($school['name_mr'] ?: $school['name']) ?> | पान २</div>
 </div>
 
-<!-- PAGE 3: भाग अ (२) - मी व माझा परिसर - ATTRACTIVE DESIGN -->
-<div class="page" style="border:3px solid #1565C0;padding:5mm 7mm;background:linear-gradient(180deg,#E3F2FD 0%,#BBDEFB 15%,#FFFFFF 40%,#FFF8E1 100%);">
+<!-- PAGE 3: भाग अ (२) - मी व माझा परिसर - BACKGROUND IMAGE DESIGN -->
+<div class="page mw-page">
+<!-- Title in green banner -->
+<div class="mw-title">भाग अ (२) - मी व माझा परिसर</div>
 
-<!-- Decorative Header with gradient banner -->
-<div style="background:linear-gradient(135deg,#1565C0,#42A5F5,#29B6F6);padding:10px 16px;border-radius:14px;margin-bottom:8px;position:relative;overflow:hidden;box-shadow:0 3px 8px rgba(21,101,192,0.3);">
-    <div style="position:absolute;top:-5px;left:10px;font-size:36px;opacity:0.12;">🌟</div>
-    <div style="position:absolute;bottom:-5px;right:10px;font-size:36px;opacity:0.12;">🌈</div>
-    <div style="text-align:center;color:#FFE082;font-size:10px;font-weight:600;letter-spacing:1px;">भाग – अ (२)</div>
-    <div style="text-align:center;color:#fff;font-size:18px;font-weight:700;text-shadow:1px 1px 3px rgba(0,0,0,0.3);">🌟 मी व माझा परिसर 🌟</div>
-    <div style="text-align:center;color:#B3E5FC;font-size:7px;margin-top:1px;">Me and My World (पालकांशी चर्चा करून शिक्षकांनी भरावे)</div>
-</div>
-
-<!-- Photo + Student Info Row -->
-<div style="display:flex;gap:10px;margin-bottom:7px;">
-<!-- Photo Card -->
-<div style="flex:0 0 110px;">
-    <div style="border:3px solid #4CAF50;border-radius:12px;padding:5px;background:linear-gradient(180deg,#E8F5E9,#C8E6C9);text-align:center;box-shadow:0 2px 6px rgba(76,175,80,0.2);">
-    <div style="font-weight:700;font-size:10px;color:#1B5E20;margin-bottom:3px;">⭐ माझा फोटो ⭐</div>
+<!-- Photo in blue circle -->
+<div class="mw-photo">
+    <div style="font-size:8px;font-weight:700;color:#333;margin-bottom:2px;">माझा फोटो</div>
     <?php if (!empty($data['photo']) && file_exists(__DIR__ . '/../' . $data['photo'])): ?>
-    <img src="<?= APP_URL . '/' . $data['photo'] ?>" style="width:90px;height:110px;object-fit:cover;border-radius:8px;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.15);">
+    <img src="<?= APP_URL . '/' . $data['photo'] ?>">
     <?php else: ?>
-    <div style="width:90px;height:110px;background:linear-gradient(135deg,#A5D6A7,#66BB6A);display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:38px;margin:0 auto;border:2px solid #fff;">📷</div>
+    <div class="ph-placeholder">📷</div>
     <?php endif; ?>
+</div>
+
+<!-- Age in star -->
+<div class="mw-age">
+    <div style="font-size:8px;">माझे वय</div>
+    <div style="font-size:22px;color:#E65100;"><?= !empty($data['date_of_birth']) ? (new DateTime($data['date_of_birth']))->diff(new DateTime())->y : '-' ?></div>
+    <div style="font-size:8px;">वर्ष आहे</div>
+</div>
+
+<!-- Birthday in pink balloon -->
+<div class="mw-bday">
+    <div style="font-size:8px;">माझा वाढदिवस</div>
+    <div style="font-size:12px;font-weight:700;"><?= !empty($data['date_of_birth']) ? date('d', strtotime($data['date_of_birth'])) . ' ' . ['','जानेवारी','फेब्रुवारी','मार्च','एप्रिल','मे','जून','जुलै','ऑगस्ट','सप्टेंबर','ऑक्टोबर','नोव्हेंबर','डिसेंबर'][intval(date('m', strtotime($data['date_of_birth'])))] : '-' ?></div>
+    <div style="font-size:7px;">या दिवशी असतो.</div>
+</div>
+
+<!-- Family in house -->
+<div class="mw-family">
+    <div style="font-size:11px;font-weight:700;margin-bottom:6px;">माझे कुटुंब</div>
+    <div style="font-size:10px;margin:2px 0;">आईचे नाव: <strong><?= sanitize($data['mother_name'] ?? '___________') ?></strong></div>
+    <div style="font-size:10px;margin:2px 0;">वडिलांचे नाव: <strong><?= sanitize($data['father_name'] ?? '___________') ?></strong></div>
+    <div style="font-size:10px;margin:2px 0;">पालकाचे नाव: <strong><?= sanitize($data['guardian_name'] ?? '___________') ?></strong></div>
+</div>
+
+<!-- Address in blue box -->
+<div class="mw-address">
+    <div>
+        <div style="font-size:9px;margin-bottom:2px;">माझ्या घराचा पत्ता:</div>
+        <div style="font-size:10px;font-weight:700;"><?= !empty($data['address_line1']) ? sanitize($data['address_line1']) : '_________________________' ?></div>
     </div>
 </div>
-<!-- Student Info Card -->
-<div style="flex:1;">
-    <div style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border:2px solid #42A5F5;border-radius:12px;padding:8px 10px;box-shadow:0 2px 6px rgba(66,165,245,0.2);">
-    <div style="font-size:12px;margin:4px 0;border-bottom:1px dashed #90CAF9;padding-bottom:3px;"><span style="color:#0D47A1;font-weight:600;">📝 माझे नाव:</span> <span style="font-weight:700;color:#1565C0;font-size:13px;"><?= sanitize($data['name_mr'] ?: $data['name']) ?></span></div>
-    <div style="font-size:11px;margin:4px 0;border-bottom:1px dashed #90CAF9;padding-bottom:3px;"><span style="color:#0D47A1;font-weight:600;">📅 माझे वय:</span> <span style="font-weight:600;"><?= !empty($data['date_of_birth']) ? (new DateTime($data['date_of_birth']))->diff(new DateTime())->y . ' वर्षे' : '-' ?></span></div>
-    <div style="font-size:11px;margin:4px 0;border-bottom:1px dashed #90CAF9;padding-bottom:3px;"><span style="color:#0D47A1;font-weight:600;">🎂 वाढदिवस:</span> <span style="font-weight:600;"><?= !empty($data['date_of_birth']) ? date('d/m/Y', strtotime($data['date_of_birth'])) : '-' ?></span></div>
-    <div style="font-size:11px;margin:4px 0;"><span style="color:#0D47A1;font-weight:600;">🏠 पत्ता:</span> <span style="font-weight:500;"><?= !empty($data['address_line1']) ? sanitize($data['address_line1']) : '_________________________' ?></span></div>
+
+<!-- Aspiration in red box -->
+<div class="mw-aspire">
+    <div style="font-size:10px;">मोठे होऊन मला</div>
+    <div style="font-size:16px;font-weight:700;color:#C62828;margin:3px 0;"><?= !empty($data['aspiration']) ? sanitize($data['aspiration']) : '_____________' ?></div>
+    <div style="font-size:10px;">व्हायचे आहे.</div>
+</div>
+
+<!-- Favourites in purple box -->
+<div class="mw-fav">
+    <div style="font-size:11px;font-weight:700;margin-bottom:4px;">माझा आवडता</div>
+    <div style="text-align:left;line-height:1.6;">
+        <div>रंग: <strong><?= !empty($data['favourite_color']) ? sanitize($data['favourite_color']) : '___' ?></strong></div>
+        <div>अन्नपदार्थ: <strong><?= !empty($data['favourite_food']) ? sanitize($data['favourite_food']) : '___' ?></strong></div>
+        <div>फूल: <strong><?= !empty($data['favourite_flower']) ? sanitize($data['favourite_flower']) : '___' ?></strong></div>
+        <div>खेळ: <strong><?= !empty($data['favourite_sport']) ? sanitize($data['favourite_sport']) : '___' ?></strong></div>
+        <div>प्राणी: <strong><?= !empty($data['favourite_animal']) ? sanitize($data['favourite_animal']) : '___' ?></strong></div>
+        <div>विषय: <strong><?= !empty($data['favourite_subject']) ? sanitize($data['favourite_subject']) : '___' ?></strong></div>
     </div>
 </div>
+
+<!-- Friends in green box -->
+<div class="mw-friends">
+    <?php $friends = array_filter([$data['best_friend1'] ?? '', $data['best_friend2'] ?? '', $data['best_friend3'] ?? '']); ?>
+    <div style="font-size:11px;font-weight:700;margin-bottom:2px;"><?= !empty($friends) ? sanitize(implode(', ', $friends)) : '__________, __________, __________' ?></div>
+    <div style="font-size:9px;background:rgba(139,195,74,0.3);padding:2px 10px;border-radius:8px;">माझे मित्र/मैत्रिणी</div>
 </div>
 
-<!-- Family Info Card -->
-<div style="border:2px solid #4CAF50;border-radius:12px;overflow:hidden;margin-bottom:7px;box-shadow:0 2px 6px rgba(76,175,80,0.15);">
-<div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);padding:5px 10px;border-bottom:2px solid #4CAF50;">
-    <span style="font-size:12px;font-weight:700;color:#1B5E20;">👨‍👩‍👧 माझे कुटुंब</span>
-</div>
-<div style="padding:6px 10px;background:#F1F8E9;">
-<div style="display:flex;gap:6px;flex-wrap:wrap;">
-    <div style="flex:1;min-width:45%;font-size:11px;padding:3px 0;border-bottom:1px dotted #A5D6A7;"><strong style="color:#2E7D32;">👩 आईचे नाव:</strong> <?= sanitize($data['mother_name'] ?? '_______________') ?></div>
-    <div style="flex:1;min-width:45%;font-size:11px;padding:3px 0;border-bottom:1px dotted #A5D6A7;"><strong style="color:#2E7D32;">👨 वडिलांचे नाव:</strong> <?= sanitize($data['father_name'] ?? '_______________') ?></div>
-    <div style="flex:1;min-width:45%;font-size:11px;padding:3px 0;"><strong style="color:#2E7D32;">🤝 पालकाचे नाव:</strong> <?= sanitize($data['guardian_name'] ?? '_______________') ?></div>
-</div>
-</div>
-</div>
-
-<!-- Friends Card -->
-<div style="border:2px solid #7C4DFF;border-radius:12px;overflow:hidden;margin-bottom:7px;box-shadow:0 2px 6px rgba(124,77,255,0.15);">
-<div style="background:linear-gradient(135deg,#EDE7F6,#D1C4E9);padding:5px 10px;border-bottom:2px solid #7C4DFF;">
-    <span style="font-size:12px;font-weight:700;color:#4527A0;">🤝 हे माझे मित्र/मैत्रिणी</span>
-</div>
-<div style="padding:6px 10px;background:#F3E5F5;display:flex;gap:6px;flex-wrap:wrap;">
-<?php $friends = array_filter([$data['best_friend1'] ?? '', $data['best_friend2'] ?? '', $data['best_friend3'] ?? '']);
-if (!empty($friends)): foreach ($friends as $idx => $f): ?>
-<span style="display:inline-block;background:linear-gradient(135deg,#CE93D8,#BA68C8);color:#fff;padding:3px 12px;border-radius:15px;font-size:11px;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,0.15);"><?= ($idx+1) ?>. <?= sanitize($f) ?></span>
-<?php endforeach; else: ?>
-<span style="font-size:11px;color:#7B1FA2;">1. __________ 2. __________ 3. __________</span>
-<?php endif; ?>
-</div>
-</div>
-
-<!-- Aspiration Banner -->
-<div style="border:3px solid #FF6F00;border-radius:14px;padding:8px 12px;margin-bottom:7px;background:linear-gradient(135deg,#FFF8E1,#FFECB3,#FFE082);text-align:center;box-shadow:0 3px 8px rgba(255,111,0,0.2);position:relative;">
-<div style="position:absolute;top:2px;left:8px;font-size:18px;">🌈</div>
-<div style="position:absolute;top:2px;right:8px;font-size:18px;">✨</div>
-<div style="font-size:12px;font-weight:700;color:#E65100;">मोठे होऊन मला</div>
-<div style="font-size:18px;font-weight:700;color:#BF360C;margin:2px 0;text-shadow:1px 1px 1px rgba(0,0,0,0.1);"><?= !empty($data['aspiration']) ? sanitize($data['aspiration']) : '_____________' ?></div>
-<div style="font-size:12px;font-weight:700;color:#E65100;">व्हायचे आहे! 🚀</div>
+<!-- Interests in cyan box -->
+<div class="mw-interests">
+    <div style="font-size:10px;font-weight:700;margin-bottom:4px;">माझी आवड आहे:</div>
+    <div style="display:flex;flex-wrap:wrap;gap:2px 8px;">
+    <?php
+    $interest_list = ['वाचन','नृत्य','गायन','वादन','क्रीडा किंवा खेळ','सर्जनशील लेखन','बागकाम','योगाभ्यास','कला','हस्तकला','पाककला'];
+    $student_interests = array_map(function($i) { return $i['name_mr'] ?: $i['name']; }, $interests);
+    foreach ($interest_list as $il):
+        $checked = false;
+        foreach ($student_interests as $si) { if (mb_strpos($si, $il) !== false || mb_strpos($il, $si) !== false) { $checked = true; break; } }
+    ?>
+    <span style="font-size:9px;"><span style="color:<?= $checked ? '#4CAF50' : '#999' ?>;font-weight:<?= $checked ? '700' : '400' ?>;"><?= $checked ? '&#10003;' : '&#9744;' ?></span> <?= $il ?></span>
+    <?php endforeach; ?>
+    </div>
+    <?php
+    $other_interest = '';
+    foreach ($interests as $si) {
+        $n = $si['name_mr'] ?: $si['name'];
+        $is_standard = false;
+        foreach ($interest_list as $il) { if (mb_strpos($n, $il) !== false || mb_strpos($il, $n) !== false) { $is_standard = true; break; } }
+        if (!$is_standard) { $other_interest = $n; break; }
+    }
+    if (!$other_interest && !empty($interests)) {
+        foreach ($interests as $si) {
+            if (!empty($si['other_details'])) { $other_interest = $si['other_details']; break; }
+        }
+    }
+    ?>
+    <div style="font-size:9px;margin-top:2px;">इतर: <strong><?= $other_interest ? sanitize($other_interest) : '_______________' ?></strong></div>
 </div>
 
-<!-- Favourites Section -->
-<div style="border:2px solid #E65100;border-radius:12px;overflow:hidden;margin-bottom:7px;box-shadow:0 2px 6px rgba(230,81,0,0.15);">
-<div style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);padding:5px 10px;border-bottom:2px solid #E65100;text-align:center;">
-    <span style="font-size:13px;font-weight:700;color:#BF360C;">⭐ माझा आवडता ⭐</span>
-</div>
-<div style="padding:6px;background:#FFFDE7;">
-<table style="border:none;width:100%;">
-<tr style="border:none;">
-<td style="background:linear-gradient(180deg,#FFEBEE,#FFCDD2);border:2px solid #EF9A9A;border-radius:10px;text-align:center;width:16%;padding:6px 3px;"><div style="font-size:20px;margin-bottom:2px;">🎨</div><strong style="font-size:8px;color:#C62828;">रंग</strong><br><span style="color:#B71C1C;font-weight:700;font-size:11px;"><?= !empty($data['favourite_color']) ? sanitize($data['favourite_color']) : '___' ?></span></td>
-<td style="background:linear-gradient(180deg,#E8F5E9,#C8E6C9);border:2px solid #A5D6A7;border-radius:10px;text-align:center;width:16%;padding:6px 3px;"><div style="font-size:20px;margin-bottom:2px;">🌺</div><strong style="font-size:8px;color:#2E7D32;">फूल</strong><br><span style="color:#1B5E20;font-weight:700;font-size:11px;"><?= !empty($data['favourite_flower']) ? sanitize($data['favourite_flower']) : '___' ?></span></td>
-<td style="background:linear-gradient(180deg,#E3F2FD,#BBDEFB);border:2px solid #90CAF9;border-radius:10px;text-align:center;width:16%;padding:6px 3px;"><div style="font-size:20px;margin-bottom:2px;">🐾</div><strong style="font-size:8px;color:#1565C0;">प्राणी</strong><br><span style="color:#0D47A1;font-weight:700;font-size:11px;"><?= !empty($data['favourite_animal']) ? sanitize($data['favourite_animal']) : '___' ?></span></td>
-<td style="background:linear-gradient(180deg,#FFF3E0,#FFE0B2);border:2px solid #FFB74D;border-radius:10px;text-align:center;width:16%;padding:6px 3px;"><div style="font-size:20px;margin-bottom:2px;">🍎</div><strong style="font-size:8px;color:#E65100;">अन्नपदार्थ</strong><br><span style="color:#BF360C;font-weight:700;font-size:11px;"><?= !empty($data['favourite_food']) ? sanitize($data['favourite_food']) : '___' ?></span></td>
-<td style="background:linear-gradient(180deg,#F3E5F5,#E1BEE7);border:2px solid #CE93D8;border-radius:10px;text-align:center;width:16%;padding:6px 3px;"><div style="font-size:20px;margin-bottom:2px;">🏏</div><strong style="font-size:8px;color:#7B1FA2;">खेळ</strong><br><span style="color:#4A148C;font-weight:700;font-size:11px;"><?= !empty($data['favourite_sport']) ? sanitize($data['favourite_sport']) : '___' ?></span></td>
-<td style="background:linear-gradient(180deg,#E0F7FA,#B2EBF2);border:2px solid #80DEEA;border-radius:10px;text-align:center;width:16%;padding:6px 3px;"><div style="font-size:20px;margin-bottom:2px;">📚</div><strong style="font-size:8px;color:#00838F;">विषय</strong><br><span style="color:#006064;font-weight:700;font-size:11px;"><?= !empty($data['favourite_subject']) ? sanitize($data['favourite_subject']) : '___' ?></span></td>
-</tr>
-</table>
-</div>
-</div>
-
-<!-- Interests Section -->
-<div style="border:2px solid #EC407A;border-radius:12px;overflow:hidden;margin-bottom:5px;box-shadow:0 2px 6px rgba(236,64,122,0.15);">
-<div style="background:linear-gradient(135deg,#FCE4EC,#F8BBD0);padding:5px 10px;border-bottom:2px solid #EC407A;">
-    <span style="font-size:12px;font-weight:700;color:#AD1457;">💝 माझी आवड आहे</span>
-</div>
-<div style="padding:6px 8px;background:#FFF0F5;display:flex;flex-wrap:wrap;gap:4px;">
-<?php
-$interest_list = ['वाचन','नृत्य','गायन','वादन','क्रीडा','लेखन','बागकाम','योगाभ्यास','कला','हस्तकला','पाककला','इतर'];
-$student_interests = array_map(function($i) { return $i['name_mr'] ?: $i['name']; }, $interests);
-foreach ($interest_list as $il):
-    $checked = false;
-    foreach ($student_interests as $si) { if (mb_strpos($si, $il) !== false || mb_strpos($il, $si) !== false) { $checked = true; break; } }
-?>
-<span style="display:inline-block;border:2px solid <?= $checked ? '#4CAF50' : '#E0E0E0' ?>;padding:3px 8px;border-radius:15px;font-size:9px;background:<?= $checked ? 'linear-gradient(135deg,#C8E6C9,#A5D6A7)' : '#fff' ?>;font-weight:<?= $checked ? '700' : '400' ?>;color:<?= $checked ? '#1B5E20' : '#666' ?>;"><?= $il ?> <?= $checked ? '🟢' : '⚪' ?></span>
-<?php endforeach; ?>
-</div>
-</div>
-
-<!-- Decorative Footer -->
-<div style="text-align:center;margin-top:4px;font-size:8px;color:#999;">🌟 प्रत्येक बालक विशेष आहे! | Every child is special! 🌟</div>
 <div class="pf">समग्र प्रगती पत्रक (HPC) | <?= sanitize($school['name_mr'] ?: $school['name']) ?> | पान ३</div>
 </div>
 

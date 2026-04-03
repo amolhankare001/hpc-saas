@@ -234,97 +234,6 @@ $total_inactive = $db->query("SELECT COUNT(*) FROM schools WHERE is_active = 0")
                             </td>
                         </tr>
 
-                        <!-- Edit Modal -->
-                        <div class="modal fade" id="editModal<?= $s['id'] ?>" tabindex="-1">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <form method="POST">
-                                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                                        <input type="hidden" name="action" value="edit_school">
-                                        <input type="hidden" name="school_id" value="<?= $s['id'] ?>">
-                                        <?php if ($filter): ?><input type="hidden" name="filter" value="<?= sanitize($filter) ?>"><?php endif; ?>
-                                        <div class="modal-header bg-primary text-white">
-                                            <h5 class="modal-title"><i class="bi bi-pencil-square"></i> शाळा संपादित करा - <?= sanitize($s['name_mr'] ?: $s['name']) ?></h5>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="row g-3">
-                                                <div class="col-md-6">
-                                                    <label class="form-label">शाळेचे नाव (English)</label>
-                                                    <input type="text" class="form-control" name="name" value="<?= sanitize($s['name']) ?>">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">शाळेचे नाव (मराठी)</label>
-                                                    <input type="text" class="form-control" name="name_mr" value="<?= sanitize($s['name_mr'] ?? '') ?>">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">ईमेल</label>
-                                                    <input type="email" class="form-control" name="email" value="<?= sanitize($s['email']) ?>">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">फोन</label>
-                                                    <input type="text" class="form-control" name="phone" value="<?= sanitize($s['phone'] ?? '') ?>">
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label">जिल्हा</label>
-                                                    <input type="text" class="form-control" name="district" value="<?= sanitize($s['district'] ?? '') ?>">
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label">तालुका</label>
-                                                    <input type="text" class="form-control" name="taluka" value="<?= sanitize($s['taluka'] ?? '') ?>">
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label">UDISE कोड</label>
-                                                    <input type="text" class="form-control" name="udise_code" value="<?= sanitize($s['udise_code'] ?? '') ?>">
-                                                </div>
-                                                <div class="col-12">
-                                                    <label class="form-label">पत्ता</label>
-                                                    <textarea class="form-control" name="address_line1" rows="2"><?= sanitize($s['address_line1'] ?? '') ?></textarea>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">योजना</label>
-                                                    <select class="form-select" name="plan_id">
-                                                        <?php foreach ($plans as $p): ?>
-                                                            <option value="<?= $p['id'] ?>" <?= ($s['plan_id'] ?? 0) == $p['id'] ? 'selected' : '' ?>><?= sanitize($p['name_mr'] ?: $p['name']) ?> (&#8377;<?= number_format($p['price'], 0) ?>)</option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">स्थिती</label>
-                                                    <div class="form-check form-switch mt-2">
-                                                        <input type="checkbox" class="form-check-input" name="is_active" id="active_<?= $s['id'] ?>" <?= $s['is_active'] ? 'checked' : '' ?>>
-                                                        <label class="form-check-label" for="active_<?= $s['id'] ?>">सक्रिय (Active)</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <hr>
-                                            <div class="row text-center">
-                                                <div class="col-3">
-                                                    <div class="fw-bold text-primary fs-4"><?= $s['student_count'] ?></div>
-                                                    <small class="text-muted">विद्यार्थी</small>
-                                                </div>
-                                                <div class="col-3">
-                                                    <div class="fw-bold text-success fs-4"><?= $s['hpc_count'] ?></div>
-                                                    <small class="text-muted">HPC कार्ड</small>
-                                                </div>
-                                                <div class="col-3">
-                                                    <div class="fw-bold text-info fs-5"><?= isset($s['subscription_start']) && $s['subscription_start'] ? date('d/m/Y', strtotime($s['subscription_start'])) : '-' ?></div>
-                                                    <small class="text-muted">सदस्यता सुरू</small>
-                                                </div>
-                                                <div class="col-3">
-                                                    <div class="fw-bold text-warning fs-5"><?= isset($s['subscription_end']) && $s['subscription_end'] ? date('d/m/Y', strtotime($s['subscription_end'])) : '-' ?></div>
-                                                    <small class="text-muted">सदस्यता शेवट</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">बंद करा</button>
-                                            <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> जतन करा</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -332,6 +241,100 @@ $total_inactive = $db->query("SELECT COUNT(*) FROM schools WHERE is_active = 0")
         </div>
     </div>
 </div>
+
+<!-- Edit Modals (outside table to prevent blinking/rendering issues) -->
+<?php foreach ($schools as $s): ?>
+<div class="modal fade" id="editModal<?= $s['id'] ?>" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                <input type="hidden" name="action" value="edit_school">
+                <input type="hidden" name="school_id" value="<?= $s['id'] ?>">
+                <?php if ($filter): ?><input type="hidden" name="filter" value="<?= sanitize($filter) ?>"><?php endif; ?>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-pencil-square"></i> शाळा संपादित करा - <?= sanitize($s['name_mr'] ?: $s['name']) ?></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">शाळेचे नाव (English)</label>
+                            <input type="text" class="form-control" name="name" value="<?= sanitize($s['name']) ?>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">शाळेचे नाव (मराठी)</label>
+                            <input type="text" class="form-control" name="name_mr" value="<?= sanitize($s['name_mr'] ?? '') ?>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">ईमेल</label>
+                            <input type="email" class="form-control" name="email" value="<?= sanitize($s['email']) ?>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">फोन</label>
+                            <input type="text" class="form-control" name="phone" value="<?= sanitize($s['phone'] ?? '') ?>">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">जिल्हा</label>
+                            <input type="text" class="form-control" name="district" value="<?= sanitize($s['district'] ?? '') ?>">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">तालुका</label>
+                            <input type="text" class="form-control" name="taluka" value="<?= sanitize($s['taluka'] ?? '') ?>">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">UDISE कोड</label>
+                            <input type="text" class="form-control" name="udise_code" value="<?= sanitize($s['udise_code'] ?? '') ?>">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">पत्ता</label>
+                            <textarea class="form-control" name="address_line1" rows="2"><?= sanitize($s['address_line1'] ?? '') ?></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">योजना</label>
+                            <select class="form-select" name="plan_id">
+                                <?php foreach ($plans as $p): ?>
+                                    <option value="<?= $p['id'] ?>" <?= ($s['plan_id'] ?? 0) == $p['id'] ? 'selected' : '' ?>><?= sanitize($p['name_mr'] ?: $p['name']) ?> (&#8377;<?= number_format($p['price'], 0) ?>)</option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">स्थिती</label>
+                            <div class="form-check form-switch mt-2">
+                                <input type="checkbox" class="form-check-input" name="is_active" id="active_<?= $s['id'] ?>" <?= $s['is_active'] ? 'checked' : '' ?>>
+                                <label class="form-check-label" for="active_<?= $s['id'] ?>">सक्रिय (Active)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row text-center">
+                        <div class="col-3">
+                            <div class="fw-bold text-primary fs-4"><?= $s['student_count'] ?></div>
+                            <small class="text-muted">विद्यार्थी</small>
+                        </div>
+                        <div class="col-3">
+                            <div class="fw-bold text-success fs-4"><?= $s['hpc_count'] ?></div>
+                            <small class="text-muted">HPC कार्ड</small>
+                        </div>
+                        <div class="col-3">
+                            <div class="fw-bold text-info fs-5"><?= isset($s['subscription_start']) && $s['subscription_start'] ? date('d/m/Y', strtotime($s['subscription_start'])) : '-' ?></div>
+                            <small class="text-muted">सदस्यता सुरू</small>
+                        </div>
+                        <div class="col-3">
+                            <div class="fw-bold text-warning fs-5"><?= isset($s['subscription_end']) && $s['subscription_end'] ? date('d/m/Y', strtotime($s['subscription_end'])) : '-' ?></div>
+                            <small class="text-muted">सदस्यता शेवट</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">बंद करा</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> जतन करा</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endforeach; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
