@@ -244,7 +244,7 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HPC - <?= sanitize($data['name_mr'] ?: $data['name']) ?></title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 @page{size:A4 portrait;margin:0;}
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -253,7 +253,14 @@ body{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:#333;bac
 .page-flow{width:210mm;min-height:297mm;height:auto;margin:0 auto;padding:6mm 8mm;page-break-before:always;position:relative;background:#fff;overflow:visible;}
 .section-avoid{page-break-inside:avoid;}
 .page:last-child{page-break-after:auto;}
-.cover{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,#FFF8E1 0%,#FFE0B2 100%);}
+.cover{padding:0 !important;background:none !important;position:relative;overflow:hidden;background-image:url('<?= APP_URL ?>/hpc/assets/hpc-samagra-sample.pdf.jpg');background-size:100% 100%;background-position:center;background-repeat:no-repeat;}
+.cover .cv-school{position:absolute;top:6.5%;left:56%;transform:translateX(-50%);width:76%;height:3.7%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;color:#333;line-height:1.2;}
+.cover .cv-stage{position:absolute;top:39.3%;left:54.6%;transform:translateX(-50%);width:44.5%;height:3.3%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Poppins',sans-serif;font-size:16px;font-weight:800;color:#BF360C;letter-spacing:1px;}
+.cover .cv-info{position:absolute;top:72%;left:50%;transform:translateX(-50%);width:88%;height:7.5%;padding:4px 20px;display:flex;justify-content:space-between;align-items:center;font-family:'Poppins',sans-serif;font-size:11px;color:#333;}
+.cover .cv-info .cv-col{display:flex;flex-direction:column;gap:2px;}
+.cover .cv-info .cv-col.right{text-align:right;}
+.cover .cv-info .cv-lbl{color:#555;font-weight:600;font-size:11px;}
+.cover .cv-info .cv-val{font-weight:800;font-size:13px;color:#111;}
 .sh-o{background:linear-gradient(135deg,#E65100,#FF8F00);color:#fff;text-align:center;padding:5px 10px;font-size:13px;font-weight:700;border-radius:6px;margin-bottom:5px;}
 .sh-b{background:linear-gradient(135deg,#1565C0,#42A5F5);color:#fff;text-align:center;padding:5px 10px;font-size:12px;font-weight:600;border-radius:5px;margin:5px 0 4px;}
 .sh-g{background:linear-gradient(135deg,#2E7D32,#66BB6A);color:#fff;text-align:center;padding:5px 10px;font-size:12px;font-weight:600;border-radius:5px;margin:5px 0 4px;}
@@ -295,7 +302,7 @@ th{background:#E3F2FD;font-weight:600;text-align:center;}
 .lr{display:flex;align-items:center;margin:3px 5px;font-size:12px;}
 .lc{width:14px;height:14px;border:2px solid #666;margin-right:5px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;border-radius:2px;}
 .lc.ck{border-color:#D32F2F;background:#FFEBEE;color:#D32F2F;font-weight:700;}
-@media print{.np{display:none !important;}.page{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:297mm;overflow:hidden;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page-flow{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:auto;min-height:auto;overflow:visible;page-break-before:always;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.section-avoid{page-break-inside:avoid;}body{background:#fff;margin:0;padding:0;}.cover{background:linear-gradient(180deg,#FFF8E1 0%,#FFE0B2 100%) !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.dh,.sh-o,.sh-b,.sh-g,.sh-r,.sh-b2,.rtbl th,.rtbl .ac,.rtbl .sel,.cg-box,.cb,.att th,.ffb,.mc{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+@media print{.np{display:none !important;}.page{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:297mm;overflow:hidden;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page-flow{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:auto;min-height:auto;overflow:visible;page-break-before:always;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.section-avoid{page-break-inside:avoid;}body{background:#fff;margin:0;padding:0;}.cover{padding:0 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;background-size:100% 100% !important;background-position:center !important;background-repeat:no-repeat !important;}.dh,.sh-o,.sh-b,.sh-g,.sh-r,.sh-b2,.rtbl th,.rtbl .ac,.rtbl .sel,.cg-box,.cb,.att th,.ffb,.mc{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
 @media screen{.page{border:1px solid #ddd;margin:6px auto;box-shadow:0 2px 8px rgba(0,0,0,0.12);}.page-flow{border:1px solid #ddd;margin:6px auto;box-shadow:0 2px 8px rgba(0,0,0,0.12);}}
 @media screen and (max-width:768px){.page,.page-flow{width:210mm;min-height:297mm;padding:6mm 8mm;}.page{overflow:hidden;}.page-flow{overflow:visible;height:auto;}.g2{grid-template-columns:1fr 1fr;}body{overflow-x:auto;min-width:210mm;}.np{position:sticky;top:0;z-index:999;padding:8px;}.np button{width:100%;font-size:16px;padding:12px;}}
 </style>
@@ -317,47 +324,20 @@ function generatePDF(){
 
 <!-- PAGE 1: COVER -->
 <div class="page cover">
-<div style="display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:15px;padding:0 10px;">
-    <div style="text-align:center;font-size:8px;font-weight:600;"><div style="font-size:28px;">🔬</div>NCERT<br><b style="color:#E65100;">PARAKH</b></div>
-    <div style="text-align:center;font-size:8px;font-weight:600;"><div style="font-size:28px;">🏛️</div>PM SHRI</div>
-    <div style="text-align:center;"><div style="font-size:36px;">☀️</div><div style="font-size:9px;font-weight:600;">महाराष्ट्र शासन</div></div>
-    <div style="text-align:center;font-size:8px;font-weight:600;"><div style="font-size:28px;">📖</div>राज्य शैक्षणिक संशोधन<br>व प्रशिक्षण परिषद</div>
-</div>
-<div style="font-size:30px;font-weight:700;color:#BF360C;margin:10px 0 4px;">समग्र प्रगतिपत्रक (HPC)</div>
-<div style="font-size:18px;color:#E65100;font-weight:600;">पायाभूत स्तर</div>
-<div style="font-size:11px;color:#555;margin:3px 0;">Holistic Progress Card - Foundational Stage</div>
-<div style="font-size:10px;color:#555;">राष्ट्रीय शैक्षणिक धोरण (NEP) 2020 | PARAKH मार्गदर्शक तत्त्वे</div>
-<div style="width:180px;height:130px;border:3px solid #8D6E63;border-radius:10px;margin:14px auto;display:flex;align-items:center;justify-content:center;background:#EFEBE9;">
-    <div style="text-align:center;"><div style="font-size:45px;">👨‍👩‍👧‍👦</div><div style="font-size:9px;color:#5D4037;">पथदर्शी प्रकल्प</div></div>
-</div>
-<div style="font-size:15px;font-weight:600;color:#2E7D32;border:2px solid #2E7D32;padding:8px 20px;border-radius:10px;background:#E8F5E9;">🏫 <?= sanitize($school['name_mr'] ?: $school['name']) ?></div>
-<div style="margin:10px 0;">
-    <div style="font-size:16px;font-weight:600;">👤 <?= sanitize($data['name_mr'] ?: $data['name']) ?></div>
-    <div style="font-size:12px;color:#666;margin-top:3px;">इयत्ता: <?= sanitize($data['grade']) ?> | तुकडी: <?= sanitize($data['section'] ?: '-') ?></div>
-</div>
-<div style="font-size:14px;color:#E65100;font-weight:600;">📅 शैक्षणिक वर्ष: <?= sanitize($data['academic_year']) ?></div>
-<!-- 6 Domains Overview on Cover -->
-<div style="margin-top:12px;width:90%;max-width:440px;">
-<div style="font-size:10px;font-weight:700;color:#1A237E;margin-bottom:4px;">📋 ६ विकासात्मक क्षेत्रे (6 Developmental Domains):</div>
-<div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;">
-<?php
-$cover_domains = ['🏃 शारीरिक विकास','💗 सामाजिक-भावनिक','🧠 बौद्धिक विकास','📖 भाषा विकास','🎨 सौंदर्यात्मक','📚 शिक्षण सवयी'];
-foreach ($cover_domains as $cd): ?>
-<span style="display:inline-block;background:#E3F2FD;border:1px solid #90CAF9;border-radius:12px;padding:2px 8px;font-size:8px;font-weight:600;color:#1565C0;"><?= $cd ?></span>
-<?php endforeach; ?>
-</div>
-</div>
-<div style="margin-top:10px;width:90%;max-width:440px;">
-<div style="display:flex;justify-content:center;gap:10px;">
-<?php foreach (['🌱 पैलू'=>'सुरुवात','🌊 प्रवाह'=>'प्रगती','🏔 पर्वत'=>'चांगले','🌌 आकाश'=>'उत्कृष्ट'] as $rl => $rd): ?>
-<div style="text-align:center;font-size:8px;background:#FFF8E1;border:1px solid #FFB300;border-radius:6px;padding:3px 6px;"><div style="font-weight:700;"><?= $rl ?></div><div style="color:#666;"><?= $rd ?></div></div>
-<?php endforeach; ?>
-</div>
-</div>
-<div style="margin-top:10px;padding:6px 12px;border:2px dashed #FFB300;border-radius:10px;background:#FFF8E1;font-size:9px;max-width:440px;">
-<strong>सूचना:</strong> हे समग्र प्रगती पत्रक NEP 2020 अंतर्गत PARAKH मार्गदर्शक तत्त्वांनुसार तयार केले आहे. प्रत्येक बालकाच्या सर्वांगीण विकासाचे मूल्यांकन ४ स्तरांवर केले जाते.
-</div>
-<div class="pf">समग्र प्रगती पत्रक (HPC) | <?= sanitize($school['name_mr'] ?: $school['name']) ?></div>
+  <div class="cv-school"><?= sanitize($school['name_mr'] ?: $school['name']) ?></div>
+  <div class="cv-stage">पायाभूत स्तर <?= sanitize($data['academic_year']) ?></div>
+  <div class="cv-info">
+    <div class="cv-col">
+      <div><span class="cv-lbl">विद्यार्थ्याचे नाव: </span><span class="cv-val"><?= sanitize($data['name_mr'] ?: $data['name']) ?></span></div>
+      <div><span class="cv-lbl">हजेरी क्र.: </span><span class="cv-val"><?= sanitize($data['roll_no'] ?: '-') ?></span></div>
+      <div><span class="cv-lbl">इयत्ता: </span><span class="cv-val"><?= sanitize($data['grade']) ?></span></div>
+    </div>
+    <div class="cv-col right">
+      <div><span class="cv-lbl">अपार आय. डी.: </span><span class="cv-val"><?= sanitize($data['apaar_id'] ?? '-') ?></span></div>
+      <div><span class="cv-lbl">जन. रजि. नं: </span><span class="cv-val"><?= sanitize($data['registration_no'] ?? '-') ?></span></div>
+      <div><span class="cv-lbl">तुकडी: </span><span class="cv-val"><?= sanitize($data['section'] ?: '-') ?></span></div>
+    </div>
+  </div>
 </div>
 
 <!-- PAGE 2: भाग अ (१) - Attractive Design -->
