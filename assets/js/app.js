@@ -105,6 +105,17 @@ function calculateAttendance() {
     }
 }
 
+// Fix PDF links: ensure they point to the working inner path /hpc/generate_pdf.php
+// This handles cases where server-side OPcache serves old code with outdated URLs
+(function() {
+    document.querySelectorAll('a[href*="generate_pdf.php"]').forEach(function(a) {
+        var href = a.getAttribute('href');
+        if (href && href.indexOf('/hpc/generate_pdf.php') === -1) {
+            a.setAttribute('href', href.replace('generate_pdf.php', 'hpc/generate_pdf.php'));
+        }
+    });
+})();
+
 // Print HPC Card
 function printHPC() {
     window.print();

@@ -50,7 +50,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="<?= APP_URL ?>/assets/js/app.js"></script>
+    <script src="<?= APP_URL ?>/assets/js/app.js?v=2"></script>
     <script>
     // Fix PDF links: ensure they point to the working inner path /hpc/generate_pdf.php
     // This handles cases where server-side OPcache serves old code with outdated URLs
