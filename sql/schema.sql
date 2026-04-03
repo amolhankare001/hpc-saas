@@ -148,6 +148,10 @@ CREATE TABLE IF NOT EXISTS hpc_cards (
     academic_year VARCHAR(10) NOT NULL,
     teacher_code VARCHAR(50),
     status ENUM('draft','completed','printed') DEFAULT 'draft',
+    -- Part C yearly summary: overall levels for awareness, sensitivity, creativity
+    summary_awareness VARCHAR(20) DEFAULT NULL COMMENT 'Overall awareness level: akash/parvat/pravah/pailu',
+    summary_sensitivity VARCHAR(20) DEFAULT NULL COMMENT 'Overall sensitivity level: akash/parvat/pravah/pailu',
+    summary_creativity VARCHAR(20) DEFAULT NULL COMMENT 'Overall creativity level: akash/parvat/pravah/pailu',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,

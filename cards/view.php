@@ -431,51 +431,41 @@ require_once __DIR__ . '/../includes/header.php';
 </div>
 <?php endforeach; ?>
 
-<!-- PAGE: Part C - Credit Framework -->
+<!-- PAGE: Part C - Yearly Summary (भाग क) -->
 <div class="hpc-page mb-4">
     <div class="card">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">भाग C - क्रेडिट फ्रेमवर्क (Credit Framework)</h5>
+            <h5 class="mb-0">भाग क - शैक्षणिक वर्षाचा सारांश (Yearly Summary)</h5>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>डोमेन</th>
-                            <th class="text-center">क्रेडिट</th>
-                            <th class="text-center">NCF पातळी</th>
-                            <th class="text-center">क्रेडिट पॉइंट</th>
-                            <th class="text-center">सत्र १ मिळवलेले</th>
-                            <th class="text-center">सत्र २ मिळवलेले</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $total_earned = 0;
-                        $total_earned_t2 = 0;
-                        foreach ($credits as $c):
-                            $total_earned += $c['credit_points_earned'];
-                            $total_earned_t2 += ($c['credit_points_earned_term2'] ?? 0);
-                        ?>
-                        <tr>
-                            <td><strong><?= sanitize($c['domain_name_mr']) ?></strong></td>
-                            <td class="text-center"><?= $c['credits'] ?></td>
-                            <td class="text-center"><?= $c['ncf_level'] ?></td>
-                            <td class="text-center"><?= $c['credit_points'] ?></td>
-                            <td class="text-center fw-bold text-primary"><?= number_format($c['credit_points_earned'], 2) ?></td>
-                            <td class="text-center fw-bold text-success"><?= number_format($c['credit_points_earned_term2'] ?? 0, 2) ?></td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                    <tfoot>
-                        <tr class="table-warning">
-                            <td colspan="4" class="text-end fw-bold">एकूण मिळवलेले क्रेडिट पॉइंट:</td>
-                            <td class="text-center fw-bold text-success fs-5"><?= number_format($total_earned, 2) ?></td>
-                            <td class="text-center fw-bold text-success fs-5"><?= number_format($total_earned_t2, 2) ?></td>
-                        </tr>
-                    </tfoot>
-                </table>
+            <p class="text-muted">प्रमुख कामगिरी वर्णन विधाने</p>
+            <?php
+            $view_summary_fields = [
+                'awareness' => ['title' => 'जाणीवजागृती', 'emoji' => '👁️', 'color' => '#1565C0'],
+                'sensitivity' => ['title' => 'संवेदनशीलता', 'emoji' => '💗', 'color' => '#C62828'],
+                'creativity' => ['title' => 'सर्जनशीलता', 'emoji' => '🎨', 'color' => '#2E7D32'],
+            ];
+            $view_levels = ['akash'=>'✨ आकाश','parvat'=>'⛰️ पर्वत','pravah'=>'🌊 प्रवाह','pailu'=>'🌾 पैलू'];
+            ?>
+            <div class="row g-3">
+                <?php foreach ($view_summary_fields as $vk => $vf): 
+                    $val = $data['summary_' . $vk] ?? '';
+                ?>
+                <div class="col-md-4">
+                    <div class="card text-center" style="border: 2px solid <?= $vf['color'] ?>;">
+                        <div class="card-header" style="background: <?= $vf['color'] ?>15;">
+                            <h6 class="mb-0" style="color: <?= $vf['color'] ?>;"><?= $vf['emoji'] ?> <?= $vf['title'] ?></h6>
+                        </div>
+                        <div class="card-body">
+                            <?php if ($val && isset($view_levels[$val])): ?>
+                                <span class="badge bg-success fs-6"><?= $view_levels[$val] ?></span>
+                            <?php else: ?>
+                                <span class="text-muted">निवडलेले नाही</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
             </div>
 
             <!-- Signature Section -->

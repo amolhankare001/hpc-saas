@@ -129,14 +129,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
 
     $final_annual_feedback = trim($_POST['final_annual_feedback'] ?? '');
 
+    // Part C summary: overall awareness/sensitivity/creativity levels
+    $summary_awareness = $_POST['summary_awareness'] ?? null;
+    $summary_sensitivity = $_POST['summary_sensitivity'] ?? null;
+    $summary_creativity = $_POST['summary_creativity'] ?? null;
+
     if (!$hpc_card) {
-        $stmt = $db->prepare("INSERT INTO hpc_cards (student_id, school_id, academic_year, teacher_code, status, final_annual_feedback) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$student_id, $school_id, academic_year(), $teacher_code, $status, $final_annual_feedback]);
+        $stmt = $db->prepare("INSERT INTO hpc_cards (student_id, school_id, academic_year, teacher_code, status, final_annual_feedback, summary_awareness, summary_sensitivity, summary_creativity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$student_id, $school_id, academic_year(), $teacher_code, $status, $final_annual_feedback, $summary_awareness, $summary_sensitivity, $summary_creativity]);
         $hpc_card_id = $db->lastInsertId();
     } else {
         $hpc_card_id = $hpc_card['id'];
-        $stmt = $db->prepare("UPDATE hpc_cards SET teacher_code = ?, status = ?, final_annual_feedback = ? WHERE id = ? AND school_id = ?");
-        $stmt->execute([$teacher_code, $status, $final_annual_feedback, $hpc_card_id, $school_id]);
+        $stmt = $db->prepare("UPDATE hpc_cards SET teacher_code = ?, status = ?, final_annual_feedback = ?, summary_awareness = ?, summary_sensitivity = ?, summary_creativity = ? WHERE id = ? AND school_id = ?");
+        $stmt->execute([$teacher_code, $status, $final_annual_feedback, $summary_awareness, $summary_sensitivity, $summary_creativity, $hpc_card_id, $school_id]);
     }
 
     // Save attendance
@@ -338,7 +343,7 @@ require_once __DIR__ . '/../includes/header.php';
         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partA2">भाग A(2) - उपस्थिती व आवड</a></li>
         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partB">भाग B - डोमेन मूल्यांकन</a></li>
         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partFinal">अंतिम अभिप्राय</a></li>
-        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partC">भाग C - क्रेडिट</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partC">भाग C - वार्षिक सारांश</a></li>
     </ul>
 
     <div class="tab-content">
@@ -898,55 +903,47 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
         </div>
 
-        <!-- PART C - Credit Framework -->
+        <!-- PART C - Yearly Summary (भाग क) -->
         <div class="tab-pane fade" id="partC">
             <div class="card mb-4">
-                <div class="card-header"><i class="bi bi-trophy"></i> भाग C - क्रेडिट फ्रेमवर्क (Credit Framework) - इयत्ता १</div>
+                <div class="card-header bg-primary text-white"><i class="bi bi-clipboard-check"></i> भाग क - शैक्षणिक वर्षाचा सारांश (Part C - Yearly Summary)</div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>डोमेन (Domain)</th>
-                                    <th class="text-center">क्रेडिट (Credits)</th>
-                                    <th class="text-center">NCF पातळी<br>(NCF Levels)</th>
-                                    <th class="text-center">क्रेडिट पॉइंट<br>(Credit Points)</th>
-                                    <th class="text-center">सत्र १ मिळवलेले<br>(Term 1 Earned)</th>
-                                    <th class="text-center">सत्र २ मिळवलेले<br>(Term 2 Earned)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                $stmt_credits = null;
-                                $credit_data = [];
-                                if ($hpc_card) {
-                                    $stmt_credits = $db->prepare("SELECT * FROM hpc_credits WHERE hpc_card_id = ?");
-                                    $stmt_credits->execute([$hpc_card['id']]);
-                                    foreach ($stmt_credits->fetchAll() as $c) {
-                                        $credit_data[$c['domain_name_mr']] = $c;
-                                    }
-                                }
-                                foreach ($domains as $domain_id => $domain):
-                                    $cd = $credit_data[$domain['name_mr']] ?? [];
-                                ?>
-                                <tr>
-                                    <td>
-                                        <strong><?= $domain_id ?>. <?= $domain['name_mr'] ?></strong><br>
-                                        <small class="text-muted"><?= $domain['name'] ?></small>
-                                    </td>
-                                    <td class="text-center">4.5</td>
-                                    <td class="text-center">0.2</td>
-                                    <td class="text-center">0.90</td>
-                                    <td class="text-center">
-                                        <input type="number" class="form-control form-control-sm text-center" name="credit_earned_<?= $domain_id ?>" step="0.01" min="0" max="0.90" value="<?= $cd['credit_points_earned'] ?? '' ?>" placeholder="0.00">
-                                    </td>
-                                    <td class="text-center">
-                                        <input type="number" class="form-control form-control-sm text-center" name="credit_earned_term2_<?= $domain_id ?>" step="0.01" min="0" max="0.90" value="<?= $cd['credit_points_earned_term2'] ?? '' ?>" placeholder="0.00">
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                    <p class="text-muted mb-3">प्रमुख कामगिरी वर्णन विधाने - प्रत्येक क्षमतेसाठी योग्य पातळी निवडा:</p>
+                    <div class="row g-4">
+                        <?php
+                        $summary_fields = [
+                            'awareness' => ['title' => 'जाणीवजागृती', 'emoji' => '👁️', 'color' => '#E3F2FD', 'border' => '#1565C0'],
+                            'sensitivity' => ['title' => 'संवेदनशीलता', 'emoji' => '💗', 'color' => '#FCE4EC', 'border' => '#C62828'],
+                            'creativity' => ['title' => 'सर्जनशीलता', 'emoji' => '🎨', 'color' => '#E8F5E9', 'border' => '#2E7D32'],
+                        ];
+                        $summary_levels = [
+                            'akash' => ['label' => 'आकाश', 'emoji' => '✨', 'color' => '#cce5ff'],
+                            'parvat' => ['label' => 'पर्वत', 'emoji' => '⛰️', 'color' => '#d4edda'],
+                            'pravah' => ['label' => 'प्रवाह', 'emoji' => '🌊', 'color' => '#d1ecf1'],
+                            'pailu' => ['label' => 'पैलू', 'emoji' => '🌾', 'color' => '#fff3cd'],
+                        ];
+                        foreach ($summary_fields as $skey => $sfield):
+                            $saved_val = $hpc_card['summary_' . $skey] ?? '';
+                        ?>
+                        <div class="col-md-4">
+                            <div class="card h-100" style="border: 2px solid <?= $sfield['border'] ?>;">
+                                <div class="card-header text-center" style="background: <?= $sfield['color'] ?>;">
+                                    <h5 class="mb-0" style="color: <?= $sfield['border'] ?>;"><?= $sfield['emoji'] ?> <?= $sfield['title'] ?></h5>
+                                    <small class="text-muted">(योग्य पर्याय निवडा.)</small>
+                                </div>
+                                <div class="card-body">
+                                    <?php foreach ($summary_levels as $lkey => $linfo): ?>
+                                    <div class="form-check mb-2 p-2 rounded" style="background: <?= $linfo['color'] ?>40;">
+                                        <input class="form-check-input" type="radio" name="summary_<?= $skey ?>" value="<?= $lkey ?>" id="summary_<?= $skey ?>_<?= $lkey ?>" <?= ($saved_val === $lkey) ? 'checked' : '' ?>>
+                                        <label class="form-check-label fw-bold" for="summary_<?= $skey ?>_<?= $lkey ?>">
+                                            <?= $linfo['emoji'] ?> <?= $linfo['label'] ?>
+                                        </label>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>

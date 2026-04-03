@@ -853,14 +853,24 @@ $domain_rubric = $GLOBALS['demo_rubric_descriptions'][$did] ?? [];
 <div style="flex:0 0 148px;">
 <?php
 $abn = ['awareness'=>['title'=>'जाणीवजागृती','emoji'=>'👁️'],'sensitivity'=>['title'=>'संवेदनशीलता','emoji'=>'💗'],'creativity'=>['title'=>'सर्जनशीलता','emoji'=>'🎨']];
+// Map English keys to Marathi labels
+$level_map = ['akash'=>'आकाश','parvat'=>'पर्वत','pravah'=>'प्रवाह','pailu'=>'पैलू'];
 foreach ($abn as $ak => $av):
-    $lc = ['पैलू'=>0,'प्रवाह'=>0,'पर्वत'=>0,'आकाश'=>0];
-    foreach ($assessments as $da) {
-        $v = $da[$ak.'_level'] ?? ''; if (isset($lc[$v])) $lc[$v]++;
-        $v2 = $da[$ak.'_level_term2'] ?? ''; if (isset($lc[$v2])) $lc[$v2]++;
+    // Use saved summary value from hpc_cards if available, otherwise auto-calculate from domain assessments
+    $saved_summary = $data['summary_' . $ak] ?? '';
+    if (!empty($saved_summary)) {
+        $dom_level = $level_map[$saved_summary] ?? '';
+    } else {
+        // Auto-calculate: count per-domain levels using English keys, then map to Marathi
+        $lc = ['pailu'=>0,'pravah'=>0,'parvat'=>0,'akash'=>0];
+        foreach ($assessments as $da) {
+            $v = $da[$ak.'_level'] ?? ''; if (isset($lc[$v])) $lc[$v]++;
+            $v2 = $da[$ak.'_level_term2'] ?? ''; if (isset($lc[$v2])) $lc[$v2]++;
+        }
+        $mx = count($lc) > 0 ? max($lc) : 0;
+        $best_key = $mx > 0 ? array_keys($lc, $mx)[0] : '';
+        $dom_level = $level_map[$best_key] ?? '';
     }
-    $mx = count($lc) > 0 ? max($lc) : 0;
-    $dom_level = $mx > 0 ? array_keys($lc, $mx)[0] : '';
 ?>
 <div class="mc">
     <div style="font-size:12px;font-weight:700;color:#1565C0;"><?= $av['emoji'] ?> <?= $av['title'] ?></div>

@@ -115,7 +115,9 @@ function flash($key, $message = null) {
 function academic_year() {
     $month = date('n');
     $year = date('Y');
-    if ($month >= 4) {
+    // Indian academic year runs June to May
+    // June (6) onwards = new academic year, up to May (5) = previous academic year
+    if ($month >= 6) {
         return $year . '-' . ($year + 1);
     }
     return ($year - 1) . '-' . $year;
