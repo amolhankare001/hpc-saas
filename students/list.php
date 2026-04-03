@@ -31,7 +31,7 @@ $stmt->execute($params);
 $total = $stmt->fetchColumn();
 $total_pages = ceil($total / $per_page);
 
-$stmt = $db->prepare("SELECT s.*, t.name_mr as teacher_name_mr, t.name as teacher_name FROM students s LEFT JOIN teachers t ON s.teacher_id = t.id $where ORDER BY s.roll_no ASC, s.name_mr ASC LIMIT $per_page OFFSET $offset");
+$stmt = $db->prepare("SELECT s.*, t.name_mr as teacher_name_mr, t.name as teacher_name FROM students s LEFT JOIN teachers t ON s.teacher_id = t.id $where ORDER BY CAST(s.roll_no AS UNSIGNED) ASC, s.name_mr ASC LIMIT $per_page OFFSET $offset");
 $stmt->execute($params);
 $students = $stmt->fetchAll();
 

@@ -32,7 +32,7 @@ if ($status_filter) {
     $params[] = $status_filter;
 }
 
-$sql .= " ORDER BY h.created_at DESC";
+$sql .= " ORDER BY CAST(s.roll_no AS UNSIGNED) ASC, s.name_mr ASC";
 $stmt = $db->prepare($sql);
 $stmt->execute($params);
 $cards = $stmt->fetchAll();
