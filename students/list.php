@@ -109,9 +109,9 @@ require_once __DIR__ . '/../includes/header.php';
                                 $hpc = $stmt2->fetch();
                                 if ($hpc && $hpc['status'] === 'completed'):
                                 ?>
-                                    <a href="<?= APP_URL ?>/hpc/view.php?id=<?= $hpc['id'] ?>" class="badge bg-success text-decoration-none">पूर्ण</a>
+                                    <a href="<?= APP_URL ?>/cards/view.php?id=<?= $hpc['id'] ?>" class="badge bg-success text-decoration-none">पूर्ण</a>
                                 <?php elseif ($hpc): ?>
-                                    <a href="<?= APP_URL ?>/hpc/create.php?student_id=<?= $s['id'] ?>" class="badge bg-warning text-dark text-decoration-none">मसुदा</a>
+                                    <a href="<?= APP_URL ?>/cards/create.php?student_id=<?= $s['id'] ?>" class="badge bg-warning text-dark text-decoration-none">मसुदा</a>
                                 <?php else: ?>
                                     <span class="badge bg-secondary">नाही</span>
                                 <?php endif; ?>
@@ -119,7 +119,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <td>
                                 <div class="btn-group btn-group-sm">
                                     <a href="<?= APP_URL ?>/students/edit.php?id=<?= $s['id'] ?>" class="btn btn-outline-primary" title="संपादित करा"><i class="bi bi-pencil"></i></a>
-                                    <a href="<?= APP_URL ?>/hpc/create.php?student_id=<?= $s['id'] ?>" class="btn btn-outline-success" title="HPC तयार करा"><i class="bi bi-card-checklist"></i></a>
+                                    <a href="<?= APP_URL ?>/cards/create.php?student_id=<?= $s['id'] ?>" class="btn btn-outline-success" title="HPC तयार करा"><i class="bi bi-card-checklist"></i></a>
                                     <form method="POST" action="<?= APP_URL ?>/students/delete.php" class="d-inline" onsubmit="return confirmDelete()">
                                         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                         <input type="hidden" name="id" value="<?= $s['id'] ?>">
