@@ -83,6 +83,24 @@ if (!empty($conditions)) {
     $sql .= " WHERE " . implode(" AND ", $conditions);
 }
 $sql .= " ORDER BY s.created_at DESC";
+
+// Pagination
+$page = max(1, intval($_GET['page'] ?? 1));
+$per_page = 50;
+
+// Count total for pagination
+$count_sql = "SELECT COUNT(*) FROM schools s LEFT JOIN plans p ON s.plan_id = p.id";
+if (!empty($conditions)) {
+    $count_sql .= " WHERE " . implode(" AND ", $conditions);
+}
+$count_stmt = $db->prepare($count_sql);
+$count_stmt->execute($params);
+$total_filtered = $count_stmt->fetchColumn();
+$total_pages = max(1, ceil($total_filtered / $per_page));
+$page = min($page, $total_pages);
+$offset = ($page - 1) * $per_page;
+
+$sql .= " LIMIT $per_page OFFSET $offset";
 $stmt = $db->prepare($sql);
 $stmt->execute($params);
 $schools = $stmt->fetchAll();
@@ -135,7 +153,7 @@ $total_inactive = $db->query("SELECT COUNT(*) FROM schools WHERE is_active = 0")
     <?php endif; ?>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2><i class="bi bi-building"></i> शाळा व्यवस्थापन <span class="badge bg-primary"><?= count($schools) ?></span></h2>
+        <h2><i class="bi bi-building"></i> शाळा व्यवस्थापन <span class="badge bg-primary"><?= $total_filtered ?></span></h2>
         <a href="<?= APP_URL ?>/admin/dashboard.php" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Dashboard</a>
     </div>
 
@@ -200,7 +218,7 @@ $total_inactive = $db->query("SELECT COUNT(*) FROM schools WHERE is_active = 0")
                         <?php endif; ?>
                         <?php foreach ($schools as $i => $s): ?>
                         <tr class="<?= !$s['is_active'] ? 'table-danger' : '' ?>">
-                            <td><?= $i + 1 ?></td>
+                            <td><?= $offset + $i + 1 ?></td>
                             <td><strong><?= sanitize($s['name_mr'] ?: $s['name']) ?></strong></td>
                             <td><small><?= sanitize($s['email']) ?></small></td>
                             <td><?= sanitize($s['udise_code'] ?: '-') ?></td>
@@ -219,7 +237,8 @@ $total_inactive = $db->query("SELECT COUNT(*) FROM schools WHERE is_active = 0")
                             <td><small><?= date('d/m/Y', strtotime($s['created_at'])) ?></small></td>
                             <td>
                                 <a href="<?= APP_URL ?>/admin/school_hpc.php?school_id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-info" title="HPC कार्ड पहा"><i class="bi bi-card-checklist"></i></a>
-                                <button class="btn btn-sm btn-outline-primary" title="पहा / संपादित करा" onclick="openEditModal(<?= htmlspecialchars(json_encode($s), ENT_QUOTES, 'UTF-8') ?>, <?= htmlspecialchars(json_encode($plans), ENT_QUOTES, 'UTF-8') ?>, '<?= $_SESSION['csrf_token'] ?>', '<?= sanitize($filter) ?>')"><i class="bi bi-pencil-square"></i></button>
+                                <?php $s_safe = $s; unset($s_safe['password']); ?>
+                                <button class="btn btn-sm btn-outline-primary" title="पहा / संपादित करा" onclick='openEditModal(<?= htmlspecialchars(json_encode($s_safe), ENT_QUOTES, "UTF-8") ?>)'><i class="bi bi-pencil-square"></i></button>
                                 <form method="POST" class="d-inline">
                                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                     <input type="hidden" name="action" value="toggle_status">
@@ -240,6 +259,34 @@ $total_inactive = $db->query("SELECT COUNT(*) FROM schools WHERE is_active = 0")
             </div>
         </div>
     </div>
+
+<!-- Pagination -->
+<?php if ($total_pages > 1): ?>
+<nav class="mt-3 mb-3 d-flex justify-content-between align-items-center">
+    <div class="text-muted small">
+        <?= $total_filtered ?> पैकी <?= $offset + 1 ?>-<?= min($offset + $per_page, $total_filtered) ?> शाळा दाखवत आहे (पृष्ठ <?= $page ?>/<?= $total_pages ?>)
+    </div>
+    <ul class="pagination pagination-sm mb-0">
+        <?php
+        $pq = '?';
+        if ($filter) $pq .= 'filter=' . urlencode($filter) . '&';
+        if ($search) $pq .= 'search=' . urlencode($search) . '&';
+        ?>
+        <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+            <a class="page-link" href="<?= $pq ?>page=<?= $page - 1 ?>">&laquo;</a>
+        </li>
+        <?php for ($pg = max(1, $page - 3); $pg <= min($total_pages, $page + 3); $pg++): ?>
+        <li class="page-item <?= $pg === $page ? 'active' : '' ?>">
+            <a class="page-link" href="<?= $pq ?>page=<?= $pg ?>"><?= $pg ?></a>
+        </li>
+        <?php endfor; ?>
+        <li class="page-item <?= $page >= $total_pages ? 'disabled' : '' ?>">
+            <a class="page-link" href="<?= $pq ?>page=<?= $page + 1 ?>">&raquo;</a>
+        </li>
+    </ul>
+</nav>
+<?php endif; ?>
+
 </div>
 
 <!-- Single shared Edit Modal (populated dynamically via JS to avoid DOM bloat with 374+ modals) -->
@@ -315,7 +362,12 @@ $total_inactive = $db->query("SELECT COUNT(*) FROM schools WHERE is_active = 0")
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-function openEditModal(s, plans, csrf, filter) {
+var _plans = <?= json_encode($plans) ?>;
+var _csrf = '<?= $_SESSION['csrf_token'] ?>';
+var _filter = '<?= sanitize($filter) ?>';
+
+function openEditModal(s) {
+    var plans = _plans, csrf = _csrf, filter = _filter;
     document.getElementById('em_csrf').value = csrf;
     document.getElementById('em_school_id').value = s.id;
     document.getElementById('em_filter').value = filter || '';

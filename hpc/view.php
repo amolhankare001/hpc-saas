@@ -510,13 +510,7 @@ function printHPC() {
     w.document.close();
     setTimeout(function(){ w.print(); }, 500);
 }
-// Fix PDF link to use correct inner path (bypasses any server-side caching)
-document.querySelectorAll('a[href*="generate_pdf.php"]').forEach(function(a) {
-    var href = a.getAttribute('href');
-    if (href && href.indexOf('/hpc/hpc/generate_pdf.php') === -1) {
-        a.setAttribute('href', href.replace('/generate_pdf.php', '/hpc/generate_pdf.php'));
-    }
-});
+
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
