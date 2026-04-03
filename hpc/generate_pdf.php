@@ -257,6 +257,7 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
 
     header('Content-Type: text/html; charset=utf-8');
     // Cover image: use absolute URL so images work regardless of access path
+    global $asset_base;
     $cover_img_url = $asset_base . '/hpc-samagra-sample.pdf.jpg';
     // Page3 image: direct path (same as cover image)
     $page3_img_url = $asset_base . '/hpc-samagra-page3.jpg';
