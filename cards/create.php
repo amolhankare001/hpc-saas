@@ -34,8 +34,8 @@ try {
         // Fix any records that were incorrectly tagged with current-next
         $fix_stmt = $db->prepare("UPDATE hpc_cards SET academic_year = ? WHERE academic_year = ? AND school_id = ?");
         $fix_stmt->execute([$right_year, $wrong_year, $school_id]);
-        // Also fix attendance records
-        $fix_stmt2 = $db->prepare("UPDATE attendance SET academic_year = ? WHERE academic_year = ? AND school_id = ?");
+        // Also fix attendance records (attendance table has no school_id, so join via students)
+        $fix_stmt2 = $db->prepare("UPDATE attendance a JOIN students s ON a.student_id = s.id SET a.academic_year = ? WHERE a.academic_year = ? AND s.school_id = ?");
         $fix_stmt2->execute([$right_year, $wrong_year, $school_id]);
     }
 } catch (Exception $e) { /* migration may fail if tables don't exist yet */ }
