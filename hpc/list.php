@@ -125,7 +125,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <?php if ($is_free_plan): ?>
                                     <a href="<?= APP_URL ?>/subscription/plans.php" class="btn btn-sm btn-outline-warning" title="PDF साठी अपग्रेड करा"><i class="bi bi-lock"></i></a>
                                 <?php else: ?>
-                                    <a href="<?= APP_URL ?>/generate_pdf.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-success" title="PDF"><i class="bi bi-file-pdf"></i></a>
+                                    <a href="<?= APP_URL ?>/hpc/generate_pdf.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-success" title="PDF"><i class="bi bi-file-pdf"></i></a>
                                 <?php endif; ?>
                                 <form method="POST" action="<?= APP_URL ?>/hpc/delete.php" class="d-inline" onsubmit="return confirm('हे HPC कार्ड हटवायचे आहे का?')">
                                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
