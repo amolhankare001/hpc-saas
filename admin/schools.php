@@ -49,7 +49,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         flash('success', 'शाळेची माहिती अपडेट झाली.');
     }
     $redir = APP_URL . '/admin/schools.php';
-    if (!empty($_POST['filter'])) $redir .= '?filter=' . urlencode($_POST['filter']);
+    $query = [];
+    if (!empty($_POST['filter'])) $query[] = 'filter=' . urlencode($_POST['filter']);
+    if (!empty($_POST['search'])) $query[] = 'search=' . urlencode($_POST['search']);
+    if (!empty($_POST['page'])) $query[] = 'page=' . urlencode($_POST['page']);
+    if ($query) $redir .= '?' . implode('&', $query);
     redirect($redir);
 }
 
@@ -244,6 +248,8 @@ $total_inactive = $db->query("SELECT COUNT(*) FROM schools WHERE is_active = 0")
                                     <input type="hidden" name="action" value="toggle_status">
                                     <input type="hidden" name="school_id" value="<?= $s['id'] ?>">
                                     <?php if ($filter): ?><input type="hidden" name="filter" value="<?= sanitize($filter) ?>"><?php endif; ?>
+                                    <?php if ($search): ?><input type="hidden" name="search" value="<?= sanitize($search) ?>"><?php endif; ?>
+                                    <input type="hidden" name="page" value="<?= $page ?>">
                                     <?php if ($s['is_active']): ?>
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="निष्क्रिय करा" onclick="return confirm('खात्री आहे?')"><i class="bi bi-x-circle"></i></button>
                                     <?php else: ?>
@@ -298,6 +304,8 @@ $total_inactive = $db->query("SELECT COUNT(*) FROM schools WHERE is_active = 0")
                 <input type="hidden" name="action" value="edit_school">
                 <input type="hidden" name="school_id" id="em_school_id">
                 <input type="hidden" name="filter" id="em_filter">
+                <input type="hidden" name="search" id="em_search">
+                <input type="hidden" name="page" id="em_page">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="em_title"><i class="bi bi-pencil-square"></i> शाळा संपादित करा</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -371,6 +379,8 @@ function openEditModal(s) {
     document.getElementById('em_csrf').value = csrf;
     document.getElementById('em_school_id').value = s.id;
     document.getElementById('em_filter').value = filter || '';
+    document.getElementById('em_search').value = <?= json_encode($search) ?> || '';
+    document.getElementById('em_page').value = <?= json_encode($page) ?> || '1';
     var titleEl = document.getElementById('em_title');
     titleEl.textContent = '';
     var icon = document.createElement('i');
