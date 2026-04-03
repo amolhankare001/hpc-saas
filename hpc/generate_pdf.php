@@ -1,12 +1,31 @@
 <?php
-// v3.0 - Force OPcache revalidation on every request
-if (function_exists('opcache_invalidate')) { opcache_invalidate(__FILE__, true); }
-// Responsive rubric layout: separate pages for rubric tables and feedback
-header('Cache-Control: no-cache, no-store, must-revalidate');
+// v15.0-photo-fix-explicit-select
+// Serve page3 background image when requested (bypasses LiteSpeed new-file blocking)
+if (isset($_GET['_img']) && $_GET['_img'] === 'page3') {
+    $imgPath = (file_exists(__DIR__ . '/assets/hpc-samagra-page3.jpg')) ? __DIR__ . '/assets/hpc-samagra-page3.jpg' : __DIR__ . '/../assets/hpc-samagra-page3.jpg';
+    if (file_exists($imgPath)) {
+        header('Content-Type: image/jpeg');
+        header('Content-Length: ' . filesize($imgPath));
+        header('Cache-Control: public, max-age=2592000');
+        readfile($imgPath);
+        exit;
+    }
+    http_response_code(404);
+    exit;
+}
+header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 header('Expires: 0');
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../includes/demo_data.php';
+// Auto-detect directory level for includes
+if (file_exists(__DIR__ . '/config/database.php')) {
+    require_once __DIR__ . '/config/database.php';
+    require_once __DIR__ . '/includes/demo_data.php';
+    $asset_base = 'assets';
+} else {
+    require_once __DIR__ . '/../config/database.php';
+    require_once __DIR__ . '/../includes/demo_data.php';
+    $asset_base = '../assets';
+}
 
 // Allow admin access or school login
 $is_admin = isset($_SESSION['admin_id']);
@@ -19,7 +38,7 @@ $id = intval($_GET['id'] ?? 0);
 
 if ($is_admin) {
     // Admin can view any school's HPC card
-    $stmt = $db->prepare("SELECT h.*, s.*, s.id as student_id, h.id as hpc_id
+    $stmt = $db->prepare("SELECT h.*, s.*, s.id as student_id, h.id as hpc_id, s.photo as photo, s.name as name, s.name_mr as name_mr
         FROM hpc_cards h JOIN students s ON h.student_id = s.id 
         WHERE h.id = ?");
     $stmt->execute([$id]);
@@ -29,7 +48,7 @@ if ($is_admin) {
     }
 } else {
     $school_id = $_SESSION['school_id'];
-    $stmt = $db->prepare("SELECT h.*, s.*, s.id as student_id, h.id as hpc_id
+    $stmt = $db->prepare("SELECT h.*, s.*, s.id as student_id, h.id as hpc_id, s.photo as photo, s.name as name, s.name_mr as name_mr
         FROM hpc_cards h JOIN students s ON h.student_id = s.id 
         WHERE h.id = ? AND h.school_id = ?");
     $stmt->execute([$id, $school_id]);
@@ -237,8 +256,14 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
     $peer_emoji_options = ['छान केले'=>'👍','मदत केली'=>'🤝','प्रयत्न केला'=>'💪'];
 
     header('Content-Type: text/html; charset=utf-8');
+    // Cover image: external URL (already cached by LiteSpeed)
+    global $asset_base;
+    $cover_img_url = $asset_base . '/hpc-samagra-sample.pdf.jpg';
+    // Page3 image: direct path (same as cover image)
+    $page3_img_url = $asset_base . '/hpc-samagra-page3.jpg';
 ?>
 <!DOCTYPE html>
+<!-- BUILD-V5-20260403-0934 -->
 <html lang="mr">
 <head>
 <meta charset="UTF-8">
@@ -253,7 +278,7 @@ body{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:#333;bac
 .page-flow{width:210mm;min-height:297mm;height:auto;margin:0 auto;padding:6mm 8mm;page-break-before:always;position:relative;background:#fff;overflow:visible;}
 .section-avoid{page-break-inside:avoid;}
 .page:last-child{page-break-after:auto;}
-.cover{padding:0 !important;background-color:transparent !important;position:relative;overflow:hidden;background-image:url('<?= APP_URL ?>/hpc/assets/hpc-samagra-sample.pdf.jpg');background-size:100% 100%;background-position:center;background-repeat:no-repeat;}
+.cover{padding:0 !important;background-color:transparent !important;position:relative;overflow:hidden;background-image:url('<?= $cover_img_url ?>');background-size:100% 100%;background-position:center;background-repeat:no-repeat;}
 .cover .cv-school{position:absolute;top:6.5%;left:56%;transform:translateX(-50%);width:76%;height:3.7%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;color:#333;line-height:1.2;}
 .cover .cv-stage{position:absolute;top:39.3%;left:54.6%;transform:translateX(-50%);width:44.5%;height:3.3%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Poppins',sans-serif;font-size:16px;font-weight:800;color:#BF360C;letter-spacing:1px;}
 .cover .cv-info{position:absolute;top:72%;left:50%;transform:translateX(-50%);width:88%;height:7.5%;padding:4px 20px;display:flex;justify-content:space-between;align-items:center;font-family:'Poppins',sans-serif;font-size:11px;color:#333;}
@@ -262,7 +287,7 @@ body{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:#333;bac
 .cover .cv-info .cv-lbl{color:#555;font-weight:600;font-size:11px;}
 .cover .cv-info .cv-val{font-weight:800;font-size:13px;color:#111;}
 /* Page 3: मी व माझा परिसर - background image design */
-.mw-page{padding:0 !important;background-color:transparent !important;position:relative;overflow:hidden;background-image:url('<?= APP_URL ?>/hpc/assets/hpc-samagra-page3.jpg');background-size:100% 100%;background-position:center;background-repeat:no-repeat;font-family:'Kalam',cursive;}
+.mw-page{padding:0 !important;background-color:transparent !important;position:relative;overflow:hidden;background-image:url('<?= $page3_img_url ?>');background-size:100% 100%;background-position:center;background-repeat:no-repeat;font-family:'Kalam',cursive;}
 .mw-page *{font-family:'Kalam',cursive;}
 .mw-title{position:absolute;top:2.8%;left:51%;transform:translateX(-50%);font-size:11px;font-weight:700;color:#333;text-align:center;white-space:nowrap;}
 .mw-photo{position:absolute;top:6.8%;left:6.4%;width:21.1%;height:14.8%;display:flex;flex-direction:column;align-items:center;justify-content:center;}
@@ -397,8 +422,8 @@ function generatePDF(){
 </div>
 <div style="flex:0 0 90px;display:flex;align-items:center;justify-content:center;padding-left:8px;">
     <div style="border:3px solid #1565C0;border-radius:10px;padding:4px;background:#E3F2FD;">
-    <?php if (!empty($data['photo']) && file_exists(__DIR__ . '/../' . $data['photo'])): ?>
-    <img src="<?= APP_URL . '/' . $data['photo'] ?>" style="width:75px;height:95px;object-fit:cover;border-radius:6px;">
+    <?php if (!empty($data['photo'])): ?>
+    <img src="<?= APP_URL . '/' . $data['photo'] ?>" style="width:75px;height:95px;object-fit:cover;border-radius:6px;" onerror="this.parentElement.innerHTML='<div style=\'width:75px;height:95px;background:#BBDEFB;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:32px;\'>📷</div>';">
     <?php else: ?>
     <div style="width:75px;height:95px;background:#BBDEFB;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:32px;">📷</div>
     <?php endif; ?>
@@ -463,8 +488,8 @@ function generatePDF(){
 <!-- Photo in blue circle -->
 <div class="mw-photo">
     <div style="font-size:8px;font-weight:700;color:#333;margin-bottom:2px;">माझा फोटो</div>
-    <?php if (!empty($data['photo']) && file_exists(__DIR__ . '/../' . $data['photo'])): ?>
-    <img src="<?= APP_URL . '/' . $data['photo'] ?>">
+    <?php if (!empty($data['photo'])): ?>
+    <img src="<?= APP_URL . '/' . $data['photo'] ?>" onerror="this.parentElement.innerHTML='<div class=ph-placeholder>📷</div>';">
     <?php else: ?>
     <div class="ph-placeholder">📷</div>
     <?php endif; ?>

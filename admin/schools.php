@@ -319,7 +319,12 @@ function openEditModal(s, plans, csrf, filter) {
     document.getElementById('em_csrf').value = csrf;
     document.getElementById('em_school_id').value = s.id;
     document.getElementById('em_filter').value = filter || '';
-    document.getElementById('em_title').innerHTML = '<i class="bi bi-pencil-square"></i> शाळा संपादित करा - ' + (s.name_mr || s.name);
+    var titleEl = document.getElementById('em_title');
+    titleEl.textContent = '';
+    var icon = document.createElement('i');
+    icon.className = 'bi bi-pencil-square';
+    titleEl.appendChild(icon);
+    titleEl.appendChild(document.createTextNode(' शाळा संपादित करा - ' + (s.name_mr || s.name)));
     document.getElementById('em_name').value = s.name || '';
     document.getElementById('em_name_mr').value = s.name_mr || '';
     document.getElementById('em_email').value = s.email || '';
@@ -349,7 +354,7 @@ function openEditModal(s, plans, csrf, filter) {
         '<div class="col-3"><div class="fw-bold text-info fs-5">' + subStart + '</div><small class="text-muted">सदस्यता सुरू</small></div>' +
         '<div class="col-3"><div class="fw-bold text-warning fs-5">' + subEnd + '</div><small class="text-muted">सदस्यता शेवट</small></div>';
     // Show modal
-    new bootstrap.Modal(document.getElementById('editModalShared')).show();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('editModalShared')).show();
 }
 </script>
 </body>
