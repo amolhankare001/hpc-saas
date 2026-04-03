@@ -1,6 +1,5 @@
 <?php
 // v2 - Part C summary + academic year fix (2025-26)
-if (function_exists('opcache_reset')) { @opcache_reset(); }
 $page_title = 'HPC कार्ड तयार करा';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/demo_data.php';
