@@ -20,12 +20,12 @@ header('Expires: 0');
 if (file_exists(__DIR__ . '/config/database.php')) {
     require_once __DIR__ . '/config/database.php';
     require_once __DIR__ . '/includes/demo_data.php';
-    $asset_base = 'assets';
 } else {
     require_once __DIR__ . '/../config/database.php';
     require_once __DIR__ . '/../includes/demo_data.php';
-    $asset_base = '../assets';
 }
+// Use absolute URL for assets so images work regardless of how the file is accessed
+$asset_base = APP_URL . '/assets';
 
 // Allow admin access or school login
 $is_admin = isset($_SESSION['admin_id']);
@@ -256,8 +256,7 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
     $peer_emoji_options = ['छान केले'=>'👍','मदत केली'=>'🤝','प्रयत्न केला'=>'💪'];
 
     header('Content-Type: text/html; charset=utf-8');
-    // Cover image: external URL (already cached by LiteSpeed)
-    global $asset_base;
+    // Cover image: use absolute URL so images work regardless of access path
     $cover_img_url = $asset_base . '/hpc-samagra-sample.pdf.jpg';
     // Page3 image: direct path (same as cover image)
     $page3_img_url = $asset_base . '/hpc-samagra-page3.jpg';
