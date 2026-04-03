@@ -12,6 +12,11 @@ $is_free_plan = true;
 $plan_row = $plan_price_stmt->fetch();
 if ($plan_row && floatval($plan_row['price']) > 0) $is_free_plan = false;
 
+// CSRF token generation
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $search = trim($_GET['search'] ?? '');
 $status_filter = trim($_GET['status'] ?? '');
 
@@ -122,6 +127,11 @@ require_once __DIR__ . '/../includes/header.php';
                                 <?php else: ?>
                                     <a href="<?= APP_URL ?>/generate_pdf.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-success" title="PDF"><i class="bi bi-file-pdf"></i></a>
                                 <?php endif; ?>
+                                <form method="POST" action="<?= APP_URL ?>/students/delete.php" class="d-inline" onsubmit="return confirm('हा विद्यार्थी हटवायचा आहे का?')">
+                                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                    <input type="hidden" name="id" value="<?= $c['student_id'] ?>">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="हटवा"><i class="bi bi-trash"></i></button>
+                                </form>
                             </td>
                         </tr>
                         <?php endforeach; ?>
