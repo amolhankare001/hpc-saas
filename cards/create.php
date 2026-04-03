@@ -9,6 +9,17 @@ $school_id = $_SESSION['school_id'];
 $school = getSchool();
 $student_id = intval($_GET['student_id'] ?? 0);
 
+// Auto-migrate: add Part C summary columns if they don't exist yet
+try {
+    $cols = $db->query("SHOW COLUMNS FROM hpc_cards LIKE 'summary_awareness'")->fetchAll();
+    if (empty($cols)) {
+        $db->exec("ALTER TABLE hpc_cards 
+            ADD COLUMN summary_awareness VARCHAR(20) DEFAULT NULL,
+            ADD COLUMN summary_sensitivity VARCHAR(20) DEFAULT NULL,
+            ADD COLUMN summary_creativity VARCHAR(20) DEFAULT NULL");
+    }
+} catch (Exception $e) { /* columns may already exist */ }
+
 // CSRF token generation
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
