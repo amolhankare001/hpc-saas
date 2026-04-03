@@ -885,9 +885,13 @@ foreach ($abn as $ak => $av):
 <?php
 $dsn = [1=>'शारीरिक विकास',2=>'सामाजिक, भावनिक व नैतिक विकास',3=>'बोधात्मक विकास',4=>'भाषा आणि साक्षरता विकास',5=>'सौंदर्यदृष्टी आणि सांस्कृतिक विकास',6=>'सकारात्मक शिक्षण सवयी'];
 foreach ($dsn as $dc => $dn2):
-    $da = $assessments[$dc] ?? [];
-    $fb = $da['teacher_feedback_mr'] ?? '';
-    if (empty($fb)) $fb = $da['teacher_feedback_mr_term2'] ?? '';
+    // Use saved Part C domain feedback if available, otherwise fallback to Part B teacher feedback
+    $fb = $data['summary_domain_' . $dc] ?? '';
+    if (empty($fb)) {
+        $da = $assessments[$dc] ?? [];
+        $fb = $da['teacher_feedback_mr'] ?? '';
+        if (empty($fb)) $fb = $da['teacher_feedback_mr_term2'] ?? '';
+    }
 ?>
 <div style="margin:2px 0;padding:3px 6px;border:1px solid #ccc;border-radius:4px;">
     <div style="font-size:9px;font-weight:700;color:#1A237E;border-bottom:1px solid #eee;padding-bottom:1px;margin-bottom:1px;"><?= $dc ?>) <?= $dn2 ?></div>

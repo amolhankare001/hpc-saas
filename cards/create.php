@@ -22,6 +22,20 @@ try {
     }
 } catch (Exception $e) { /* columns may already exist */ }
 
+// Auto-migrate: add Part C per-domain summary feedback columns
+try {
+    $cols2 = $db->query("SHOW COLUMNS FROM hpc_cards LIKE 'summary_domain_1'")->fetchAll();
+    if (empty($cols2)) {
+        $db->exec("ALTER TABLE hpc_cards 
+            ADD COLUMN summary_domain_1 TEXT DEFAULT NULL,
+            ADD COLUMN summary_domain_2 TEXT DEFAULT NULL,
+            ADD COLUMN summary_domain_3 TEXT DEFAULT NULL,
+            ADD COLUMN summary_domain_4 TEXT DEFAULT NULL,
+            ADD COLUMN summary_domain_5 TEXT DEFAULT NULL,
+            ADD COLUMN summary_domain_6 TEXT DEFAULT NULL");
+    }
+} catch (Exception $e) { /* columns may already exist */ }
+
 // Auto-migrate: fix academic_year for records created in April/May under old boundary (month>=4)
 // Old code tagged April/May records as "2026-2027", but correct value is "2025-2026"
 try {
@@ -165,14 +179,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
     $summary_sensitivity = $_POST['summary_sensitivity'] ?? null;
     $summary_creativity = $_POST['summary_creativity'] ?? null;
 
+    // Part C: per-domain summary feedback
+    $summary_domain_1 = trim($_POST['summary_domain_1'] ?? '');
+    $summary_domain_2 = trim($_POST['summary_domain_2'] ?? '');
+    $summary_domain_3 = trim($_POST['summary_domain_3'] ?? '');
+    $summary_domain_4 = trim($_POST['summary_domain_4'] ?? '');
+    $summary_domain_5 = trim($_POST['summary_domain_5'] ?? '');
+    $summary_domain_6 = trim($_POST['summary_domain_6'] ?? '');
+
     if (!$hpc_card) {
-        $stmt = $db->prepare("INSERT INTO hpc_cards (student_id, school_id, academic_year, teacher_code, status, final_annual_feedback, summary_awareness, summary_sensitivity, summary_creativity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$student_id, $school_id, academic_year(), $teacher_code, $status, $final_annual_feedback, $summary_awareness, $summary_sensitivity, $summary_creativity]);
+        $stmt = $db->prepare("INSERT INTO hpc_cards (student_id, school_id, academic_year, teacher_code, status, final_annual_feedback, summary_awareness, summary_sensitivity, summary_creativity, summary_domain_1, summary_domain_2, summary_domain_3, summary_domain_4, summary_domain_5, summary_domain_6) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$student_id, $school_id, academic_year(), $teacher_code, $status, $final_annual_feedback, $summary_awareness, $summary_sensitivity, $summary_creativity, $summary_domain_1, $summary_domain_2, $summary_domain_3, $summary_domain_4, $summary_domain_5, $summary_domain_6]);
         $hpc_card_id = $db->lastInsertId();
     } else {
         $hpc_card_id = $hpc_card['id'];
-        $stmt = $db->prepare("UPDATE hpc_cards SET teacher_code = ?, status = ?, final_annual_feedback = ?, summary_awareness = ?, summary_sensitivity = ?, summary_creativity = ? WHERE id = ? AND school_id = ?");
-        $stmt->execute([$teacher_code, $status, $final_annual_feedback, $summary_awareness, $summary_sensitivity, $summary_creativity, $hpc_card_id, $school_id]);
+        $stmt = $db->prepare("UPDATE hpc_cards SET teacher_code = ?, status = ?, final_annual_feedback = ?, summary_awareness = ?, summary_sensitivity = ?, summary_creativity = ?, summary_domain_1 = ?, summary_domain_2 = ?, summary_domain_3 = ?, summary_domain_4 = ?, summary_domain_5 = ?, summary_domain_6 = ? WHERE id = ? AND school_id = ?");
+        $stmt->execute([$teacher_code, $status, $final_annual_feedback, $summary_awareness, $summary_sensitivity, $summary_creativity, $summary_domain_1, $summary_domain_2, $summary_domain_3, $summary_domain_4, $summary_domain_5, $summary_domain_6, $hpc_card_id, $school_id]);
     }
 
     // Save attendance
@@ -976,6 +998,43 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                         <?php endforeach; ?>
                     </div>
+
+                    <!-- Per-domain summary feedback -->
+                    <hr class="my-4">
+                    <h5 class="text-primary mb-3"><i class="bi bi-card-text"></i> प्रमुख कामगिरी वर्णन विधाने (Per-Domain Summary Feedback)</h5>
+                    <p class="text-muted mb-3">प्रत्येक विकास क्षेत्रासाठी वर्णनात्मक अभिप्राय निवडा किंवा लिहा:</p>
+                    <?php
+                    $domain_names_partc = [
+                        1 => ['name_mr' => 'शारीरिक विकास', 'emoji' => '🏃', 'color' => '#E3F2FD', 'border' => '#1565C0'],
+                        2 => ['name_mr' => 'सामाजिक, भावनिक व नैतिक विकास', 'emoji' => '💗', 'color' => '#FCE4EC', 'border' => '#C62828'],
+                        3 => ['name_mr' => 'बोधात्मक विकास', 'emoji' => '🧠', 'color' => '#EDE7F6', 'border' => '#4A148C'],
+                        4 => ['name_mr' => 'भाषा आणि साक्षरता विकास', 'emoji' => '📖', 'color' => '#E8F5E9', 'border' => '#2E7D32'],
+                        5 => ['name_mr' => 'सौंदर्यदृष्टी आणि सांस्कृतिक विकास', 'emoji' => '🎨', 'color' => '#FFF3E0', 'border' => '#E65100'],
+                        6 => ['name_mr' => 'सकारात्मक शिक्षण सवयी', 'emoji' => '📚', 'color' => '#F3E5F5', 'border' => '#6A1B9A'],
+                    ];
+                    foreach ($domain_names_partc as $dpc_id => $dpc_info):
+                        $saved_domain_fb = $hpc_card['summary_domain_' . $dpc_id] ?? '';
+                    ?>
+                    <div class="card mb-3" style="border: 2px solid <?= $dpc_info['border'] ?>;">
+                        <div class="card-header py-2" style="background: <?= $dpc_info['color'] ?>;">
+                            <strong style="color: <?= $dpc_info['border'] ?>;"><?= $dpc_info['emoji'] ?> <?= $dpc_id ?>) <?= $dpc_info['name_mr'] ?></strong>
+                        </div>
+                        <div class="card-body py-2">
+                            <div class="mb-2">
+                                <label class="form-label text-muted small mb-1">📋 तयार नमुना निवडा:</label>
+                                <select class="form-select form-select-sm demo-dropdown" data-target="summary_domain_<?= $dpc_id ?>_textarea">
+                                    <option value="">-- नमुना निवडा --</option>
+                                    <?php if (isset($demo_teacher_feedback[$dpc_id])): ?>
+                                        <?php foreach ($demo_teacher_feedback[$dpc_id] as $fb_idx => $fb_text): ?>
+                                            <option value="<?= htmlspecialchars($fb_text, ENT_QUOTES) ?>">📌 <?= mb_substr($fb_text, 0, 80) ?>...</option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                            <textarea class="form-control form-control-sm" name="summary_domain_<?= $dpc_id ?>" id="summary_domain_<?= $dpc_id ?>_textarea" rows="2" placeholder="<?= $dpc_info['name_mr'] ?> साठी अभिप्राय लिहा..."><?= sanitize($saved_domain_fb) ?></textarea>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
