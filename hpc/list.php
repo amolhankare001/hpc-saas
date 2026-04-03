@@ -127,10 +127,10 @@ require_once __DIR__ . '/../includes/header.php';
                                 <?php else: ?>
                                     <a href="<?= APP_URL ?>/generate_pdf.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-success" title="PDF"><i class="bi bi-file-pdf"></i></a>
                                 <?php endif; ?>
-                                <form method="POST" action="<?= APP_URL ?>/students/delete.php" class="d-inline" onsubmit="return confirm('हा विद्यार्थी हटवायचा आहे का?')">
+                                <form method="POST" action="<?= APP_URL ?>/hpc/delete.php" class="d-inline" onsubmit="return confirm('हे HPC कार्ड हटवायचे आहे का?')">
                                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                                    <input type="hidden" name="id" value="<?= $c['student_id'] ?>">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="हटवा"><i class="bi bi-trash"></i></button>
+                                    <input type="hidden" name="id" value="<?= $c['id'] ?>">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="HPC हटवा"><i class="bi bi-trash"></i></button>
                                 </form>
                             </td>
                         </tr>
