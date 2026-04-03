@@ -216,7 +216,7 @@ function generateHTMLPDF($data, $school, $assessments, $attendance, $credits, $i
     // Priority: per-month school value > saved attendance > legacy school average
     $getWorkingDays = function($num) use ($month_num_to_key, $school_working_days_monthly, $attendance, $school_working_days) {
         $key = $month_num_to_key[$num] ?? '';
-        if (!empty($school_working_days_monthly[$key])) return intval($school_working_days_monthly[$key]);
+        if (isset($school_working_days_monthly[$key])) return intval($school_working_days_monthly[$key]);
         if (!empty($attendance[$num]['working_days'])) return intval($attendance[$num]['working_days']);
         return $school_working_days;
     };
