@@ -990,7 +990,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="card-body py-2">
                             <div class="mb-2">
                                 <label class="form-label text-muted small mb-1">📋 तयार नमुना निवडा:</label>
-                                <select class="form-select form-select-sm demo-dropdown" data-target="summary_domain_<?= $dpc_id ?>_textarea">
+                                <select class="form-select form-select-sm demo-dropdown" data-target="summary_domain_<?= $dpc_id ?>_textarea" data-replace="true">
                                     <option value="">-- नमुना निवडा --</option>
                                     <?php if (isset($demo_teacher_feedback[$dpc_id])): ?>
                                         <?php foreach ($demo_teacher_feedback[$dpc_id] as $fb_idx => $fb_text): ?>
@@ -1146,7 +1146,10 @@ document.querySelectorAll('.demo-dropdown').forEach(function(dropdown) {
         var targetId = this.getAttribute('data-target');
         var textarea = document.getElementById(targetId);
         if (textarea && this.value) {
-            if (textarea.value.trim()) {
+            var shouldReplace = this.getAttribute('data-replace') === 'true';
+            if (shouldReplace) {
+                textarea.value = this.value;
+            } else if (textarea.value.trim()) {
                 textarea.value = textarea.value.trim() + '\n\n' + this.value;
             } else {
                 textarea.value = this.value;

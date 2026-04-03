@@ -342,9 +342,9 @@ th{background:#E3F2FD;font-weight:600;text-align:center;}
 .lr{display:flex;align-items:center;margin:3px 5px;font-size:12px;}
 .lc{width:14px;height:14px;border:2px solid #666;margin-right:5px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;border-radius:2px;}
 .lc.ck{border-color:#D32F2F;background:#FFEBEE;color:#D32F2F;font-weight:700;}
-@media print{.np{display:none !important;}.page{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:297mm;overflow:hidden;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page-flow{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:auto;min-height:auto;overflow:visible;page-break-before:always;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.section-avoid{page-break-inside:avoid;}body{background:#fff;margin:0;padding:0;}.cover,.mw-page{padding:0 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;background-size:100% 100% !important;background-position:center !important;background-repeat:no-repeat !important;}.dh,.sh-o,.sh-b,.sh-g,.sh-r,.sh-b2,.rtbl th,.rtbl .ac,.rtbl .sel,.cg-box,.cb,.att th,.ffb,.mc{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+@media print{.np{display:none !important;}.page,.page-flow{transform:none !important;margin-bottom:0 !important;}.page{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:297mm;overflow:hidden;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page-flow{margin:0;padding:8mm 10mm;box-shadow:none;border:none;width:210mm;height:auto;min-height:auto;overflow:visible;page-break-before:always;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.section-avoid{page-break-inside:avoid;}body{background:#fff;margin:0;padding:0;}.cover,.mw-page{padding:0 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;background-size:100% 100% !important;background-position:center !important;background-repeat:no-repeat !important;}.dh,.sh-o,.sh-b,.sh-g,.sh-r,.sh-b2,.rtbl th,.rtbl .ac,.rtbl .sel,.cg-box,.cb,.att th,.ffb,.mc{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
 @media screen{.page{border:1px solid #ddd;margin:6px auto;box-shadow:0 2px 8px rgba(0,0,0,0.12);}.page-flow{border:1px solid #ddd;margin:6px auto;box-shadow:0 2px 8px rgba(0,0,0,0.12);}}
-@media screen and (max-width:768px){.page,.page-flow{width:210mm;min-height:297mm;padding:6mm 8mm;}.page{overflow:hidden;}.page-flow{overflow:visible;height:auto;}.g2{grid-template-columns:1fr 1fr;}body{overflow-x:auto;min-width:210mm;}.np{position:sticky;top:0;z-index:999;padding:8px;}.np button{width:100%;font-size:16px;padding:12px;}}
+@media screen and (max-width:800px){body{overflow-x:hidden;min-width:auto;margin:0;padding:0;background:#f0f0f0;}.page,.page-flow{transform-origin:top center;margin:4px auto;}.page{overflow:hidden;}.page-flow{overflow:visible;height:auto;}.np{position:sticky;top:0;z-index:999;padding:8px;background:#FFF3E0;}.np button{width:100%;font-size:16px;padding:12px;}}
 </style>
 </head>
 <body>
@@ -355,11 +355,41 @@ th{background:#E3F2FD;font-weight:600;text-align:center;}
 </div>
 <script>
 function generatePDF(){
-    try{window.print();}catch(e){
-        // Fallback for mobile browsers that block window.print
+    // Reset mobile scaling before printing so print output is A4
+    var wasScaled = document.body.getAttribute('data-mobile-scaled');
+    if(wasScaled){
+        var pages = document.querySelectorAll('.page,.page-flow');
+        pages.forEach(function(p){ p.style.transform=''; p.style.marginBottom=''; });
+    }
+    try{
+        window.print();
+    }catch(e){
         alert('कृपया ब्राउझर मेनू मधून "Share" > "Print" वापरा किंवा Desktop mode मध्ये PDF तयार करा.');
     }
+    // Re-apply mobile scaling after print dialog
+    if(wasScaled) setTimeout(scaleMobile, 300);
 }
+function scaleMobile(){
+    var vw = window.innerWidth;
+    if(vw >= 800) return;
+    var pageW = 793.7; // 210mm in px
+    var scale = (vw - 8) / pageW; // 8px for margins
+    if(scale > 1) scale = 1;
+    var pages = document.querySelectorAll('.page,.page-flow');
+    pages.forEach(function(p){
+        p.style.transformOrigin = 'top center';
+        p.style.transform = 'scale(' + scale + ')';
+        var h = p.scrollHeight || p.offsetHeight;
+        p.style.marginBottom = '-' + (h * (1 - scale)) + 'px';
+    });
+    document.body.setAttribute('data-mobile-scaled','1');
+}
+if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', scaleMobile);
+} else {
+    scaleMobile();
+}
+window.addEventListener('resize', function(){ scaleMobile(); });
 </script>
 
 <!-- PAGE 1: COVER -->
