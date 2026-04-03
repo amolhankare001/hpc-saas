@@ -395,8 +395,8 @@ require_once __DIR__ . '/../includes/header.php';
         <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#partA1">भाग A(1) - शाळा माहिती</a></li>
         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partA2">भाग A(2) - उपस्थिती व आवड</a></li>
         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partB">भाग B - डोमेन मूल्यांकन</a></li>
-        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partFinal">अंतिम अभिप्राय</a></li>
         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partC">भाग C - वार्षिक सारांश</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partFinal">अंतिम अभिप्राय</a></li>
     </ul>
 
     <div class="tab-content">
@@ -933,29 +933,6 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
         </div>
 
-        <!-- Final Annual Feedback -->
-        <div class="tab-pane fade" id="partFinal">
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white"><i class="bi bi-pen"></i> शिक्षकांचा अंतिम सर्वकष वार्षिक अभिप्राय (Final Annual Teacher's Feedback)</div>
-                <div class="card-body">
-                    <p class="text-muted">शैक्षणिक वर्षाच्या शेवटी विद्यार्थ्यांच्या समग्र विकासाबद्दल वर्णनात्मक अभिप्राय लिहा:</p>
-                    <div class="mb-2">
-                        <label class="form-label text-muted small">📋 तयार नमुना अभिप्राय निवडा:</label>
-                        <select class="form-select form-select-sm demo-dropdown" data-target="final_annual_feedback_textarea">
-                            <option value="">-- नमुना अभिप्राय निवडा (Demo Feedback) --</option>
-                            <?php if (isset($demo_final_annual_feedback)): ?>
-                                <?php foreach ($demo_final_annual_feedback as $idx => $fb): ?>
-                                    <option value="<?= htmlspecialchars($fb, ENT_QUOTES) ?>">📌 नमुना <?= $idx + 1 ?>: <?= mb_substr($fb, 0, 90) ?>...</option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
-                    </div>
-                    <textarea class="form-control" name="final_annual_feedback" id="final_annual_feedback_textarea" rows="8" placeholder="विद्यार्थ्याचा समग्र वार्षिक अभिप्राय येथे लिहा... किंवा वरील ड्रॉपडाउनमधून नमुना निवडा"><?= sanitize($hpc_card['final_annual_feedback'] ?? '') ?></textarea>
-                    <small class="text-muted">💡 ड्रॉपडाउनमधून निवडा आणि आवश्यकतेनुसार बदल करा</small>
-                </div>
-            </div>
-        </div>
-
         <!-- PART C - Yearly Summary (भाग क) -->
         <div class="tab-pane fade" id="partC">
             <div class="card mb-4">
@@ -1035,6 +1012,29 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                     </div>
                     <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Annual Feedback -->
+        <div class="tab-pane fade" id="partFinal">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white"><i class="bi bi-pen"></i> शिक्षकांचा अंतिम सर्वकष वार्षिक अभिप्राय (Final Annual Teacher's Feedback)</div>
+                <div class="card-body">
+                    <p class="text-muted">शैक्षणिक वर्षाच्या शेवटी विद्यार्थ्यांच्या समग्र विकासाबद्दल वर्णनात्मक अभिप्राय लिहा:</p>
+                    <div class="mb-2">
+                        <label class="form-label text-muted small">📋 तयार नमुना अभिप्राय निवडा:</label>
+                        <select class="form-select form-select-sm demo-dropdown" data-target="final_annual_feedback_textarea">
+                            <option value="">-- नमुना अभिप्राय निवडा (Demo Feedback) --</option>
+                            <?php if (isset($demo_final_annual_feedback)): ?>
+                                <?php foreach ($demo_final_annual_feedback as $idx => $fb): ?>
+                                    <option value="<?= htmlspecialchars($fb, ENT_QUOTES) ?>">📌 नमुना <?= $idx + 1 ?>: <?= mb_substr($fb, 0, 90) ?>...</option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    <textarea class="form-control" name="final_annual_feedback" id="final_annual_feedback_textarea" rows="8" placeholder="विद्यार्थ्याचा समग्र वार्षिक अभिप्राय येथे लिहा... किंवा वरील ड्रॉपडाउनमधून नमुना निवडा"><?= sanitize($hpc_card['final_annual_feedback'] ?? '') ?></textarea>
+                    <small class="text-muted">💡 ड्रॉपडाउनमधून निवडा आणि आवश्यकतेनुसार बदल करा</small>
                 </div>
             </div>
         </div>
