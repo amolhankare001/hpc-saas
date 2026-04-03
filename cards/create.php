@@ -310,14 +310,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
         }
     }
 
-    // Save credit framework (Part C)
-    $db->prepare("DELETE FROM hpc_credits WHERE hpc_card_id = ?")->execute([$hpc_card_id]);
-    foreach ($domains as $domain_id => $domain) {
-        $earned = floatval($_POST["credit_earned_$domain_id"] ?? 0);
-        $earned_t2 = floatval($_POST["credit_earned_term2_$domain_id"] ?? 0);
-        $stmt = $db->prepare("INSERT INTO hpc_credits (hpc_card_id, domain_name, domain_name_mr, credits, ncf_level, credit_points, credit_points_earned, credit_points_earned_term2) VALUES (?, ?, ?, 4.5, 0.2, 0.9, ?, ?)");
-        $stmt->execute([$hpc_card_id, $domain['name'], $domain['name_mr'], $earned, $earned_t2]);
-    }
 
     flash('success', $status === 'completed' ? 'HPC कार्ड पूर्ण झाले!' : 'HPC कार्ड मसुदा जतन झाला!');
     redirect(APP_URL . '/cards/view.php?id=' . $hpc_card_id);
