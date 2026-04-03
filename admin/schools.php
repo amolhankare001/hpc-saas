@@ -96,7 +96,7 @@ if (!empty($conditions)) {
 $count_stmt = $db->prepare($count_sql);
 $count_stmt->execute($params);
 $total_filtered = $count_stmt->fetchColumn();
-$total_pages = max(1, ceil($total_filtered / $per_page));
+$total_pages = max(1, intval(ceil($total_filtered / $per_page)));
 $page = min($page, $total_pages);
 $offset = ($page - 1) * $per_page;
 
