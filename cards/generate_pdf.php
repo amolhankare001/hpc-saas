@@ -1,5 +1,5 @@
 <?php
-// v15.0-photo-fix-explicit-select
+// v16.0-mobile-scaling-dropdown-replace
 // Serve page3 background image when requested (bypasses LiteSpeed new-file blocking)
 if (isset($_GET['_img']) && $_GET['_img'] === 'page3') {
     $imgPath = (file_exists(__DIR__ . '/assets/hpc-samagra-page3.jpg')) ? __DIR__ . '/assets/hpc-samagra-page3.jpg' : __DIR__ . '/../assets/hpc-samagra-page3.jpg';
