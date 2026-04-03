@@ -1,4 +1,6 @@
 <?php
+// v2 - Part C summary + academic year fix (2025-26)
+if (function_exists('opcache_reset')) { @opcache_reset(); }
 $page_title = 'HPC कार्ड तयार करा';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/demo_data.php';
@@ -19,6 +21,24 @@ try {
             ADD COLUMN summary_creativity VARCHAR(20) DEFAULT NULL");
     }
 } catch (Exception $e) { /* columns may already exist */ }
+
+// Auto-migrate: fix academic_year for records created in April/May under old boundary (month>=4)
+// Old code tagged April/May records as "2026-2027", but correct value is "2025-2026"
+try {
+    $cur_year = date('Y');
+    $wrong_year = $cur_year . '-' . ($cur_year + 1);        // e.g. "2026-2027"
+    $right_year = ($cur_year - 1) . '-' . $cur_year;        // e.g. "2025-2026"
+    $month = date('n');
+    if ($month >= 1 && $month <= 5) {
+        // We're in Jan-May, so the correct academic year is previous-current
+        // Fix any records that were incorrectly tagged with current-next
+        $fix_stmt = $db->prepare("UPDATE hpc_cards SET academic_year = ? WHERE academic_year = ? AND school_id = ?");
+        $fix_stmt->execute([$right_year, $wrong_year, $school_id]);
+        // Also fix attendance records
+        $fix_stmt2 = $db->prepare("UPDATE attendance SET academic_year = ? WHERE academic_year = ? AND school_id = ?");
+        $fix_stmt2->execute([$right_year, $wrong_year, $school_id]);
+    }
+} catch (Exception $e) { /* migration may fail if tables don't exist yet */ }
 
 // CSRF token generation
 if (empty($_SESSION['csrf_token'])) {

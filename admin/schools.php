@@ -364,7 +364,7 @@ $total_inactive = $db->query("SELECT COUNT(*) FROM schools WHERE is_active = 0")
 <script>
 var _plans = <?= json_encode($plans) ?>;
 var _csrf = '<?= $_SESSION['csrf_token'] ?>';
-var _filter = '<?= sanitize($filter) ?>';
+var _filter = <?= json_encode($filter) ?>;
 
 function openEditModal(s) {
     var plans = _plans, csrf = _csrf, filter = _filter;

@@ -1,4 +1,5 @@
 <?php
+// v2 - Academic year fix (June cutoff for 2025-26)
 // Database Configuration - load from local file or use defaults
 $local_db_file = __DIR__ . '/db_credentials.local.php';
 if (file_exists($local_db_file)) {
