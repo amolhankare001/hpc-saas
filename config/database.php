@@ -1,4 +1,5 @@
 <?php
+// v2 - Academic year fix (June cutoff for 2025-26)
 // Database Configuration - load from local file or use defaults
 $local_db_file = __DIR__ . '/db_credentials.local.php';
 if (file_exists($local_db_file)) {
@@ -115,7 +116,9 @@ function flash($key, $message = null) {
 function academic_year() {
     $month = date('n');
     $year = date('Y');
-    if ($month >= 4) {
+    // Indian academic year runs June to May
+    // June (6) onwards = new academic year, up to May (5) = previous academic year
+    if ($month >= 6) {
         return $year . '-' . ($year + 1);
     }
     return ($year - 1) . '-' . $year;

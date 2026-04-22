@@ -33,7 +33,7 @@ $current_school = isLoggedIn() ? getSchool() : null;
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= APP_URL ?>/hpc/list.php">
+                        <a class="nav-link" href="<?= APP_URL ?>/cards/list.php">
                             <i class="bi bi-card-checklist"></i> HPC कार्ड
                         </a>
                     </li>

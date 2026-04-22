@@ -84,7 +84,7 @@ require_once 'includes/header.php';
         <div class="dashboard-card blue">
             <h5><i class="bi bi-card-checklist text-primary"></i> HPC कार्ड तयार करा</h5>
             <p class="text-muted small mb-2">विद्यार्थ्यासाठी नवीन HPC कार्ड तयार करा.</p>
-            <a href="<?= APP_URL ?>/hpc/create.php" class="btn btn-sm btn-outline-primary">
+            <a href="<?= APP_URL ?>/cards/create.php" class="btn btn-sm btn-outline-primary">
                 <i class="bi bi-plus-circle"></i> तयार करा
             </a>
         </div>
@@ -148,7 +148,7 @@ require_once 'includes/header.php';
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <a href="<?= APP_URL ?>/hpc/create.php?student_id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-primary" title="HPC तयार करा">
+                                <a href="<?= APP_URL ?>/cards/create.php?student_id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-primary" title="HPC तयार करा">
                                     <i class="bi bi-card-checklist"></i>
                                 </a>
                             </td>

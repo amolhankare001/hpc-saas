@@ -1,4 +1,5 @@
 <?php
+// v2 - Part C summary + academic year fix (2025-26)
 $page_title = 'HPC कार्ड तयार करा';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/demo_data.php';
@@ -8,6 +9,49 @@ $db = getDB();
 $school_id = $_SESSION['school_id'];
 $school = getSchool();
 $student_id = intval($_GET['student_id'] ?? 0);
+
+// Auto-migrate: add Part C summary columns if they don't exist yet
+try {
+    $cols = $db->query("SHOW COLUMNS FROM hpc_cards LIKE 'summary_awareness'")->fetchAll();
+    if (empty($cols)) {
+        $db->exec("ALTER TABLE hpc_cards 
+            ADD COLUMN summary_awareness VARCHAR(20) DEFAULT NULL,
+            ADD COLUMN summary_sensitivity VARCHAR(20) DEFAULT NULL,
+            ADD COLUMN summary_creativity VARCHAR(20) DEFAULT NULL");
+    }
+} catch (Exception $e) { /* columns may already exist */ }
+
+// Auto-migrate: add Part C per-domain summary feedback columns
+try {
+    $cols2 = $db->query("SHOW COLUMNS FROM hpc_cards LIKE 'summary_domain_1'")->fetchAll();
+    if (empty($cols2)) {
+        $db->exec("ALTER TABLE hpc_cards 
+            ADD COLUMN summary_domain_1 TEXT DEFAULT NULL,
+            ADD COLUMN summary_domain_2 TEXT DEFAULT NULL,
+            ADD COLUMN summary_domain_3 TEXT DEFAULT NULL,
+            ADD COLUMN summary_domain_4 TEXT DEFAULT NULL,
+            ADD COLUMN summary_domain_5 TEXT DEFAULT NULL,
+            ADD COLUMN summary_domain_6 TEXT DEFAULT NULL");
+    }
+} catch (Exception $e) { /* columns may already exist */ }
+
+// Auto-migrate: fix academic_year for records created in April/May under old boundary (month>=4)
+// Old code tagged April/May records as "2026-2027", but correct value is "2025-2026"
+try {
+    $cur_year = date('Y');
+    $wrong_year = $cur_year . '-' . ($cur_year + 1);        // e.g. "2026-2027"
+    $right_year = ($cur_year - 1) . '-' . $cur_year;        // e.g. "2025-2026"
+    $month = date('n');
+    if ($month >= 1 && $month <= 5) {
+        // We're in Jan-May, so the correct academic year is previous-current
+        // Fix any records that were incorrectly tagged with current-next
+        $fix_stmt = $db->prepare("UPDATE hpc_cards SET academic_year = ? WHERE academic_year = ? AND school_id = ?");
+        $fix_stmt->execute([$right_year, $wrong_year, $school_id]);
+        // Also fix attendance records (attendance table has no school_id, so join via students)
+        $fix_stmt2 = $db->prepare("UPDATE attendance a JOIN students s ON a.student_id = s.id SET a.academic_year = ? WHERE a.academic_year = ? AND s.school_id = ?");
+        $fix_stmt2->execute([$right_year, $wrong_year, $school_id]);
+    }
+} catch (Exception $e) { /* migration may fail if tables don't exist yet */ }
 
 // CSRF token generation
 if (empty($_SESSION['csrf_token'])) {
@@ -122,21 +166,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
     // CSRF validation
     if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '')) {
         flash('error', 'Invalid CSRF token');
-        redirect(APP_URL . '/hpc/create.php?student_id=' . $student_id);
+        redirect(APP_URL . '/cards/create.php?student_id=' . $student_id);
     }
     $teacher_code = trim($_POST['teacher_code'] ?? '');
     $status = ($_POST['save_type'] ?? 'draft') === 'complete' ? 'completed' : 'draft';
 
     $final_annual_feedback = trim($_POST['final_annual_feedback'] ?? '');
 
+    // Part C summary: overall awareness/sensitivity/creativity levels
+    $summary_awareness = $_POST['summary_awareness'] ?? null;
+    $summary_sensitivity = $_POST['summary_sensitivity'] ?? null;
+    $summary_creativity = $_POST['summary_creativity'] ?? null;
+
+    // Part C: per-domain summary feedback
+    $summary_domain_1 = trim($_POST['summary_domain_1'] ?? '');
+    $summary_domain_2 = trim($_POST['summary_domain_2'] ?? '');
+    $summary_domain_3 = trim($_POST['summary_domain_3'] ?? '');
+    $summary_domain_4 = trim($_POST['summary_domain_4'] ?? '');
+    $summary_domain_5 = trim($_POST['summary_domain_5'] ?? '');
+    $summary_domain_6 = trim($_POST['summary_domain_6'] ?? '');
+
     if (!$hpc_card) {
-        $stmt = $db->prepare("INSERT INTO hpc_cards (student_id, school_id, academic_year, teacher_code, status, final_annual_feedback) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$student_id, $school_id, academic_year(), $teacher_code, $status, $final_annual_feedback]);
+        $stmt = $db->prepare("INSERT INTO hpc_cards (student_id, school_id, academic_year, teacher_code, status, final_annual_feedback, summary_awareness, summary_sensitivity, summary_creativity, summary_domain_1, summary_domain_2, summary_domain_3, summary_domain_4, summary_domain_5, summary_domain_6) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$student_id, $school_id, academic_year(), $teacher_code, $status, $final_annual_feedback, $summary_awareness, $summary_sensitivity, $summary_creativity, $summary_domain_1, $summary_domain_2, $summary_domain_3, $summary_domain_4, $summary_domain_5, $summary_domain_6]);
         $hpc_card_id = $db->lastInsertId();
     } else {
         $hpc_card_id = $hpc_card['id'];
-        $stmt = $db->prepare("UPDATE hpc_cards SET teacher_code = ?, status = ?, final_annual_feedback = ? WHERE id = ? AND school_id = ?");
-        $stmt->execute([$teacher_code, $status, $final_annual_feedback, $hpc_card_id, $school_id]);
+        $stmt = $db->prepare("UPDATE hpc_cards SET teacher_code = ?, status = ?, final_annual_feedback = ?, summary_awareness = ?, summary_sensitivity = ?, summary_creativity = ?, summary_domain_1 = ?, summary_domain_2 = ?, summary_domain_3 = ?, summary_domain_4 = ?, summary_domain_5 = ?, summary_domain_6 = ? WHERE id = ? AND school_id = ?");
+        $stmt->execute([$teacher_code, $status, $final_annual_feedback, $summary_awareness, $summary_sensitivity, $summary_creativity, $summary_domain_1, $summary_domain_2, $summary_domain_3, $summary_domain_4, $summary_domain_5, $summary_domain_6, $hpc_card_id, $school_id]);
     }
 
     // Save attendance
@@ -252,17 +309,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $student) {
         }
     }
 
-    // Save credit framework (Part C)
-    $db->prepare("DELETE FROM hpc_credits WHERE hpc_card_id = ?")->execute([$hpc_card_id]);
-    foreach ($domains as $domain_id => $domain) {
-        $earned = floatval($_POST["credit_earned_$domain_id"] ?? 0);
-        $earned_t2 = floatval($_POST["credit_earned_term2_$domain_id"] ?? 0);
-        $stmt = $db->prepare("INSERT INTO hpc_credits (hpc_card_id, domain_name, domain_name_mr, credits, ncf_level, credit_points, credit_points_earned, credit_points_earned_term2) VALUES (?, ?, ?, 4.5, 0.2, 0.9, ?, ?)");
-        $stmt->execute([$hpc_card_id, $domain['name'], $domain['name_mr'], $earned, $earned_t2]);
-    }
 
     flash('success', $status === 'completed' ? 'HPC कार्ड पूर्ण झाले!' : 'HPC कार्ड मसुदा जतन झाला!');
-    redirect(APP_URL . '/hpc/view.php?id=' . $hpc_card_id);
+    redirect(APP_URL . '/cards/view.php?id=' . $hpc_card_id);
 }
 
 require_once __DIR__ . '/../includes/header.php';
@@ -270,7 +319,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-card-checklist"></i> HPC कार्ड तयार करा</h2>
-    <a href="<?= APP_URL ?>/hpc/list.php" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> मागे</a>
+    <a href="<?= APP_URL ?>/cards/list.php" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> मागे</a>
 </div>
 
 <!-- Student Selection -->
@@ -337,8 +386,8 @@ require_once __DIR__ . '/../includes/header.php';
         <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#partA1">भाग A(1) - शाळा माहिती</a></li>
         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partA2">भाग A(2) - उपस्थिती व आवड</a></li>
         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partB">भाग B - डोमेन मूल्यांकन</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partC">भाग C - वार्षिक सारांश</a></li>
         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partFinal">अंतिम अभिप्राय</a></li>
-        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#partC">भाग C - क्रेडिट</a></li>
     </ul>
 
     <div class="tab-content">
@@ -407,8 +456,8 @@ require_once __DIR__ . '/../includes/header.php';
                                     $monthly_wd = !empty($school['working_days_monthly']) ? json_decode($school['working_days_monthly'], true) : [];
                                     $sw_days_fallback = intval($school['working_days'] ?? 0);
                                     foreach ($month_keys as $num => $key): 
-                                        // Use per-month value if available, fallback to single value, but allow saved attendance to override
-                                        $wd_val = $attendance_data[$num]['working_days'] ?? ($monthly_wd[$key] ?? $sw_days_fallback);
+                                            // Always use school's current monthly working days (source of truth), fallback to saved attendance, then legacy average
+                                        $wd_val = (isset($monthly_wd[$key]) ? $monthly_wd[$key] : null) ?? ($attendance_data[$num]['working_days'] ?? $sw_days_fallback);
                                     ?>
                                         <td>
                                             <input type="number" class="form-control form-control-sm attendance-working" name="working_<?= $key ?>" value="<?= intval($wd_val) ?>" readonly style="background:#f0f0f0;">
@@ -875,6 +924,89 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
         </div>
 
+        <!-- PART C - Yearly Summary (भाग क) -->
+        <div class="tab-pane fade" id="partC">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white"><i class="bi bi-clipboard-check"></i> भाग क - शैक्षणिक वर्षाचा सारांश (Part C - Yearly Summary)</div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">प्रमुख कामगिरी वर्णन विधाने - प्रत्येक क्षमतेसाठी योग्य पातळी निवडा:</p>
+                    <div class="row g-4">
+                        <?php
+                        $summary_fields = [
+                            'awareness' => ['title' => 'जाणीवजागृती', 'emoji' => '👁️', 'color' => '#E3F2FD', 'border' => '#1565C0'],
+                            'sensitivity' => ['title' => 'संवेदनशीलता', 'emoji' => '💗', 'color' => '#FCE4EC', 'border' => '#C62828'],
+                            'creativity' => ['title' => 'सर्जनशीलता', 'emoji' => '🎨', 'color' => '#E8F5E9', 'border' => '#2E7D32'],
+                        ];
+                        $summary_levels = [
+                            'akash' => ['label' => 'आकाश', 'emoji' => '✨', 'color' => '#cce5ff'],
+                            'parvat' => ['label' => 'पर्वत', 'emoji' => '⛰️', 'color' => '#d4edda'],
+                            'pravah' => ['label' => 'प्रवाह', 'emoji' => '🌊', 'color' => '#d1ecf1'],
+                            'pailu' => ['label' => 'पैलू', 'emoji' => '🌾', 'color' => '#fff3cd'],
+                        ];
+                        foreach ($summary_fields as $skey => $sfield):
+                            $saved_val = $hpc_card['summary_' . $skey] ?? '';
+                        ?>
+                        <div class="col-md-4">
+                            <div class="card h-100" style="border: 2px solid <?= $sfield['border'] ?>;">
+                                <div class="card-header text-center" style="background: <?= $sfield['color'] ?>;">
+                                    <h5 class="mb-0" style="color: <?= $sfield['border'] ?>;"><?= $sfield['emoji'] ?> <?= $sfield['title'] ?></h5>
+                                    <small class="text-muted">(योग्य पर्याय निवडा.)</small>
+                                </div>
+                                <div class="card-body">
+                                    <?php foreach ($summary_levels as $lkey => $linfo): ?>
+                                    <div class="form-check mb-2 p-2 rounded" style="background: <?= $linfo['color'] ?>40;">
+                                        <input class="form-check-input" type="radio" name="summary_<?= $skey ?>" value="<?= $lkey ?>" id="summary_<?= $skey ?>_<?= $lkey ?>" <?= ($saved_val === $lkey) ? 'checked' : '' ?>>
+                                        <label class="form-check-label fw-bold" for="summary_<?= $skey ?>_<?= $lkey ?>">
+                                            <?= $linfo['emoji'] ?> <?= $linfo['label'] ?>
+                                        </label>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <!-- Per-domain summary feedback -->
+                    <hr class="my-4">
+                    <h5 class="text-primary mb-3"><i class="bi bi-card-text"></i> प्रमुख कामगिरी वर्णन विधाने (Per-Domain Summary Feedback)</h5>
+                    <p class="text-muted mb-3">प्रत्येक विकास क्षेत्रासाठी वर्णनात्मक अभिप्राय निवडा किंवा लिहा:</p>
+                    <?php
+                    $domain_names_partc = [
+                        1 => ['name_mr' => 'शारीरिक विकास', 'emoji' => '🏃', 'color' => '#E3F2FD', 'border' => '#1565C0'],
+                        2 => ['name_mr' => 'सामाजिक, भावनिक व नैतिक विकास', 'emoji' => '💗', 'color' => '#FCE4EC', 'border' => '#C62828'],
+                        3 => ['name_mr' => 'बोधात्मक विकास', 'emoji' => '🧠', 'color' => '#EDE7F6', 'border' => '#4A148C'],
+                        4 => ['name_mr' => 'भाषा आणि साक्षरता विकास', 'emoji' => '📖', 'color' => '#E8F5E9', 'border' => '#2E7D32'],
+                        5 => ['name_mr' => 'सौंदर्यदृष्टी आणि सांस्कृतिक विकास', 'emoji' => '🎨', 'color' => '#FFF3E0', 'border' => '#E65100'],
+                        6 => ['name_mr' => 'सकारात्मक शिक्षण सवयी', 'emoji' => '📚', 'color' => '#F3E5F5', 'border' => '#6A1B9A'],
+                    ];
+                    foreach ($domain_names_partc as $dpc_id => $dpc_info):
+                        $saved_domain_fb = $hpc_card['summary_domain_' . $dpc_id] ?? '';
+                    ?>
+                    <div class="card mb-3" style="border: 2px solid <?= $dpc_info['border'] ?>;">
+                        <div class="card-header py-2" style="background: <?= $dpc_info['color'] ?>;">
+                            <strong style="color: <?= $dpc_info['border'] ?>;"><?= $dpc_info['emoji'] ?> <?= $dpc_id ?>) <?= $dpc_info['name_mr'] ?></strong>
+                        </div>
+                        <div class="card-body py-2">
+                            <div class="mb-2">
+                                <label class="form-label text-muted small mb-1">📋 तयार नमुना निवडा:</label>
+                                <select class="form-select form-select-sm demo-dropdown" data-target="summary_domain_<?= $dpc_id ?>_textarea" data-replace="true">
+                                    <option value="">-- नमुना निवडा --</option>
+                                    <?php if (isset($demo_teacher_feedback[$dpc_id])): ?>
+                                        <?php foreach ($demo_teacher_feedback[$dpc_id] as $fb_idx => $fb_text): ?>
+                                            <option value="<?= htmlspecialchars($fb_text, ENT_QUOTES) ?>">📌 <?= mb_substr($fb_text, 0, 80) ?>...</option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                            <textarea class="form-control form-control-sm" name="summary_domain_<?= $dpc_id ?>" id="summary_domain_<?= $dpc_id ?>_textarea" rows="2" placeholder="<?= $dpc_info['name_mr'] ?> साठी अभिप्राय लिहा..."><?= sanitize($saved_domain_fb) ?></textarea>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+
         <!-- Final Annual Feedback -->
         <div class="tab-pane fade" id="partFinal">
             <div class="card mb-4">
@@ -894,60 +1026,6 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                     <textarea class="form-control" name="final_annual_feedback" id="final_annual_feedback_textarea" rows="8" placeholder="विद्यार्थ्याचा समग्र वार्षिक अभिप्राय येथे लिहा... किंवा वरील ड्रॉपडाउनमधून नमुना निवडा"><?= sanitize($hpc_card['final_annual_feedback'] ?? '') ?></textarea>
                     <small class="text-muted">💡 ड्रॉपडाउनमधून निवडा आणि आवश्यकतेनुसार बदल करा</small>
-                </div>
-            </div>
-        </div>
-
-        <!-- PART C - Credit Framework -->
-        <div class="tab-pane fade" id="partC">
-            <div class="card mb-4">
-                <div class="card-header"><i class="bi bi-trophy"></i> भाग C - क्रेडिट फ्रेमवर्क (Credit Framework) - इयत्ता १</div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>डोमेन (Domain)</th>
-                                    <th class="text-center">क्रेडिट (Credits)</th>
-                                    <th class="text-center">NCF पातळी<br>(NCF Levels)</th>
-                                    <th class="text-center">क्रेडिट पॉइंट<br>(Credit Points)</th>
-                                    <th class="text-center">सत्र १ मिळवलेले<br>(Term 1 Earned)</th>
-                                    <th class="text-center">सत्र २ मिळवलेले<br>(Term 2 Earned)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                $stmt_credits = null;
-                                $credit_data = [];
-                                if ($hpc_card) {
-                                    $stmt_credits = $db->prepare("SELECT * FROM hpc_credits WHERE hpc_card_id = ?");
-                                    $stmt_credits->execute([$hpc_card['id']]);
-                                    foreach ($stmt_credits->fetchAll() as $c) {
-                                        $credit_data[$c['domain_name_mr']] = $c;
-                                    }
-                                }
-                                foreach ($domains as $domain_id => $domain):
-                                    $cd = $credit_data[$domain['name_mr']] ?? [];
-                                ?>
-                                <tr>
-                                    <td>
-                                        <strong><?= $domain_id ?>. <?= $domain['name_mr'] ?></strong><br>
-                                        <small class="text-muted"><?= $domain['name'] ?></small>
-                                    </td>
-                                    <td class="text-center">4.5</td>
-                                    <td class="text-center">0.2</td>
-                                    <td class="text-center">0.90</td>
-                                    <td class="text-center">
-                                        <input type="number" class="form-control form-control-sm text-center" name="credit_earned_<?= $domain_id ?>" step="0.01" min="0" max="0.90" value="<?= $cd['credit_points_earned'] ?? '' ?>" placeholder="0.00">
-                                    </td>
-                                    <td class="text-center">
-                                        <input type="number" class="form-control form-control-sm text-center" name="credit_earned_term2_<?= $domain_id ?>" step="0.01" min="0" max="0.90" value="<?= $cd['credit_points_earned_term2'] ?? '' ?>" placeholder="0.00">
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1068,7 +1146,10 @@ document.querySelectorAll('.demo-dropdown').forEach(function(dropdown) {
         var targetId = this.getAttribute('data-target');
         var textarea = document.getElementById(targetId);
         if (textarea && this.value) {
-            if (textarea.value.trim()) {
+            var shouldReplace = this.getAttribute('data-replace') === 'true';
+            if (shouldReplace) {
+                textarea.value = this.value;
+            } else if (textarea.value.trim()) {
                 textarea.value = textarea.value.trim() + '\n\n' + this.value;
             } else {
                 textarea.value = this.value;
