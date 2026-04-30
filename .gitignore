@@ -1,0 +1,25 @@
+# Uploads
+uploads/photos/*
+uploads/logos/*
+!uploads/photos/.gitkeep
+!uploads/logos/.gitkeep
+
+# Environment
+.env
+*.log
+config/razorpay_keys.local.php
+config/db_credentials.local.php
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vendor
+vendor/
+
+# Temp
+tmp/

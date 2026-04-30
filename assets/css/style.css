@@ -1,0 +1,219 @@
+/* HPC Card SaaS - Marathi UI Styles */
+
+:root {
+    --primary: #E65100;
+    --primary-dark: #BF360C;
+    --primary-light: #FF8A65;
+    --secondary: #1565C0;
+    --success: #2E7D32;
+    --bg-light: #FFF3E0;
+    --bg-card: #FFFFFF;
+    --text-dark: #212121;
+    --text-muted: #757575;
+    --border: #E0E0E0;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+* {
+    font-family: 'Noto Sans Devanagari', 'Segoe UI', sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: var(--text-dark);
+}
+
+/* Navbar */
+.navbar { background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important; }
+.navbar-brand { font-weight: 700; font-size: 1.3rem; }
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+.card-header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-radius: 12px 12px 0 0 !important; font-weight: 600; }
+
+/* Buttons */
+.btn-primary { background: var(--primary); border-color: var(--primary); }
+.btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+.btn-outline-primary { color: var(--primary); border-color: var(--primary); }
+.btn-outline-primary:hover { background: var(--primary); border-color: var(--primary); }
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 50%, #4E342E 100%);
+    color: white;
+    padding: 80px 0;
+    margin-top: -1.5rem;
+}
+.hero-section h1 { font-size: 2.8rem; font-weight: 700; }
+.hero-section p { font-size: 1.2rem; opacity: 0.9; }
+
+/* Stats */
+.stat-card {
+    text-align: center;
+    padding: 24px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: var(--shadow);
+}
+.stat-card .stat-number { font-size: 2.5rem; font-weight: 700; color: var(--primary); }
+.stat-card .stat-label { color: var(--text-muted); font-size: 0.9rem; }
+
+/* Dashboard */
+.dashboard-card {
+    border-left: 4px solid var(--primary);
+    padding: 20px;
+    background: white;
+    border-radius: 0 12px 12px 0;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+}
+.dashboard-card.blue { border-left-color: var(--secondary); }
+.dashboard-card.green { border-left-color: var(--success); }
+
+/* Forms */
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(230, 81, 0, 0.15);
+}
+.form-label { font-weight: 500; color: var(--text-dark); margin-bottom: 4px; }
+
+/* HPC Card Styles */
+.hpc-card-preview {
+    background: white;
+    border: 2px solid var(--primary);
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+.hpc-header {
+    text-align: center;
+    border-bottom: 3px double var(--primary);
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+}
+.hpc-header h2 { color: var(--primary); font-weight: 700; }
+.hpc-header h3 { color: var(--primary-dark); font-size: 1.1rem; }
+
+/* Part tabs */
+.hpc-tabs .nav-link {
+    color: var(--primary);
+    font-weight: 600;
+    border: 2px solid transparent;
+    border-radius: 8px 8px 0 0;
+    padding: 10px 20px;
+}
+.hpc-tabs .nav-link.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Domain cards */
+.domain-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+    background: var(--bg-light);
+}
+.domain-card h5 { color: var(--primary); font-weight: 600; }
+
+/* Assessment Rubric - 4 Level System */
+.rubric-table th { text-align: center; font-size: 0.85rem; }
+.rubric-table td { vertical-align: top; }
+.rubric-radio { accent-color: var(--primary); width: 16px; height: 16px; flex-shrink: 0; }
+.rubric-radio:checked + small { font-weight: 600; color: var(--text-dark); }
+.rubric-table label:has(input:checked) { background: rgba(230,81,0,0.08); border-radius: 6px; padding: 4px; }
+/* Fallback for browsers without :has */
+.rubric-table td { transition: background 0.2s; }
+.rubric-table input[type="radio"]:checked { box-shadow: 0 0 0 3px rgba(230,81,0,0.2); }
+
+/* Attendance Table */
+.attendance-table th { background: var(--primary); color: white; text-align: center; font-size: 0.85rem; }
+.attendance-table td { text-align: center; }
+.attendance-table input { width: 60px; text-align: center; }
+
+/* Interest checkboxes */
+.interest-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+.interest-item {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.interest-item:hover { background: var(--bg-light); border-color: var(--primary); }
+.interest-item.selected { background: var(--bg-light); border-color: var(--primary); }
+
+/* Pricing Cards */
+.pricing-card {
+    border-radius: 16px;
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.3s;
+}
+.pricing-card:hover { transform: translateY(-8px); }
+.pricing-card.popular { border: 3px solid var(--primary); }
+.pricing-card .price { font-size: 2.5rem; font-weight: 700; color: var(--primary); }
+.pricing-card .price small { font-size: 1rem; color: var(--text-muted); }
+
+/* Print Styles */
+@media print {
+    .navbar, footer, .no-print, .btn, .alert { display: none !important; }
+    body { background: white; }
+    .hpc-card-preview { border: 1px solid #000; box-shadow: none; }
+    .card { box-shadow: none; border: 1px solid #ccc; }
+    main { padding: 0 !important; }
+    .container { max-width: 100% !important; }
+}
+
+/* Photo upload */
+.photo-upload {
+    width: 120px;
+    height: 150px;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+.photo-upload:hover { border-color: var(--primary); }
+.photo-upload img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Plan badges */
+.plan-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+.plan-badge.free { background: #E8F5E9; color: #2E7D32; }
+.plan-badge.basic { background: #E3F2FD; color: #1565C0; }
+.plan-badge.pro { background: #FFF3E0; color: #E65100; }
+.plan-badge.enterprise { background: #F3E5F5; color: #7B1FA2; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-section { padding: 40px 0; }
+    .hero-section h1 { font-size: 1.8rem; }
+    .stat-card .stat-number { font-size: 1.8rem; }
+    .interest-grid { grid-template-columns: repeat(2, 1fr); }
+}
