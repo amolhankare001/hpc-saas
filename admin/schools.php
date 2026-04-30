@@ -48,6 +48,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$name, $name_mr, $email, $phone, $district, $taluka, $udise_code, $address_line1, $plan_id, $is_active, $school_id]);
         flash('success', 'शाळेची माहिती अपडेट झाली.');
     }
+    if ($action === 'change_password' && $school_id) {
+        $new_password = $_POST['new_password'] ?? '';
+        $confirm_password = $_POST['confirm_password'] ?? '';
+
+        if (empty($new_password) || strlen($new_password) < 6) {
+            flash('error', 'पासवर्ड किमान 6 अक्षरे असावा.');
+        } elseif ($new_password !== $confirm_password) {
+            flash('error', 'पासवर्ड आणि पुष्टी पासवर्ड जुळत नाहीत.');
+        } else {
+            $hash = password_hash($new_password, PASSWORD_DEFAULT);
+            $stmt = $db->prepare("UPDATE schools SET password = ? WHERE id = ?");
+            $stmt->execute([$hash, $school_id]);
+            flash('success', 'शाळेचा पासवर्ड यशस्वीरित्या बदलला.');
+        }
+    }
     $redir = APP_URL . '/admin/schools.php';
     if (!empty($_POST['filter'])) $redir .= '?filter=' . urlencode($_POST['filter']);
     redirect($redir);
@@ -220,6 +235,7 @@ $total_inactive = $db->query("SELECT COUNT(*) FROM schools WHERE is_active = 0")
                             <td>
                                 <a href="<?= APP_URL ?>/admin/school_hpc.php?school_id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-info" title="HPC कार्ड पहा"><i class="bi bi-card-checklist"></i></a>
                                 <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal<?= $s['id'] ?>" title="पहा / संपादित करा"><i class="bi bi-pencil-square"></i></button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#pwdModal<?= $s['id'] ?>" title="पासवर्ड बदला"><i class="bi bi-key"></i></button>
                                 <form method="POST" class="d-inline">
                                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                     <input type="hidden" name="action" value="toggle_status">
@@ -320,6 +336,38 @@ $total_inactive = $db->query("SELECT COUNT(*) FROM schools WHERE is_active = 0")
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">बंद करा</button>
                                             <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> जतन करा</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Change Password Modal -->
+                        <div class="modal fade" id="pwdModal<?= $s['id'] ?>" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form method="POST">
+                                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                        <input type="hidden" name="action" value="change_password">
+                                        <input type="hidden" name="school_id" value="<?= $s['id'] ?>">
+                                        <?php if ($filter): ?><input type="hidden" name="filter" value="<?= sanitize($filter) ?>"><?php endif; ?>
+                                        <div class="modal-header bg-warning text-dark">
+                                            <h5 class="modal-title"><i class="bi bi-key"></i> पासवर्ड बदला - <?= sanitize($s['name_mr'] ?: $s['name']) ?></h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p class="text-muted mb-3"><i class="bi bi-info-circle"></i> शाळेचा लॉगिन पासवर्ड बदला. ईमेल: <strong><?= sanitize($s['email']) ?></strong></p>
+                                            <div class="mb-3">
+                                                <label class="form-label">नवीन पासवर्ड</label>
+                                                <input type="password" class="form-control" name="new_password" required minlength="6" placeholder="किमान 6 अक्षरे">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">पासवर्ड पुष्टी करा</label>
+                                                <input type="password" class="form-control" name="confirm_password" required minlength="6" placeholder="पुन्हा पासवर्ड टाका">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">रद्द करा</button>
+                                            <button type="submit" class="btn btn-warning" onclick="return confirm('खात्री आहे? शाळेचा पासवर्ड बदलला जाईल.')"><i class="bi bi-key"></i> पासवर्ड बदला</button>
                                         </div>
                                     </form>
                                 </div>
